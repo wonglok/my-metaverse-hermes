@@ -9,6 +9,7 @@ import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteAvatar } from "./other-avatar";
 import { KinematicPlatform } from "./kinematic-platform";
+import { JoystickControls } from "./joystick-controls";
 import {
   updatePlayerPhysics,
   resetPlayer,
@@ -42,7 +43,18 @@ interface GameWorldProps {
   placeId: string;
 }
 
-function MyScene({ rt }: GameWorldProps) {
+interface MySceneProps extends GameWorldProps {
+  keysRef: React.MutableRefObject<{
+    fwd: boolean;
+    bkd: boolean;
+    lft: boolean;
+    rgt: boolean;
+    space: boolean;
+  }>;
+  spacePressedRef: React.MutableRefObject<boolean>;
+}
+
+function MyScene({ rt, keysRef, spacePressedRef }: MySceneProps) {
   const playerRef = useRef<THREE.Group>(null);
   const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
@@ -51,15 +63,6 @@ function MyScene({ rt }: GameWorldProps) {
     offGroundTimer: 0,
     walkAnimation: 0,
   });
-  const keysRef = useRef({
-    fwd: false,
-    bkd: false,
-    lft: false,
-    rgt: false,
-    space: false,
-  });
-
-  const spacePressedRef = useRef(false);
   const thetaRef = useRef(0);
   const phiRef = useRef(0.5);
   const distRef = useRef(DEFAULT_DIST);
@@ -320,6 +323,15 @@ function MyScene({ rt }: GameWorldProps) {
 
 export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
   let [ready, setReady] = useState(false);
+
+  const keysRef = useRef({
+    fwd: false,
+    bkd: false,
+    lft: false,
+    rgt: false,
+    space: false,
+  });
+  const spacePressedRef = useRef(false);
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -349,9 +361,16 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
           </>
         )}
         <Suspense fallback={null}>
-          <MyScene rt={rt} placeId={_placeId} />
+          <MyScene
+            rt={rt}
+            placeId={_placeId}
+            keysRef={keysRef}
+            spacePressedRef={spacePressedRef}
+          />
         </Suspense>
       </Canvas>
+
+      <JoystickControls keysRef={keysRef} spacePressedRef={spacePressedRef} />
 
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
         WASD to move &middot; Space to jump &middot; Drag mouse to orbit
