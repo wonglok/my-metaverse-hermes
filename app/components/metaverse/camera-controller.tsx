@@ -4,7 +4,7 @@ import { useThree } from "@react-three/fiber";
 export const MIN_PHI = 0.15;
 export const MAX_PHI = Math.PI / 2 - 0.1;
 export const MIN_DIST = 3;
-export const MAX_DIST = 20;
+export const MAX_DIST = 200;
 export const DEFAULT_DIST = 8;
 export const LERP_SPEED = 8;
 export const LOOK_TARGET_Y = 1.0;

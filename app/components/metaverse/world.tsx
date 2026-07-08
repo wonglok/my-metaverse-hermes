@@ -33,6 +33,7 @@ import { WebGPURenderer } from "three/webgpu";
 // import { equirectUV, texture, uv, vec3, vec4 } from "three/tsl";
 // import { Fn } from "three/src/nodes/TSL.js";
 import { EffectsSSGI } from "./EffectsSSGI";
+import { GLBEnv } from "./GLBEnv";
 
 declare module "@react-three/fiber" {
   interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
@@ -289,7 +290,7 @@ function MyScene({
           motion={{ axis: "y", amplitude: 0, speed: 0 }}
           onReady={registerPlatform}
         >
-          <Gltf src="/assets/place/church.glb" receiveShadow castShadow />
+          <GLBEnv src="/assets/place/church.glb" receiveShadow castShadow />
         </KinematicPlatform>
       </Suspense>
 
