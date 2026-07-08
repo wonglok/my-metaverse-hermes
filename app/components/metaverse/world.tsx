@@ -40,7 +40,7 @@ const DEFAULT_PLATFORMS: PlatformDef[] = [
 // ── Physics params ─────────────────────────────────────────────────────────
 
 const PHYSICS_PARAMS = { gravity: -80, playerSpeed: 10 };
-const PHYSICS_STEPS = 4;
+const PHYSICS_STEPS = 5;
 
 // ── Player capsule definition ──────────────────────────────────────────────
 
@@ -300,7 +300,7 @@ function MyScene({ rt }: GameWorldProps) {
         rotation={[0, Math.PI / 2, 0]}
       >
         <PlayerCharacter
-          walkAnimation={physicsStateRef.current.walkAnimation}
+          walkAnimation={0}
           color={rt.self?.color ?? "#ff637e"}
         />
       </group>
