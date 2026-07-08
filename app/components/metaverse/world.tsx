@@ -32,7 +32,7 @@ import { WebGPURenderer } from "three/webgpu";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 import { equirectUV, texture, uv, vec3, vec4 } from "three/tsl";
 import { Fn } from "three/src/nodes/TSL.js";
-import { EnvLight } from "./EffectsSSGI";
+import { EffectsSSGI } from "./EffectsSSGI";
 
 declare module "@react-three/fiber" {
   interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
@@ -248,6 +248,7 @@ function MyScene({
     <>
       <directionalLight
         ref={lightRef}
+        color={"#ffffff"}
         intensity={2}
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -372,20 +373,19 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
         shadows
         camera={{ fov: 60, near: 0.1, far: 200, position: [0, 6, 8] }}
         gl={async (props) => {
-          const renderer = new WebGPURenderer(props as any);
+          const renderer = new WebGPURenderer({
+            ...(props as any),
+            depth: false,
+            antialias: false,
+            stencil: false,
+          });
           await renderer.init();
 
           return renderer;
         }}
       >
-        <EnvLight hdrURL={`/assets/place/sky.hdr`}></EnvLight>
-        {/* <Suspense fallback={null}>
-          <Environment
-            files={[`/assets/place/sky.hdr`]}
-            environmentIntensity={0.75}
-            background
-          />
-        </Suspense> */}
+        <EffectsSSGI></EffectsSSGI>
+
         <Suspense fallback={null}>
           <MyScene
             rt={rt}
