@@ -1,6 +1,7 @@
 import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
+import { Water } from "three/examples/jsm/objects/Water.js";
 import * as THREE from "three";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
@@ -142,6 +143,53 @@ function CameraController({ targetRef, thetaRef }: CameraControllerProps) {
   return null;
 }
 
+// ── Water plane ────────────────────────────────────────────────────────────
+
+const WATER_GEOMETRY = new THREE.PlaneGeometry(500, 500);
+
+function WaterPlane() {
+  const { scene, gl } = useThree();
+  const waterRef = useRef<Water | null>(null);
+
+  useEffect(() => {
+    const normalsTexture = new THREE.TextureLoader().load(
+      "/assets/water/waternormals.jpg",
+      () => {
+        water.material.uniforms.time.value = 0;
+      },
+    );
+    normalsTexture.wrapS = normalsTexture.wrapT = THREE.RepeatWrapping;
+    normalsTexture.repeat.set(10, 10);
+
+    const water = new Water(WATER_GEOMETRY, {
+      textureWidth: 1024,
+      textureHeight: 1024,
+      waterNormals: normalsTexture,
+      sunDirection: new THREE.Vector3(0, 1, 0),
+      sunColor: 0xffffff,
+      waterColor: 0x001e3c,
+      distortionScale: 3.0,
+    });
+    water.position.set(0, -10, 0);
+    water.rotation.x = -Math.PI / 2;
+    waterRef.current = water;
+    scene.add(water);
+
+    return () => {
+      scene.remove(water);
+      water.geometry.dispose();
+      (water.material as THREE.ShaderMaterial).dispose();
+    };
+  }, [scene, gl]);
+
+  useFrame((_, delta) => {
+    if (!waterRef.current) return;
+    waterRef.current.material.uniforms.time.value += delta;
+  });
+
+  return null;
+}
+
 // ── Scene ──────────────────────────────────────────────────────────────────
 
 interface GameWorldProps {
@@ -276,7 +324,7 @@ function MyScene({ rt }: GameWorldProps) {
     spacePressedRef.current = false;
 
     // Reset if fallen too far
-    if (player.position.y < -5) {
+    if (player.position.y < -25) {
       resetPlayer(
         player,
         physicsStateRef.current,
@@ -362,6 +410,9 @@ function MyScene({ rt }: GameWorldProps) {
         </KinematicPlatform>
       </Suspense>
       {/* GLTF */}
+
+      {/* Water */}
+      <WaterPlane />
 
       {/* Moving platforms */}
       <KinematicPlatform
