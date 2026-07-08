@@ -7,7 +7,7 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
-import { RemoteAvatar } from "./cylinder-avatar";
+import { RemoteAvatar } from "./other-avatar";
 import { KinematicPlatform } from "./kinematic-platform";
 import {
   updatePlayerPhysics,

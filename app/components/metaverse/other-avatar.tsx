@@ -16,15 +16,11 @@ interface OtherAvatarProps {
 const LERP_FACTOR = 0.15;
 
 export function OtherAvatar({
-  color,
   position = [0, 0, 0],
   rotation = 0,
-  isLocal = false,
   name,
 }: OtherAvatarProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const bodyRef = useRef<THREE.Mesh>(null);
-  const headRef = useRef<THREE.Mesh>(null);
 
   const targetPos = useRef(new THREE.Vector3(...position));
   const currentPos = useRef(new THREE.Vector3(...position));
@@ -74,33 +70,6 @@ export function OtherAvatar({
   return (
     <group ref={groupRef}>
       <group position={[0, 0, 0]}>
-        {/* <mesh ref={bodyRef} castShadow position={[0, 0.6, 0]}>
-          <cylinderGeometry args={[0.35, 0.4, 1.2, 16]} />
-          <meshStandardMaterial color={color} roughness={0.5} />
-        </mesh>
-
-        <mesh ref={headRef} castShadow position={[0, 1.425, 0]}>
-          <cylinderGeometry args={[0.25, 0.28, 0.45, 16]} />
-          <meshStandardMaterial color={color} roughness={0.4} />
-        </mesh>
-
-        <mesh position={[0.08, 1.5, 0.22]}>
-          <sphereGeometry args={[0.05, 8, 8]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-        <mesh position={[-0.08, 1.5, 0.22]}>
-          <sphereGeometry args={[0.05, 8, 8]} />
-          <meshBasicMaterial color="white" />
-        </mesh>
-
-        <mesh position={[0, 0.8, 0.38]}>
-          <boxGeometry args={[0.12, 0.06, 0.08]} />
-          <meshStandardMaterial
-            color={isLocal ? "#ffffff" : "#000000"}
-            roughness={0.3}
-          />
-        </mesh> */}
-
         <group rotation={[0, Math.PI * 0.5, 0]}>
           <PlayerCharacter isMe={false} state={state} />
         </group>
