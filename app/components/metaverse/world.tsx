@@ -270,7 +270,7 @@ function MyScene({ rt }: GameWorldProps) {
         onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[2, 0.3, 2]} />
+          <boxGeometry args={[4, 0.3, 4]} />
           <meshStandardNodeMaterial color="#40a4e8" roughness={0.3} />
         </mesh>
       </KinematicPlatform>
