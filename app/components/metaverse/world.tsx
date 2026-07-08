@@ -48,15 +48,15 @@ interface GameWorldProps {
 }
 
 interface MySceneProps extends GameWorldProps {
-  keysRef: React.MutableRefObject<{
+  keysRef: React.RefObject<{
     fwd: boolean;
     bkd: boolean;
     lft: boolean;
     rgt: boolean;
     space: boolean;
   }>;
-  spacePressedRef: React.MutableRefObject<boolean>;
-  joystickInputRef: React.MutableRefObject<{
+  spacePressedRef: React.RefObject<boolean>;
+  joystickInputRef: React.RefObject<{
     active: boolean;
     angle: number;
     force: number;
