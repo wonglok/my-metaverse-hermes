@@ -33,12 +33,16 @@ import {
   float,
   packNormalToRGB,
   unpackRGBToNormal,
+  equirectUV,
+  textureCubeUV,
+  texture3D,
 } from "three/tsl";
 
 import {
   //
   Object3D,
   PerspectiveCamera,
+  PMREMGenerator,
   RenderPipeline,
   Spherical,
   Texture,
@@ -50,7 +54,13 @@ import {
 import { Color, Scene } from "three/webgpu";
 import { UnsignedByteType } from "three/webgpu";
 
-import { Timer, FloatType, HalfFloatType, WebGLRenderer } from "three";
+import {
+  Timer,
+  FloatType,
+  HalfFloatType,
+  WebGLRenderer,
+  EquirectangularReflectionMapping,
+} from "three";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 
 export function EffectsSSGI() {
@@ -190,13 +200,19 @@ export function EffectsSSGI() {
 
     console.log(gl);
 
-    let loader = new HDRLoader();
+    const loader = new HDRLoader();
     loader.loadAsync(`/assets/place/sky.hdr`).then((sky) => {
       //
+      sky.mapping = EquirectangularReflectionMapping;
 
-      scene.backgroundNode = vec3(texture(sky, uv()));
+      const prm = new PMREMGenerator(gl as any);
+      prm.compileEquirectangularShader();
+      const rtt = prm.fromEquirectangular(sky);
 
-      scene.environmentNode = vec3(texture(sky, uv()));
+      scene.environment = rtt.texture;
+      scene.environmentIntensity = 0.5;
+      scene.background = rtt.texture;
+      scene.backgroundIntensity = 0.5;
 
       console.log(sky);
       //
