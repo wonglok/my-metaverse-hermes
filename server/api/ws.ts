@@ -145,13 +145,16 @@ export default defineWebSocketHandler({
           timestamp: Date.now(),
         };
 
-        peer.publish(
-          placeId,
-          JSON.stringify({
-            t: "chat",
-            message: chatMsg,
-          } satisfies ServerMessage),
-        );
+        const payload = JSON.stringify({
+          t: "chat",
+          message: chatMsg,
+        } satisfies ServerMessage);
+
+        // Echo back to sender so they see their own message immediately
+        send(peer, { t: "chat", message: chatMsg });
+
+        // Broadcast to all other peers in the room
+        peer.publish(placeId, payload);
         break;
       }
 
