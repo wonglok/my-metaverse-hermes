@@ -278,7 +278,11 @@ function MyScene({ rt }: GameWorldProps) {
       </KinematicPlatform>
 
       {/* Local player */}
-      <group ref={playerRef} position={[0, 2, 0]} rotation={[0, 0, 0]}>
+      <group
+        ref={playerRef}
+        position={[0, 2, 0]}
+        rotation={[0, Math.PI * -0.5, 0]}
+      >
         <Suspense fallback={null}>
           <group rotation={[0, 0.5 * Math.PI, 0]}>
             <PlayerCharacter
@@ -303,7 +307,9 @@ function MyScene({ rt }: GameWorldProps) {
         }) => {
           return (
             <group key={p.id}>
-              <RemoteAvatar player={p} />
+              <Suspense fallback={null}>
+                <RemoteAvatar player={p} />
+              </Suspense>
             </group>
           );
         },
