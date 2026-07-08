@@ -60,6 +60,8 @@ export function CameraController({
     // ── Touch ──────────────────────────────────────────────────────────
 
     function onTouchStart(e: TouchEvent) {
+      e.preventDefault();
+      e.preventDefault();
       if (e.touches.length === 1) {
         dragging.current = true;
         lastPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -72,6 +74,8 @@ export function CameraController({
     }
 
     function onTouchMove(e: TouchEvent) {
+      e.preventDefault();
+      e.preventDefault();
       if (e.touches.length === 1 && dragging.current) {
         const dx = e.touches[0].clientX - lastPos.current.x;
         const dy = e.touches[0].clientY - lastPos.current.y;
