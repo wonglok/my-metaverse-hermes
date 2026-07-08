@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Center, Text3D } from "@react-three/drei";
@@ -22,30 +22,20 @@ export function OtherAvatar({
 }: OtherAvatarProps) {
   const groupRef = useRef<THREE.Group>(null);
 
-  const targetPos = useRef(new THREE.Vector3(...position));
   const currentPos = useRef(new THREE.Vector3(...position));
-  const targetRot = useRef(rotation);
   const currentRot = useRef(rotation);
+  const targetPos = useRef(new THREE.Vector3(...position));
+  const targetRot = useRef(rotation);
 
   const [state] = useState({ walkAnimation: 0 });
 
-  useEffect(() => {
-    targetPos.current.set(...position);
-    targetRot.current = rotation;
-  }, [position, rotation]);
+  // Update targets from latest props (not in useEffect, so useFrame always
+  // sees current values without a render-commit round-trip)
+  targetPos.current.set(...position);
+  targetRot.current = rotation;
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
-
-    if (!currentRot.current) {
-      return;
-    }
-    if (!targetPos.current) {
-      return;
-    }
-
-    //
-    //
 
     if (currentPos.current.distanceTo(targetPos.current) >= 0.5) {
       state.walkAnimation = 1.0;
@@ -63,8 +53,6 @@ export function OtherAvatar({
     );
     groupRef.current.position.copy(currentPos.current);
     groupRef.current.rotation.y = currentRot.current;
-
-    //
   });
 
   return (
