@@ -327,6 +327,7 @@ function MyScene({
               name={rt.self?.name}
               isMe={true}
               state={physicsStateRef.current}
+              spacePressedRef={spacePressedRef}
             />
           </group>
         </Suspense>

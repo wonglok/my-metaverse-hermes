@@ -11,6 +11,7 @@ interface PlayerCharacterProps {
   name?: string;
   state: PlayerPhysicsState | { walkAnimation: number };
   isMe: boolean;
+  spacePressedRef?: React.MutableRefObject<boolean>;
 }
 
 let useFBXAction = (
@@ -41,6 +42,7 @@ export function PlayerCharacter({
   name = "me",
   state,
   isMe = true,
+  spacePressedRef,
 }: PlayerCharacterProps) {
   const meshRef = useRef<THREE.Group>(null);
 
@@ -86,19 +88,25 @@ export function PlayerCharacter({
     ),
   };
 
-  const isOnGround = "isOnGround" in state ? state.isOnGround : true;
+  const jumpTimer = useRef(0);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (clonedScene) {
       clonedScene.rotation.x = Math.PI * -0.5;
     }
 
-    const jumping = !isOnGround;
+    // Trigger jump animation from keyboard/joystick input, hold for 0.4s
+    if (spacePressedRef?.current) {
+      jumpTimer.current = 0.4;
+    }
+    jumpTimer.current = Math.max(0, jumpTimer.current - delta);
+
+    const isOnGround = "isOnGround" in state ? state.isOnGround : true;
+    const jumping = jumpTimer.current > 0 || !isOnGround;
     const walking = state.walkAnimation !== 0;
 
     const targetIdle = !jumping && !walking ? 1 : 0;
     const targetRun = !jumping && walking ? 1 : 0;
-
     const targetJump = jumping ? 1 : 0;
 
     if (fbx.idle) {
