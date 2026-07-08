@@ -1,10 +1,10 @@
-import { useRef, useEffect } from 'react'
-import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { Sky, Environment } from '@react-three/drei'
-import BVHEcctrl, { type BVHEcctrlApi, StaticCollider } from 'bvhecctrl'
-import type { UseMetaverse } from '@/hooks/use-metaverse'
-import { CylinderAvatar, RemoteCylinderAvatar } from './cylinder-avatar'
-import * as THREE from 'three'
+import { useRef, useEffect } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { Sky, Environment } from "@react-three/drei";
+import BVHEcctrl, { type BVHEcctrlApi, StaticCollider } from "bvhecctrl";
+import type { UseMetaverse } from "@/hooks/use-metaverse";
+import { CylinderAvatar, RemoteCylinderAvatar } from "./cylinder-avatar";
+import * as THREE from "three";
 
 function Ground() {
   return (
@@ -17,10 +17,16 @@ function Ground() {
         <meshStandardMaterial color="#2d5a27" roughness={0.8} />
       </mesh>
     </StaticCollider>
-  )
+  );
 }
 
-function Platform({ position, size }: { position: [number, number, number]; size: [number, number, number] }) {
+function Platform({
+  position,
+  size,
+}: {
+  position: [number, number, number];
+  size: [number, number, number];
+}) {
   return (
     <StaticCollider>
       <mesh position={position} castShadow receiveShadow>
@@ -28,131 +34,151 @@ function Platform({ position, size }: { position: [number, number, number]; size
         <meshStandardMaterial color="#555" roughness={0.6} />
       </mesh>
     </StaticCollider>
-  )
+  );
 }
 
 // ── Third-person camera that follows the ecctrl avatar ────────────────────────
 
-const MIN_PHI = 0.15
-const MAX_PHI = Math.PI / 2 - 0.1
-const MIN_DIST = 3
-const MAX_DIST = 20
-const DEFAULT_DIST = 8
-const LERP_SPEED = 8
-const LOOK_TARGET_Y = 1.0 // aim at mid-torso
+const MIN_PHI = 0.15;
+const MAX_PHI = Math.PI / 2 - 0.1;
+const MIN_DIST = 3;
+const MAX_DIST = 20;
+const DEFAULT_DIST = 8;
+const LERP_SPEED = 8;
+const LOOK_TARGET_Y = 1.0; // aim at mid-torso
 
 interface CameraControllerProps {
-  targetRef: React.RefObject<BVHEcctrlApi | null>
+  targetRef: React.RefObject<BVHEcctrlApi | null>;
 }
 
 function CameraController({ targetRef }: CameraControllerProps) {
-  const { camera, gl } = useThree()
+  const { camera, gl } = useThree();
 
-  const thetaRef = useRef(0) // horizontal orbit angle (radians)
-  const phiRef = useRef(0.5) // vertical orbit angle
-  const distRef = useRef(DEFAULT_DIST)
-  const dragging = useRef(false)
-  const lastMouse = useRef({ x: 0, y: 0 })
+  const thetaRef = useRef(0); // horizontal orbit angle (radians)
+  const phiRef = useRef(0.5); // vertical orbit angle
+  const distRef = useRef(DEFAULT_DIST);
+  const dragging = useRef(false);
+  const lastMouse = useRef({ x: 0, y: 0 });
 
   // Mouse orbit + scroll zoom
   useEffect(() => {
-    const canvas = gl.domElement
+    const canvas = gl.domElement;
 
     function onDown(e: MouseEvent) {
-      dragging.current = true
-      lastMouse.current = { x: e.clientX, y: e.clientY }
+      dragging.current = true;
+      lastMouse.current = { x: e.clientX, y: e.clientY };
     }
     function onUp() {
-      dragging.current = false
+      dragging.current = false;
     }
     function onMove(e: MouseEvent) {
-      if (!dragging.current) return
-      const dx = e.clientX - lastMouse.current.x
-      const dy = e.clientY - lastMouse.current.y
-      thetaRef.current -= dx * 0.005
-      phiRef.current = Math.min(MAX_PHI, Math.max(MIN_PHI, phiRef.current - dy * 0.005))
-      lastMouse.current = { x: e.clientX, y: e.clientY }
+      if (!dragging.current) return;
+      const dx = e.clientX - lastMouse.current.x;
+      const dy = e.clientY - lastMouse.current.y;
+      thetaRef.current -= dx * 0.005;
+      phiRef.current = Math.min(
+        MAX_PHI,
+        Math.max(MIN_PHI, phiRef.current - dy * 0.005),
+      );
+      lastMouse.current = { x: e.clientX, y: e.clientY };
     }
     function onWheel(e: WheelEvent) {
-      distRef.current = Math.min(MAX_DIST, Math.max(MIN_DIST, distRef.current + e.deltaY * 0.01))
+      distRef.current = Math.min(
+        MAX_DIST,
+        Math.max(MIN_DIST, distRef.current + e.deltaY * 0.01),
+      );
     }
 
-    canvas.addEventListener('mousedown', onDown)
-    window.addEventListener('mouseup', onUp)
-    window.addEventListener('mousemove', onMove)
-    canvas.addEventListener('wheel', onWheel, { passive: true })
+    canvas.addEventListener("mousedown", onDown);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("mousemove", onMove);
+    canvas.addEventListener("wheel", onWheel, { passive: true });
 
     return () => {
-      canvas.removeEventListener('mousedown', onDown)
-      window.removeEventListener('mouseup', onUp)
-      window.removeEventListener('mousemove', onMove)
-      canvas.removeEventListener('wheel', onWheel)
-    }
-  }, [gl])
+      canvas.removeEventListener("mousedown", onDown);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("mousemove", onMove);
+      canvas.removeEventListener("wheel", onWheel);
+    };
+  }, [gl]);
 
   useFrame((_, delta) => {
-    const group = targetRef.current?.group
-    if (!group) return
+    const group = targetRef.current?.group;
+    if (!group) return;
 
-    const px = group.position.x
-    const py = group.position.y
-    const pz = group.position.z
+    const px = group.position.x;
+    const py = group.position.y;
+    const pz = group.position.z;
 
-    const theta = thetaRef.current
-    const phi = phiRef.current
-    const dist = distRef.current
+    const theta = thetaRef.current;
+    const phi = phiRef.current;
+    const dist = distRef.current;
 
     // Spherical → Cartesian relative to the player
-    const targetX = px + dist * Math.sin(phi) * Math.sin(theta)
-    const targetY = py + dist * Math.cos(phi)
-    const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta)
+    const targetX = px + dist * Math.sin(phi) * Math.sin(theta);
+    const targetY = py + dist * Math.cos(phi);
+    const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta);
 
-    const t = 1 - Math.exp(-LERP_SPEED * delta)
-    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), t)
-    camera.lookAt(px, py + LOOK_TARGET_Y, pz)
-  })
+    const t = 1 - Math.exp(-LERP_SPEED * delta);
+    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), t);
+    camera.lookAt(px, py + LOOK_TARGET_Y, pz);
+  });
 
-  return null
+  return null;
 }
 
 // ── Scene ─────────────────────────────────────────────────────────────────────
 
 interface GameWorldProps {
-  rt: UseMetaverse
-  placeId: string
+  rt: UseMetaverse;
+  placeId: string;
 }
 
 function Scene({ rt }: GameWorldProps) {
-  const ecctrlRef = useRef<BVHEcctrlApi>(null)
-  const keysRef = useRef({ w: false, a: false, s: false, d: false, shift: false, space: false })
+  const ecctrlRef = useRef<BVHEcctrlApi>(null);
+  const keysRef = useRef({
+    w: false,
+    a: false,
+    s: false,
+    d: false,
+    shift: false,
+    space: false,
+  });
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const map: Record<string, keyof typeof keysRef.current> = {
-        KeyW: 'w', KeyA: 'a', KeyS: 's', KeyD: 'd',
-        ArrowUp: 'w', ArrowLeft: 'a', ArrowDown: 's', ArrowRight: 'd',
-        ShiftLeft: 'shift', Space: 'space',
-      }
-      const key = map[e.code]
+        KeyW: "w",
+        KeyA: "a",
+        KeyS: "s",
+        KeyD: "d",
+        ArrowUp: "w",
+        ArrowLeft: "a",
+        ArrowDown: "s",
+        ArrowRight: "d",
+        ShiftLeft: "shift",
+        Space: "space",
+      };
+      const key = map[e.code];
       if (key) {
-        keysRef.current[key] = e.type === 'keydown'
-        e.preventDefault()
+        keysRef.current[key] = e.type === "keydown";
+        e.preventDefault();
       }
     }
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('keyup', onKey)
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKey);
     return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('keyup', onKey)
-    }
-  }, [])
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKey);
+    };
+  }, []);
 
   // Drive BVHEcctrl movement from keyboard + broadcast position
   useEffect(() => {
-    let raf: number
+    let raf: number;
     function tick() {
-      const k = keysRef.current
-      const api = ecctrlRef.current
+      const k = keysRef.current;
+      const api = ecctrlRef.current;
       if (api) {
         api.setMovement({
           forward: k.w,
@@ -161,20 +187,20 @@ function Scene({ rt }: GameWorldProps) {
           rightward: k.d,
           run: k.shift,
           jump: k.space,
-        })
+        });
 
-        const group = api.group
+        const group = api.group;
         if (group) {
-          const pos = group.position
-          const euler = new THREE.Euler().setFromQuaternion(group.quaternion)
-          rt.sendMove(pos.x, pos.y, pos.z, euler.y)
+          const pos = group.position;
+          const euler = new THREE.Euler().setFromQuaternion(group.quaternion);
+          rt.sendMove(pos.x, pos.y, pos.z, euler.y);
         }
       }
-      raf = requestAnimationFrame(tick)
+      raf = requestAnimationFrame(tick);
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [rt])
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [rt]);
 
   return (
     <>
@@ -209,7 +235,7 @@ function Scene({ rt }: GameWorldProps) {
         colliderCapsuleArgs={[0.35, 1.0, 8, 16]}
       >
         <CylinderAvatar
-          color={rt.self?.color ?? '#ff637e'}
+          color={rt.self?.color ?? "#ff637e"}
           isLocal
           name={rt.self?.name}
         />
@@ -219,7 +245,7 @@ function Scene({ rt }: GameWorldProps) {
         <RemoteCylinderAvatar key={p.id} player={p} />
       ))}
     </>
-  )
+  );
 }
 
 export function GameWorld({ rt, placeId }: GameWorldProps) {
@@ -234,8 +260,9 @@ export function GameWorld({ rt, placeId }: GameWorldProps) {
       </Canvas>
 
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
-        WASD to move &middot; Shift to run &middot; Space to jump &middot; Drag mouse to orbit &middot; Scroll to zoom
+        WASD to move &middot; Shift to run &middot; Space to jump &middot; Drag
+        mouse to orbit &middot; Scroll to zoom
       </div>
     </div>
-  )
+  );
 }
