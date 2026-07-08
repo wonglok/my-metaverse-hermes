@@ -89,13 +89,12 @@ export function ProceduralColliders({
   onBVHReady,
 }: ProceduralCollidersProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const readyRef = useRef(false);
+  const bvhRef = useRef<ObjectBVH | null>(null);
 
   useEffect(() => {
-    if (readyRef.current || !groupRef.current) return;
-    readyRef.current = true;
-
     const group = groupRef.current;
+    if (!group) return;
+
     group.updateMatrixWorld(true);
 
     group.traverse((c) => {
@@ -106,9 +105,9 @@ export function ProceduralColliders({
     });
 
     group.updateMatrixWorld(true);
-    const sceneBVH = new ObjectBVH(group, { maxLeafTris: 1 });
-    onBVHReady?.(sceneBVH, group);
-  }, []);
+    bvhRef.current = new ObjectBVH(group, { maxLeafTris: 1 });
+    onBVHReady?.(bvhRef.current, group);
+  }, [platforms]);
 
   return (
     <group ref={groupRef}>

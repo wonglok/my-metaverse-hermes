@@ -5,10 +5,7 @@ import * as THREE from "three";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteCylinderAvatar } from "./cylinder-avatar";
-import {
-  ProceduralColliders,
-  type PlatformDef,
-} from "./gltf-environment";
+import { ProceduralColliders, type PlatformDef } from "./gltf-environment";
 import {
   updatePlayerPhysics,
   resetPlayer,
@@ -20,17 +17,30 @@ import {
 // ── Default platforms (matching previous world layout) ─────────────────────
 
 const DEFAULT_PLATFORMS: PlatformDef[] = [
+  // Ground-level platforms
   { position: [3, 0.5, -3], size: [2, 1, 2] },
-  { position: [-4, 0.75, -2], size: [2, 1.5, 2] },
-  { position: [0, 0.5, -6], size: [4, 1, 1.5] },
-  { position: [5, 0.3, 2], size: [1.5, 0.6, 4] },
-  { position: [-3, 1, 3], size: [3, 2, 3] },
+  { position: [5, 0.3, 2], size: [2, 0.6, 4] },
+  { position: [-6, 0.5, 1], size: [2, 1, 2] },
+
+  // Elevated platforms (floating, no ground connection)
+  { position: [-4, 2.5, -3], size: [2, 0.4, 2] },
+  { position: [0, 3.5, -5], size: [2.5, 0.3, 2.5] },
+  { position: [4, 4.5, -4], size: [2, 0.3, 2] },
+
+  // Staircase to get up to floating platforms
+  { position: [-4, 0.75, 2], size: [2, 0.5, 1.5] },
+  { position: [-4, 1.5, 1], size: [2, 0.5, 1.5] },
+  { position: [-4, 2.25, 0], size: [2, 0.5, 1.5] },
+
+  // Wide elevated walkway
+  { position: [6, 2.0, -6], size: [5, 0.3, 1.5] },
+  { position: [8, 2.8, -6], size: [3, 0.3, 1.5] },
 ];
 
 // ── Physics params ─────────────────────────────────────────────────────────
 
 const PHYSICS_PARAMS = { gravity: -80, playerSpeed: 10 };
-const PHYSICS_STEPS = 5;
+const PHYSICS_STEPS = 4;
 
 // ── Player capsule definition ──────────────────────────────────────────────
 
@@ -187,16 +197,37 @@ function MyScene({ rt }: GameWorldProps) {
     };
   }, []);
 
-  // Broadcast position each frame
+  // Broadcast position — throttled to ≤2 sends per 2s, only when moving
   useEffect(() => {
+    const MIN_DELTA = 0.01; // ignore sub-centimeter drift
+    const MIN_INTERVAL = 1000; // ms between sends (2 per 2s)
+
+    let lastSentPos = new THREE.Vector3();
+    let lastSentRot = 0;
+    let lastSentTime = 0;
     let raf: number;
+
     function tick() {
       const player = playerRef.current;
-      if (player) {
-        const pos = player.position;
-        const euler = new THREE.Euler().setFromQuaternion(player.quaternion);
+      if (!player) return;
+
+      const pos = player.position;
+      const euler = new THREE.Euler().setFromQuaternion(player.quaternion);
+      const now = performance.now();
+
+      const moved =
+        Math.abs(pos.x - lastSentPos.x) > MIN_DELTA ||
+        Math.abs(pos.y - lastSentPos.y) > MIN_DELTA ||
+        Math.abs(pos.z - lastSentPos.z) > MIN_DELTA ||
+        Math.abs(euler.y - lastSentRot) > 0.001;
+
+      if (moved && now - lastSentTime >= MIN_INTERVAL) {
         rt.sendMove(pos.x, pos.y, pos.z, euler.y);
+        lastSentPos.copy(pos);
+        lastSentRot = euler.y;
+        lastSentTime = now;
       }
+
       raf = requestAnimationFrame(tick);
     }
     raf = requestAnimationFrame(tick);
@@ -263,7 +294,11 @@ function MyScene({ rt }: GameWorldProps) {
       />
 
       {/* Local player */}
-      <group ref={playerRef} position={[0, 2, 0]} rotation={[0, Math.PI / 2, 0]}>
+      <group
+        ref={playerRef}
+        position={[0, 2, 0]}
+        rotation={[0, Math.PI / 2, 0]}
+      >
         <PlayerCharacter
           walkAnimation={physicsStateRef.current.walkAnimation}
           color={rt.self?.color ?? "#ff637e"}

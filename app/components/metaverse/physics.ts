@@ -44,6 +44,19 @@ export interface BVHContext {
   root: THREE.Group;
 }
 
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function isTransparent(obj: THREE.Object3D): boolean {
+  const mesh = obj as THREE.Mesh;
+  if (!mesh.isMesh) return false;
+  const materials = Array.isArray(mesh.material)
+    ? mesh.material
+    : [mesh.material];
+  return materials.some(
+    (m) => (m as THREE.Material & { transparent?: boolean }).transparent === true,
+  );
+}
+
 // ── Physics step ───────────────────────────────────────────────────────────
 
 export function updatePlayerPhysics(
@@ -135,18 +148,15 @@ export function updatePlayerPhysics(
 
   const segmentStart = _worldSegment.start.clone();
 
-  // Shapecast against scene BVH
+  // Shapecast against scene BVH — resolves collisions against all meshes
+  // (ground, floating platforms, walls, etc.)
   bvhCtx.bvh.shapecast({
     intersectsBounds: (box) => box.intersectsBox(_sceneLocalBox),
 
     intersectsObject: (object) => {
       if (!object.visible) return;
-
-      const mesh = object as THREE.Mesh;
-      if (mesh.material) {
-        const mat = mesh.material as THREE.Material & { transparent?: boolean };
-        if (mat.transparent) return;
-      }
+      if (!(object as THREE.Mesh).isMesh) return;
+      if (isTransparent(object)) return;
 
       _invMat.copy(object.matrixWorld).invert();
 
@@ -164,10 +174,12 @@ export function updatePlayerPhysics(
       _sphere.applyMatrix4(_invMat);
       const localRadius = _sphere.radius;
 
+      const mesh = object as THREE.Mesh;
       if (!mesh.geometry.boundsTree) return;
 
       (mesh.geometry.boundsTree as any).shapecast({
-        intersectsBounds: (box: THREE.Box3) => box.intersectsBox(_objectLocalBox),
+        intersectsBounds: (box: THREE.Box3) =>
+          box.intersectsBox(_objectLocalBox),
 
         intersectsTriangle: (tri: THREE.Triangle) => {
           const triPoint = _tempVector;
@@ -193,7 +205,9 @@ export function updatePlayerPhysics(
 
   // Update player position
   const deltaVector = _tempVector2;
-  deltaVector.copy(capsule.segment.start).applyMatrix4(player.matrixWorld);
+  deltaVector
+    .copy(capsule.segment.start)
+    .applyMatrix4(player.matrixWorld);
   deltaVector.subVectors(_worldSegment.start, deltaVector);
   player.position.add(deltaVector);
 
