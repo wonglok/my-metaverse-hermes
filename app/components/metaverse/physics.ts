@@ -35,7 +35,7 @@ export interface PlayerPhysicsState {
 
 export const OFF_GROUND_TIME = 0.05;
 export const WALK_CYCLE_TIME = 2 * Math.PI;
-const JUMP_VELOCITY = 30;
+const JUMP_VELOCITY = 28;
 
 // ── BVH context (root group + bvh) ─────────────────────────────────────────
 
