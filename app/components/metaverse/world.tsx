@@ -259,8 +259,8 @@ function MyScene({ rt }: GameWorldProps) {
           motion={{ axis: "y", amplitude: 0, speed: 0 }}
           onReady={registerPlatform}
         >
-          <WaterPlane />
           <Gltf src="/assets/place/church.glb" receiveShadow castShadow />
+          <WaterPlane />
           <Environment
             files={[`/assets/place/sky.hdr`]}
             environmentIntensity={0.75}
