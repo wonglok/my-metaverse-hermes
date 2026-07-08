@@ -29,6 +29,10 @@ import {
   PLAYER_CAPSULE,
 } from "./scene-defaults";
 import { WebGPURenderer } from "three/webgpu";
+import { HDRLoader } from "three/examples/jsm/Addons.js";
+import { equirectUV, texture, uv, vec3, vec4 } from "three/tsl";
+import { Fn } from "three/src/nodes/TSL.js";
+import { EnvLight } from "./EffectsSSGI";
 
 declare module "@react-three/fiber" {
   interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
@@ -374,13 +378,14 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
           return renderer;
         }}
       >
-        <Suspense fallback={null}>
+        <EnvLight hdrURL={`/assets/place/sky.hdr`}></EnvLight>
+        {/* <Suspense fallback={null}>
           <Environment
             files={[`/assets/place/sky.hdr`]}
             environmentIntensity={0.75}
             background
           />
-        </Suspense>
+        </Suspense> */}
         <Suspense fallback={null}>
           <MyScene
             rt={rt}
