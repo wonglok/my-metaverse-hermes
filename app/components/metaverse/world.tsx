@@ -1,43 +1,48 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Suspense } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment } from "@react-three/drei";
-import BVHEcctrl, { type BVHEcctrlApi, StaticCollider } from "bvhecctrl";
-import type { UseMetaverse } from "@/hooks/use-metaverse";
-import { CylinderAvatar, RemoteCylinderAvatar } from "./cylinder-avatar";
 import * as THREE from "three";
+import type { UseMetaverse } from "@/hooks/use-metaverse";
+import { PlayerCharacter } from "./player-character";
+import { RemoteCylinderAvatar } from "./cylinder-avatar";
+import {
+  ProceduralColliders,
+  type PlatformDef,
+} from "./gltf-environment";
+import {
+  updatePlayerPhysics,
+  resetPlayer,
+  type PlayerCapsule,
+  type PlayerPhysicsState,
+  type BVHContext,
+} from "./physics";
 
-function Ground() {
-  return (
-    <StaticCollider>
-      {/* BoxGeometry gives the ground real depth so three-mesh-bvh produces a
-          solid BVH that shapecasts and raycasts can reliably hit. The top
-          surface sits at y=0. */}
-      <mesh receiveShadow position={[0, -0.25, 0]}>
-        <boxGeometry args={[50, 0.5, 50]} />
-        <meshStandardMaterial color="#2d5a27" roughness={0.8} />
-      </mesh>
-    </StaticCollider>
-  );
-}
+// ── Default platforms (matching previous world layout) ─────────────────────
 
-function Platform({
-  position,
-  size,
-}: {
-  position: [number, number, number];
-  size: [number, number, number];
-}) {
-  return (
-    <StaticCollider>
-      <mesh position={position} castShadow receiveShadow>
-        <boxGeometry args={size} />
-        <meshStandardMaterial color="#555" roughness={0.6} />
-      </mesh>
-    </StaticCollider>
-  );
-}
+const DEFAULT_PLATFORMS: PlatformDef[] = [
+  { position: [3, 0.5, -3], size: [2, 1, 2] },
+  { position: [-4, 0.75, -2], size: [2, 1.5, 2] },
+  { position: [0, 0.5, -6], size: [4, 1, 1.5] },
+  { position: [5, 0.3, 2], size: [1.5, 0.6, 4] },
+  { position: [-3, 1, 3], size: [3, 2, 3] },
+];
 
-// ── Third-person camera that follows the ecctrl avatar ────────────────────────
+// ── Physics params ─────────────────────────────────────────────────────────
+
+const PHYSICS_PARAMS = { gravity: -80, playerSpeed: 10 };
+const PHYSICS_STEPS = 5;
+
+// ── Player capsule definition ──────────────────────────────────────────────
+
+const PLAYER_CAPSULE: PlayerCapsule = {
+  radius: 0.75,
+  segment: new THREE.Line3(
+    new THREE.Vector3(0, 0.75, 0),
+    new THREE.Vector3(0, 1.0, 0),
+  ),
+};
+
+// ── Third-person camera ────────────────────────────────────────────────────
 
 const MIN_PHI = 0.15;
 const MAX_PHI = Math.PI / 2 - 0.1;
@@ -45,22 +50,21 @@ const MIN_DIST = 3;
 const MAX_DIST = 20;
 const DEFAULT_DIST = 8;
 const LERP_SPEED = 8;
-const LOOK_TARGET_Y = 1.0; // aim at mid-torso
+const LOOK_TARGET_Y = 1.0;
 
 interface CameraControllerProps {
-  targetRef: React.RefObject<BVHEcctrlApi | null>;
+  targetRef: React.RefObject<THREE.Group | null>;
+  thetaRef: React.RefObject<number>;
 }
 
-function CameraController({ targetRef }: CameraControllerProps) {
+function CameraController({ targetRef, thetaRef }: CameraControllerProps) {
   const { camera, gl } = useThree();
 
-  const thetaRef = useRef(0); // horizontal orbit angle (radians)
-  const phiRef = useRef(0.5); // vertical orbit angle
+  const phiRef = useRef(0.5);
   const distRef = useRef(DEFAULT_DIST);
   const dragging = useRef(false);
   const lastMouse = useRef({ x: 0, y: 0 });
 
-  // Mouse orbit + scroll zoom
   useEffect(() => {
     const canvas = gl.domElement;
 
@@ -103,7 +107,7 @@ function CameraController({ targetRef }: CameraControllerProps) {
   }, [gl]);
 
   useFrame((_, delta) => {
-    const group = targetRef.current?.group;
+    const group = targetRef.current;
     if (!group) return;
 
     const px = group.position.x;
@@ -114,7 +118,6 @@ function CameraController({ targetRef }: CameraControllerProps) {
     const phi = phiRef.current;
     const dist = distRef.current;
 
-    // Spherical → Cartesian relative to the player
     const targetX = px + dist * Math.sin(phi) * Math.sin(theta);
     const targetY = py + dist * Math.cos(phi);
     const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta);
@@ -127,41 +130,52 @@ function CameraController({ targetRef }: CameraControllerProps) {
   return null;
 }
 
-// ── Scene ─────────────────────────────────────────────────────────────────────
+// ── Scene ──────────────────────────────────────────────────────────────────
 
 interface GameWorldProps {
   rt: UseMetaverse;
   placeId: string;
 }
 
-function Scene({ rt }: GameWorldProps) {
-  const ecctrlRef = useRef<BVHEcctrlApi>(null);
+function MyScene({ rt }: GameWorldProps) {
+  const playerRef = useRef<THREE.Group>(null);
+  const sceneBVHRef = useRef<BVHContext | null>(null);
+  const physicsStateRef = useRef<PlayerPhysicsState>({
+    velocity: new THREE.Vector3(),
+    isOnGround: false,
+    offGroundTimer: 0,
+    walkAnimation: 0,
+  });
   const keysRef = useRef({
-    w: false,
-    a: false,
-    s: false,
-    d: false,
-    shift: false,
+    fwd: false,
+    bkd: false,
+    lft: false,
+    rgt: false,
     space: false,
   });
+  const spacePressedRef = useRef(false);
+  const thetaRef = useRef(0);
 
+  // Keyboard input
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const map: Record<string, keyof typeof keysRef.current> = {
-        KeyW: "w",
-        KeyA: "a",
-        KeyS: "s",
-        KeyD: "d",
-        ArrowUp: "w",
-        ArrowLeft: "a",
-        ArrowDown: "s",
-        ArrowRight: "d",
-        ShiftLeft: "shift",
+        KeyW: "fwd",
+        KeyA: "lft",
+        KeyS: "bkd",
+        KeyD: "rgt",
+        ArrowUp: "fwd",
+        ArrowLeft: "lft",
+        ArrowDown: "bkd",
+        ArrowRight: "rgt",
         Space: "space",
       };
       const key = map[e.code];
       if (key) {
         keysRef.current[key] = e.type === "keydown";
+        if (key === "space" && e.type === "keydown") {
+          spacePressedRef.current = true;
+        }
         e.preventDefault();
       }
     }
@@ -173,28 +187,15 @@ function Scene({ rt }: GameWorldProps) {
     };
   }, []);
 
-  // Drive BVHEcctrl movement from keyboard + broadcast position
+  // Broadcast position each frame
   useEffect(() => {
     let raf: number;
     function tick() {
-      const k = keysRef.current;
-      const api = ecctrlRef.current;
-      if (api) {
-        api.setMovement({
-          forward: k.w,
-          backward: k.s,
-          leftward: k.a,
-          rightward: k.d,
-          run: k.shift,
-          jump: k.space,
-        });
-
-        const group = api.group;
-        if (group) {
-          const pos = group.position;
-          const euler = new THREE.Euler().setFromQuaternion(group.quaternion);
-          rt.sendMove(pos.x, pos.y, pos.z, euler.y);
-        }
+      const player = playerRef.current;
+      if (player) {
+        const pos = player.position;
+        const euler = new THREE.Euler().setFromQuaternion(player.quaternion);
+        rt.sendMove(pos.x, pos.y, pos.z, euler.y);
       }
       raf = requestAnimationFrame(tick);
     }
@@ -202,9 +203,44 @@ function Scene({ rt }: GameWorldProps) {
     return () => cancelAnimationFrame(raf);
   }, [rt]);
 
+  // Physics + walk animation
+  useFrame((_, delta) => {
+    const player = playerRef.current;
+    const bvhCtx = sceneBVHRef.current;
+    if (!player || !bvhCtx) return;
+
+    const clampedDelta = Math.min(delta, 0.1);
+    const stepDelta = clampedDelta / PHYSICS_STEPS;
+
+    for (let i = 0; i < PHYSICS_STEPS; i++) {
+      updatePlayerPhysics(
+        stepDelta,
+        player,
+        PLAYER_CAPSULE,
+        physicsStateRef.current,
+        bvhCtx,
+        keysRef.current,
+        spacePressedRef.current,
+        thetaRef.current,
+        PHYSICS_PARAMS,
+      );
+    }
+
+    spacePressedRef.current = false;
+
+    // Reset if fallen too far
+    if (player.position.y < -5) {
+      resetPlayer(
+        player,
+        physicsStateRef.current,
+        new THREE.Vector3(8, 10, 2.5),
+      );
+    }
+  });
+
   return (
     <>
-      <CameraController targetRef={ecctrlRef} />
+      <CameraController targetRef={playerRef} thetaRef={thetaRef} />
 
       <ambientLight intensity={0.4} />
       <directionalLight
@@ -214,33 +250,27 @@ function Scene({ rt }: GameWorldProps) {
         shadow-mapSize={[1024, 1024]}
       />
       <Sky sunPosition={[100, 50, 100]} />
-      <Environment preset="park" />
 
-      <Ground />
+      <Suspense fallback={null}>
+        <Environment preset="park" />
+      </Suspense>
 
-      <Platform position={[3, 0.5, -3]} size={[2, 1, 2]} />
-      <Platform position={[-4, 0.75, -2]} size={[2, 1.5, 2]} />
-      <Platform position={[0, 0.5, -6]} size={[4, 1, 1.5]} />
-      <Platform position={[5, 0.3, 2]} size={[1.5, 0.6, 4]} />
-      <Platform position={[-3, 1, 3]} size={[3, 2, 3]} />
+      <ProceduralColliders
+        platforms={DEFAULT_PLATFORMS}
+        onBVHReady={(bvh, root) => {
+          sceneBVHRef.current = { bvh, root };
+        }}
+      />
 
-      <BVHEcctrl
-        ref={ecctrlRef}
-        position={[0, 2, 0]}
-        maxWalkSpeed={4}
-        maxRunSpeed={7}
-        jumpVel={6}
-        floatHeight={0.2}
-        floatCheckType="BOTH"
-        colliderCapsuleArgs={[0.35, 1.0, 8, 16]}
-      >
-        <CylinderAvatar
+      {/* Local player */}
+      <group ref={playerRef} position={[0, 2, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <PlayerCharacter
+          walkAnimation={physicsStateRef.current.walkAnimation}
           color={rt.self?.color ?? "#ff637e"}
-          isLocal
-          name={rt.self?.name}
         />
-      </BVHEcctrl>
+      </group>
 
+      {/* Remote players */}
       {rt.players.map((p) => (
         <RemoteCylinderAvatar key={p.id} player={p} />
       ))}
@@ -248,7 +278,7 @@ function Scene({ rt }: GameWorldProps) {
   );
 }
 
-export function GameWorld({ rt, placeId }: GameWorldProps) {
+export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -256,12 +286,12 @@ export function GameWorld({ rt, placeId }: GameWorldProps) {
         camera={{ fov: 60, near: 0.1, far: 200, position: [0, 6, 8] }}
         gl={{ antialias: true }}
       >
-        <Scene rt={rt} placeId={placeId} />
+        <MyScene rt={rt} placeId={_placeId} />
       </Canvas>
 
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
-        WASD to move &middot; Shift to run &middot; Space to jump &middot; Drag
-        mouse to orbit &middot; Scroll to zoom
+        WASD to move &middot; Space to jump &middot; Drag mouse to orbit
+        &middot; Scroll to zoom
       </div>
     </div>
   );
