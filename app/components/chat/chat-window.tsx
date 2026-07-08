@@ -117,7 +117,7 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
       {/* Chat panel */}
       <div
         className={cn(
-          "fixed bottom-20 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
+          "fixed bottom-4 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
           // Mobile: full-width tabs style at bottom
           "max-sm:bottom-0 max-sm:right-0 max-sm:left-0 max-sm:rounded-b-none max-sm:rounded-t-xl",
           open

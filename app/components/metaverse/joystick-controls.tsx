@@ -64,17 +64,34 @@ export function JoystickControls({
       joystickInputRef.current.active = false;
     });
 
-    const handleJump = (e: TouchEvent) => {
+    let jumpInterval: ReturnType<typeof setInterval> | null = null;
+
+    const startJump = (e: TouchEvent) => {
       e.preventDefault();
       e.stopPropagation();
       spacePressedRef.current = true;
+      jumpInterval = setInterval(() => {
+        spacePressedRef.current = true;
+      }, 150);
     };
 
-    jump?.addEventListener("touchstart", handleJump, { passive: false });
+    const stopJump = () => {
+      if (jumpInterval) {
+        clearInterval(jumpInterval);
+        jumpInterval = null;
+      }
+    };
+
+    jump?.addEventListener("touchstart", startJump, { passive: false });
+    jump?.addEventListener("touchend", stopJump);
+    jump?.addEventListener("touchcancel", stopJump);
 
     return () => {
       manager.destroy();
-      jump?.removeEventListener("touchstart", handleJump);
+      if (jumpInterval) clearInterval(jumpInterval);
+      jump?.removeEventListener("touchstart", startJump);
+      jump?.removeEventListener("touchend", stopJump);
+      jump?.removeEventListener("touchcancel", stopJump);
     };
   }, [keysRef, spacePressedRef, joystickInputRef]);
 
