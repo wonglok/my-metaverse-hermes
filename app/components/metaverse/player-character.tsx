@@ -45,10 +45,7 @@ export function PlayerCharacter({
   spacePressedRef,
 }: PlayerCharacterProps) {
   const meshRef = useRef<THREE.Group>(null);
-
-  // let name = "me";
-
-  let gltf = useGLTF(`/assets/avatar/lamb/lamb-in-beach-transformed.glb`);
+  const gltf = useGLTF(`/assets/avatar/lamb/lamb-in-beach-transformed.glb`);
 
   let clonedScene = useMemo(() => {
     return clone(gltf.scene);
