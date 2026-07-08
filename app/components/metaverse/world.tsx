@@ -168,7 +168,9 @@ function MyScene({
     const stepDelta = clampedDelta / PHYSICS_STEPS;
 
     const joystick = joystickInputRef.current;
-    const walkAngle = joystick.active ? thetaRef.current + joystick.angle : thetaRef.current;
+    const walkAngle = joystick.active
+      ? thetaRef.current + (joystick.angle + Math.PI * -0.5)
+      : thetaRef.current;
     const keys = joystick.active
       ? {
           fwd: true,
