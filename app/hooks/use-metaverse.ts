@@ -17,6 +17,7 @@ export interface UseMetaverse {
   sendChat: (text: string) => void
 }
 
+const RECONNECT_DELAY = 5_000
 const HEARTBEAT_INTERVAL = 25_000
 const PONG_TIMEOUT = 10_000
 
@@ -28,7 +29,6 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   const playersRef = useRef(new Map<string, RemotePlayer>())
   const selfRef = useRef<Peer | null>(null)
-  const reconnectDelayRef = useRef(1000)
 
   // Epoch counter: incremented on every connect(), so stale-socket event
   // handlers from a React Strict Mode double-invoke are silently ignored.
@@ -53,10 +53,10 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   useEffect(() => {
     const placeIdStr = placeId
-    reconnectDelayRef.current = 1000
 
     let heartbeatTimer: ReturnType<typeof setInterval> | undefined
     let pongTimer: ReturnType<typeof setTimeout> | undefined
+    let reconnectTimer: ReturnType<typeof setTimeout> | undefined
     let socket: WebSocket | null = null
 
     function send(msg: ClientMessage) {
@@ -123,7 +123,6 @@ export function useMetaverse(placeId: string): UseMetaverse {
     }
 
     function connect() {
-      // Close any previous socket first (belt and suspenders).
       if (socket) {
         socket.close()
         socket = null
@@ -138,7 +137,6 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
       ws.addEventListener('open', () => {
         if (epochRef.current !== epoch) return
-        reconnectDelayRef.current = 1000
         setStatus('connected')
         send({ t: 'join', placeId: placeIdStr })
         startHeartbeat()
@@ -152,20 +150,15 @@ export function useMetaverse(placeId: string): UseMetaverse {
       ws.addEventListener('close', () => {
         if (epochRef.current !== epoch) return
         stopHeartbeat()
-        // Only reconnect if this effect is still the active one —
-        // the epoch guard above already handles that, but we also check
-        // that we haven't been superseded by a new connect() call.
         if (epochRef.current !== epoch) return
         setStatus('disconnected')
         selfRef.current = null
         setSelf(null)
         playersRef.current = new Map()
         syncPlayers()
-        const delay = reconnectDelayRef.current
-        setTimeout(() => {
+        reconnectTimer = setTimeout(() => {
           if (epochRef.current === epoch) connect()
-        }, delay)
-        reconnectDelayRef.current = Math.min(delay * 2, 30_000)
+        }, RECONNECT_DELAY)
       })
 
       ws.addEventListener('error', () => {
@@ -195,9 +188,9 @@ export function useMetaverse(placeId: string): UseMetaverse {
     connect()
 
     return () => {
-      // Bump the epoch so all pending events from this connection are ignored.
       ++epochRef.current
       stopHeartbeat()
+      if (reconnectTimer) clearTimeout(reconnectTimer)
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
       if (socket) {
         socket.close()
