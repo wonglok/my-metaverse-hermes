@@ -8,13 +8,11 @@ import { Sky, Environment, Gltf } from "@react-three/drei";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteCylinderAvatar } from "./cylinder-avatar";
-import { ProceduralColliders } from "./gltf-environment";
 import { KinematicPlatform } from "./kinematic-platform";
 import {
   updatePlayerPhysics,
   resetPlayer,
   type PlayerPhysicsState,
-  type BVHContext,
   type MovingPlatform,
 } from "./physics";
 import {
@@ -25,7 +23,6 @@ import {
 } from "./camera-controller";
 import { WaterPlane } from "./water-plane";
 import {
-  DEFAULT_PLATFORMS,
   PHYSICS_PARAMS,
   PHYSICS_STEPS,
   PLAYER_CAPSULE,
@@ -47,7 +44,6 @@ interface GameWorldProps {
 
 function MyScene({ rt }: GameWorldProps) {
   const playerRef = useRef<THREE.Group>(null);
-  const staticBVHRef = useRef<BVHContext | null>(null);
   const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
     velocity: new THREE.Vector3(),
@@ -151,8 +147,7 @@ function MyScene({ rt }: GameWorldProps) {
   // Physics + camera update (single useFrame — camera runs after physics)
   useFrame((_, delta) => {
     const player = playerRef.current;
-    const staticBVH = staticBVHRef.current;
-    if (!player || !staticBVH) return;
+    if (!player) return;
 
     const clampedDelta = Math.min(delta, 0.1);
     const stepDelta = clampedDelta / PHYSICS_STEPS;
@@ -163,7 +158,7 @@ function MyScene({ rt }: GameWorldProps) {
         player,
         PLAYER_CAPSULE,
         physicsStateRef.current,
-        staticBVH,
+        // staticBVH,
         movingPlatformsRef.current,
         keysRef.current,
         spacePressedRef.current,
@@ -235,13 +230,6 @@ function MyScene({ rt }: GameWorldProps) {
           shadow-camera-top={30}
         />
       </Suspense>
-
-      <ProceduralColliders
-        platforms={DEFAULT_PLATFORMS}
-        onBVHReady={(bvh, root) => {
-          staticBVHRef.current = { bvh, root };
-        }}
-      />
 
       {/* GLTF environment (church model) */}
       <Suspense

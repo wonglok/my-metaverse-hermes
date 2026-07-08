@@ -136,7 +136,7 @@ export function updatePlayerPhysics(
   player: THREE.Group,
   capsule: PlayerCapsule,
   state: PlayerPhysicsState,
-  staticBVH: BVHContext,
+  // staticBVH: BVHContext,
   movingPlatforms: MovingPlatform[],
   keys: { fwd: boolean; bkd: boolean; lft: boolean; rgt: boolean },
   spacePressed: boolean,
@@ -209,8 +209,8 @@ export function updatePlayerPhysics(
 
   const segmentStart = _worldSegment.start.clone();
 
-  // Shapecast against static environment
-  shapecastBVH(staticBVH, capsule);
+  // // Shapecast against static environment
+  // shapecastBVH(staticBVH, capsule);
 
   // Shapecast against each moving platform
   for (const mp of movingPlatforms) {
