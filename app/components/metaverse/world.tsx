@@ -2,9 +2,9 @@ import { DoubleSide, Euler, Vector3 } from "three/webgpu";
 // import * as TSL from "three/tsl";
 import { extend, type ThreeToJSXElements } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
-import { useRef, useEffect, Suspense, useMemo, useState } from "react";
+import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Sky, Environment, Gltf, Sphere, Cylinder } from "@react-three/drei";
+import { Gltf, Cylinder } from "@react-three/drei";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteAvatar } from "./other-avatar";
@@ -290,7 +290,6 @@ function MyScene({
           onReady={registerPlatform}
         >
           <Gltf src="/assets/place/church.glb" receiveShadow castShadow />
-          <WaterPlane />
         </KinematicPlatform>
       </Suspense>
 
@@ -386,6 +385,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
         }}
       >
         <EffectsSSGI>
+          <WaterPlane />
           <Suspense fallback={null}>
             <MyScene
               rt={rt}
