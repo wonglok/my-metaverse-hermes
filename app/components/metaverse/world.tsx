@@ -221,13 +221,13 @@ function MyScene({ rt }: GameWorldProps) {
           intensity={2}
           castShadow
           shadow-mapSize={[2048, 2048]}
-          shadow-bias={-1e-4}
+          shadow-bias={-1e-9 - 0.0005}
           shadow-normalBias={0.05}
           shadow-radius={3}
-          shadow-camera-left={-30}
-          shadow-camera-bottom={-30}
-          shadow-camera-right={45}
-          shadow-camera-top={30}
+          shadow-camera-left={-100}
+          shadow-camera-bottom={-100}
+          shadow-camera-right={100}
+          shadow-camera-top={100}
         />
       </Suspense>
 
