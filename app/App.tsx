@@ -1,42 +1,42 @@
-import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
-import { HeroBackdrop } from '@/components/hero-backdrop'
-import { LiveCanvas } from '@/components/live-canvas'
-import { PresenceBar } from '@/components/presence-bar'
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { HeroBackdrop } from "@/components/hero-backdrop";
+import { LiveCanvas } from "@/components/live-canvas";
+import { PresenceBar } from "@/components/presence-bar";
 import {
   GitHubLogo,
   MousePointer2,
   Sparkles,
   Users,
   VercelLogo,
-} from '@/components/icons'
-import { useRealtime } from '@/hooks/use-realtime'
-import { cn } from '@/lib/utils'
-import { site } from '@/lib/site'
+} from "@/components/icons";
+import { useRealtime } from "@/hooks/use-realtime";
+import { cn } from "@/lib/utils";
+import { site } from "@/lib/site";
 
 const features = [
   {
     icon: MousePointer2,
-    title: 'Live cursors',
+    title: "Live cursors",
     description:
-      'Every pointer move is broadcast over a single WebSocket and rendered for everyone in the room.',
+      "Every pointer move is broadcast over a single WebSocket and rendered for everyone in the room.",
   },
   {
     icon: Users,
-    title: 'Presence',
+    title: "Presence",
     description:
-      'Join and leave events keep an accurate, shared roster of who is currently connected.',
+      "Join and leave events keep an accurate, shared roster of who is currently connected.",
   },
   {
     icon: Sparkles,
-    title: 'Reactions',
+    title: "Reactions",
     description:
-      'Ephemeral emoji bursts fan out to everyone in the room over the same WebSocket connection.',
+      "Ephemeral emoji bursts fan out to everyone in the room over the same WebSocket connection.",
   },
-]
+];
 
 export function App() {
-  const rt = useRealtime()
+  const rt = useRealtime();
 
   return (
     <div className="relative min-h-screen">
@@ -55,8 +55,8 @@ export function App() {
           target="_blank"
           rel="noreferrer"
           className={cn(
-            buttonVariants({ variant: 'secondary', size: 'sm' }),
-            'bg-white text-black hover:bg-white/90',
+            buttonVariants({ variant: "secondary", size: "sm" }),
+            "bg-white text-black hover:bg-white/90",
           )}
         >
           <VercelLogo className="size-5" />
@@ -101,7 +101,7 @@ export function App() {
       <footer className="relative z-10 border-t">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row">
           <p>
-            Built with{' '}
+            Built with{" "}
             <a
               href="https://nitro.build"
               target="_blank"
@@ -109,8 +109,8 @@ export function App() {
               className="text-foreground hover:underline"
             >
               Nitro
-            </a>{' '}
-            and{' '}
+            </a>{" "}
+            and{" "}
             <a
               href="https://vercel.com/docs/functions/websockets"
               target="_blank"
@@ -126,7 +126,7 @@ export function App() {
             href={site.repo}
             target="_blank"
             rel="noreferrer"
-            className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+            className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
           >
             <GitHubLogo className="size-4" />
             vercel/examples
@@ -134,5 +134,5 @@ export function App() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

@@ -1,35 +1,35 @@
-import { useRef, useState } from 'react'
-import { REACTIONS, type Reaction } from '../../shared/types/realtime'
-import { Button } from '@/components/ui/button'
-import { Cursor } from '@/components/cursor'
-import { MousePointer2 } from '@/components/icons'
-import { cn } from '@/lib/utils'
-import type { UseRealtime } from '@/hooks/use-realtime'
+import { useRef, useState } from "react";
+import { REACTIONS, type Reaction } from "../../shared/types/realtime";
+import { Button } from "@/components/ui/button";
+import { Cursor } from "@/components/cursor";
+import { MousePointer2 } from "@/components/icons";
+import { cn } from "@/lib/utils";
+import type { UseRealtime } from "@/hooks/use-realtime";
 
 export function LiveCanvas({ rt }: { rt: UseRealtime }) {
-  const rootRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null);
 
   // The armed emoji — click the grid to drop it.
-  const [selected, setSelected] = useState<Reaction>(REACTIONS[0])
+  const [selected, setSelected] = useState<Reaction>(REACTIONS[0]);
 
   function toNormalized(event: { clientX: number; clientY: number }) {
-    const el = rootRef.current
-    if (!el) return null
-    const rect = el.getBoundingClientRect()
-    const x = (event.clientX - rect.left) / rect.width
-    const y = (event.clientY - rect.top) / rect.height
-    return { x: Math.min(Math.max(x, 0), 1), y: Math.min(Math.max(y, 0), 1) }
+    const el = rootRef.current;
+    if (!el) return null;
+    const rect = el.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    return { x: Math.min(Math.max(x, 0), 1), y: Math.min(Math.max(y, 0), 1) };
   }
 
   function onPointerMove(event: { clientX: number; clientY: number }) {
-    const pos = toNormalized(event)
-    if (pos) rt.moveCursor(pos.x, pos.y)
+    const pos = toNormalized(event);
+    if (pos) rt.moveCursor(pos.x, pos.y);
   }
 
   // Drop the selected emoji wherever you click on the canvas.
   function onCanvasClick(event: { clientX: number; clientY: number }) {
-    const pos = toNormalized(event)
-    if (pos) rt.sendReaction(selected, pos.x, pos.y)
+    const pos = toNormalized(event);
+    if (pos) rt.sendReaction(selected, pos.x, pos.y);
   }
 
   return (
@@ -82,10 +82,10 @@ export function LiveCanvas({ rt }: { rt: UseRealtime }) {
               aria-pressed={selected === emoji}
               onClick={() => setSelected(emoji)}
               className={cn(
-                'size-8 justify-center rounded-full p-0 text-lg leading-none transition',
+                "size-8 justify-center rounded-full p-0 text-lg leading-none transition",
                 selected === emoji
-                  ? 'scale-110 bg-accent hover:bg-accent'
-                  : 'hover:scale-110',
+                  ? "scale-110 bg-accent hover:bg-accent"
+                  : "hover:scale-110",
               )}
             >
               {emoji}
@@ -94,5 +94,5 @@ export function LiveCanvas({ rt }: { rt: UseRealtime }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
