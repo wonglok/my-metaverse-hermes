@@ -287,7 +287,7 @@ function MyScene({ rt }: GameWorldProps) {
       <group ref={playerRef} position={[0, 2, 0]} rotation={[0, 0, 0]}>
         <Suspense fallback={null}>
           <group rotation={[0, 0.5 * Math.PI, 0]}>
-            <PlayerCharacter state={physicsStateRef.current} />
+            <PlayerCharacter isMe={true} state={physicsStateRef.current} />
           </group>
         </Suspense>
       </group>
