@@ -1,7 +1,57 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useMetaverse } from "@/hooks/use-metaverse";
 import { GameWorld } from "@/components/metaverse/world";
 import { ChatWindow } from "@/components/chat/chat-window";
+
+function NameEditor({
+  name,
+  onSave,
+}: {
+  name: string;
+  onSave: (name: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(name);
+
+  function commit() {
+    const trimmed = value.trim();
+    if (trimmed && trimmed !== name) {
+      onSave(trimmed);
+    }
+    setEditing(false);
+    setValue(name);
+  }
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={value}
+        onChange={(e) => setValue(e.target.value.slice(0, 24))}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") {
+            setValue(name);
+            setEditing(false);
+          }
+        }}
+        className="w-24 rounded bg-black/40 px-1.5 py-0.5 text-xs text-white outline-none ring-1 ring-white/30"
+      />
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setEditing(true)}
+      className="cursor-pointer rounded px-1 -mx-1 text-xs text-white/80 hover:bg-white/10 hover:text-white transition"
+      title="Click to change name"
+    >
+      {name}
+    </button>
+  );
+}
 
 export function GamePage() {
   const { placeId } = useParams<{ placeId: string }>();
@@ -32,6 +82,12 @@ export function GamePage() {
         <div className="flex items-center gap-3 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
           <span className="font-medium text-white">{placeId}</span>
           <span className="text-white/40">|</span>
+          {rt.self && (
+            <>
+              <NameEditor name={rt.self.name} onSave={rt.sendName} />
+              <span className="text-white/40">|</span>
+            </>
+          )}
           <span
             className={
               rt.status === "connected"

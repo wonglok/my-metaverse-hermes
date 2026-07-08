@@ -158,6 +158,30 @@ export default defineWebSocketHandler({
         break;
       }
 
+      case "rename": {
+        const newName = String(msg.name || "").trim().slice(0, 24);
+        if (!newName) return;
+
+        identity.name = newName;
+
+        const placeId = peerRoom.get(identity.id);
+        if (!placeId) return;
+
+        // Update name in room state
+        const state = rooms.get(placeId)?.get(identity.id);
+        if (state) state.name = newName;
+
+        const payload = JSON.stringify({
+          t: "rename",
+          id: identity.id,
+          name: newName,
+        } satisfies ServerMessage);
+
+        send(peer, { t: "rename", id: identity.id, name: newName });
+        peer.publish(placeId, payload);
+        break;
+      }
+
       case "ping":
         send(peer, { t: "pong" });
         break;

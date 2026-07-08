@@ -15,6 +15,7 @@ export interface UseMetaverse {
   messages: ChatMessage[]
   sendMove: (x: number, y: number, z: number, rotation: number) => void
   sendChat: (text: string) => void
+  sendName: (name: string) => void
 }
 
 const RECONNECT_DELAY = 5_000
@@ -49,6 +50,12 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   const sendChat = useCallback((text: string) => {
     sendChatRef.current(text)
+  }, [])
+
+  const sendNameRef = useRef<(name: string) => void>(() => {})
+
+  const sendName = useCallback((name: string) => {
+    sendNameRef.current(name)
   }, [])
 
   useEffect(() => {
@@ -114,6 +121,16 @@ export function useMetaverse(placeId: string): UseMetaverse {
         }
         case 'chat': {
           setMessages(prev => [...prev.slice(-99), msg.message])
+          break
+        }
+        case 'rename': {
+          const p = playersRef.current.get(msg.id)
+          if (p) p.name = msg.name
+          if (msg.id === selfRef.current?.id) {
+            selfRef.current.name = msg.name
+            setSelf({ ...selfRef.current })
+          }
+          syncPlayers()
           break
         }
         case 'pong':
@@ -185,6 +202,10 @@ export function useMetaverse(placeId: string): UseMetaverse {
       send({ t: 'chat', text })
     }
 
+    sendNameRef.current = (name: string) => {
+      send({ t: 'rename', name })
+    }
+
     connect()
 
     return () => {
@@ -199,5 +220,5 @@ export function useMetaverse(placeId: string): UseMetaverse {
     }
   }, [placeId])
 
-  return { status, self, players, messages, sendMove, sendChat }
+  return { status, self, players, messages, sendMove, sendChat, sendName }
 }

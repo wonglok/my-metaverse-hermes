@@ -40,6 +40,7 @@ export type ClientMessage =
   | { t: 'join'; placeId: string }
   | { t: 'move'; x: number; y: number; z: number; rotation: number }
   | { t: 'chat'; text: string }
+  | { t: 'rename'; name: string }
   | { t: 'ping' }
   // Legacy — kept for backward compatibility with the original live-canvas demo.
   | { t: 'cursor'; x: number; y: number }
@@ -53,6 +54,7 @@ export type ServerMessage =
   | { t: 'leave'; id: string }
   | { t: 'move'; id: string; x: number; y: number; z: number; rotation: number }
   | { t: 'chat'; message: ChatMessage }
+  | { t: 'rename'; id: string; name: string }
   | { t: 'pong' }
   // Legacy
   | { t: 'cursor'; id: string; x: number; y: number }
