@@ -16,7 +16,10 @@ const rooms = new Map<string, Map<string, PlayerState>>();
 const peerRoom = new Map<string, string>();
 
 /** Local peers in each room — used for Redis rebroadcast */
-const roomPeers = new Map<string, Set<{ send: (data: string) => void; id: string }>>();
+const roomPeers = new Map<
+  string,
+  Set<{ send: (data: string) => void; id: string }>
+>();
 
 /** Next monotonic id for chat messages. */
 let chatSeq = 0;
@@ -97,7 +100,9 @@ export default defineWebSocketHandler({
 
         // Track local peer for Redis rebroadcast
         if (!roomPeers.has(placeId)) roomPeers.set(placeId, new Set());
-        roomPeers.get(placeId)!.add({ send: (d) => peer.send(d), id: identity.id });
+        roomPeers
+          .get(placeId)!
+          .add({ send: (d) => peer.send(d), id: identity.id });
 
         if (!rooms.has(placeId)) rooms.set(placeId, new Map());
 
