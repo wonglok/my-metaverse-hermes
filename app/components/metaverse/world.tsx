@@ -357,6 +357,8 @@ function MyScene({
 }
 
 export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
+  //
+
   const keysRef = useRef({
     fwd: false,
     bkd: false,
@@ -364,12 +366,16 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
     rgt: false,
     space: false,
   });
+
   const spacePressedRef = useRef(false);
+
   const joystickInputRef = useRef({ active: false, angle: 0, force: 0 });
+
   return (
     <div className="absolute top-0  left-0 w-full h-full overflow-hidden touch-manipulation select-none">
       <Canvas
         shadows
+        dpr={[1, 1]}
         camera={{ fov: 60, near: 0.1, far: 200, position: [0, 6, 8] }}
         gl={async (props) => {
           const renderer = new WebGPURenderer({
@@ -378,6 +384,8 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             antialias: false,
             stencil: false,
           });
+
+          renderer.setPixelRatio(1);
 
           await renderer.init();
 
