@@ -115,7 +115,6 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     const scenePass = pass(scene, camera);
     scenePass.setMRT(
       mrt({
-        emissive: emissive,
         output: output,
         diffuseColor: diffuseColor,
         normal: packNormalToRGB(normalView),
