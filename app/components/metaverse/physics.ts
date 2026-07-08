@@ -35,7 +35,7 @@ export interface PlayerPhysicsState {
 
 export const OFF_GROUND_TIME = 0.05;
 export const WALK_CYCLE_TIME = 2 * Math.PI;
-const JUMP_VELOCITY = 40;
+const JUMP_VELOCITY = 30;
 
 // ── BVH context (root group + bvh) ─────────────────────────────────────────
 
@@ -66,10 +66,7 @@ function isTransparent(obj: THREE.Object3D): boolean {
 }
 
 /** Run the core shapecast loop against a single BVH context. */
-function shapecastBVH(
-  bvhCtx: BVHContext,
-  capsule: PlayerCapsule,
-): void {
+function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
   bvhCtx.root.updateMatrixWorld();
   _invMat.copy(bvhCtx.root.matrixWorld).invert();
 
@@ -217,17 +214,12 @@ export function updatePlayerPhysics(
 
   // Shapecast against each moving platform
   for (const mp of movingPlatforms) {
-    shapecastBVH(
-      { bvh: mp.bvh, root: mp.group },
-      capsule,
-    );
+    shapecastBVH({ bvh: mp.bvh, root: mp.group }, capsule);
   }
 
   // Update player position
   const deltaVector = _tempVector2;
-  deltaVector
-    .copy(capsule.segment.start)
-    .applyMatrix4(player.matrixWorld);
+  deltaVector.copy(capsule.segment.start).applyMatrix4(player.matrixWorld);
   deltaVector.subVectors(_worldSegment.start, deltaVector);
   player.position.add(deltaVector);
 
