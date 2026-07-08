@@ -66,15 +66,14 @@ const LERP_SPEED = 8;
 const LOOK_TARGET_Y = 1.0;
 
 interface CameraControllerProps {
-  targetRef: React.RefObject<THREE.Group | null>;
   thetaRef: React.RefObject<number>;
+  phiRef: React.RefObject<number>;
+  distRef: React.RefObject<number>;
 }
 
-function CameraController({ targetRef, thetaRef }: CameraControllerProps) {
-  const { camera, gl } = useThree();
+function CameraController({ thetaRef, phiRef, distRef }: CameraControllerProps) {
+  const { gl } = useThree();
 
-  const phiRef = useRef(0.5);
-  const distRef = useRef(DEFAULT_DIST);
   const dragging = useRef(false);
   const lastMouse = useRef({ x: 0, y: 0 });
 
@@ -118,27 +117,6 @@ function CameraController({ targetRef, thetaRef }: CameraControllerProps) {
       canvas.removeEventListener("wheel", onWheel);
     };
   }, [gl]);
-
-  useFrame((_, delta) => {
-    const group = targetRef.current;
-    if (!group) return;
-
-    const px = group.position.x;
-    const py = group.position.y;
-    const pz = group.position.z;
-
-    const theta = thetaRef.current;
-    const phi = phiRef.current;
-    const dist = distRef.current;
-
-    const targetX = px + dist * Math.sin(phi) * Math.sin(theta);
-    const targetY = py + dist * Math.cos(phi);
-    const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta);
-
-    const t = 1 - Math.exp(-LERP_SPEED * delta);
-    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), t);
-    camera.lookAt(px, py + LOOK_TARGET_Y, pz);
-  });
 
   return null;
 }
@@ -216,7 +194,10 @@ function MyScene({ rt }: GameWorldProps) {
   });
   const spacePressedRef = useRef(false);
   const thetaRef = useRef(0);
+  const phiRef = useRef(0.5);
+  const distRef = useRef(DEFAULT_DIST);
   const lightRef = useRef<THREE.DirectionalLight>(null);
+  const { camera } = useThree();
 
   // Keyboard input
   useEffect(() => {
@@ -331,11 +312,30 @@ function MyScene({ rt }: GameWorldProps) {
         new THREE.Vector3(8, 10, 2.5),
       );
     }
+
+    // Camera update — after physics so it reads the final position this frame
+    const px = player.position.x;
+    const py = player.position.y;
+    const pz = player.position.z;
+    const theta = thetaRef.current;
+    const phi = phiRef.current;
+    const dist = distRef.current;
+
+    const targetX = px + dist * Math.sin(phi) * Math.sin(theta);
+    const targetY = py + dist * Math.cos(phi);
+    const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta);
+
+    const camT = 1 - Math.exp(-LERP_SPEED * clampedDelta);
+    camera.position.lerp(
+      new THREE.Vector3(targetX, targetY, targetZ),
+      camT,
+    );
+    camera.lookAt(px, py + LOOK_TARGET_Y, pz);
   });
 
   return (
     <>
-      <CameraController targetRef={playerRef} thetaRef={thetaRef} />
+      <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
 
       <ambientLight intensity={0.4} />
 
