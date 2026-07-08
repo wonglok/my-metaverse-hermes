@@ -79,10 +79,10 @@ export function JoystickControls({
   }, [keysRef, spacePressedRef, joystickInputRef]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 md:hidden">
+    <>
       <div
         ref={zoneRef}
-        className="pointer-events-auto absolute bottom-6 left-6 h-36 w-36 bg-red-500"
+        className="pointer-events-auto absolute bottom-6 left-6 h-36 w-36 bg-white/20 rounded-full"
       />
 
       <div
@@ -91,6 +91,6 @@ export function JoystickControls({
       >
         JUMP
       </div>
-    </div>
+    </>
   );
 }
