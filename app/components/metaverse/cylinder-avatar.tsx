@@ -5,7 +5,7 @@ import { Center, Text3D } from "@react-three/drei";
 import { helveticaReglar } from "./helvetica";
 import { PlayerCharacter } from "./player-character";
 
-interface CylinderAvatarProps {
+interface OtherAvatarProps {
   color: string;
   position?: [number, number, number];
   rotation?: number;
@@ -15,13 +15,13 @@ interface CylinderAvatarProps {
 
 const LERP_FACTOR = 0.15;
 
-export function CylinderAvatar({
+export function OtherAvatar({
   color,
   position = [0, 0, 0],
   rotation = 0,
   isLocal = false,
   name,
-}: CylinderAvatarProps) {
+}: OtherAvatarProps) {
   const groupRef = useRef<THREE.Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
   const headRef = useRef<THREE.Mesh>(null);
@@ -126,7 +126,7 @@ export function CylinderAvatar({
 }
 
 /** Static cylinder avatar without physics: used for remote players. */
-export function RemoteCylinderAvatar({
+export function RemoteAvatar({
   player,
 }: {
   player: {
@@ -139,7 +139,7 @@ export function RemoteCylinderAvatar({
   };
 }) {
   return (
-    <CylinderAvatar
+    <OtherAvatar
       color={player.color}
       position={[player.targetX, player.targetY, player.targetZ]}
       rotation={player.targetRotation}

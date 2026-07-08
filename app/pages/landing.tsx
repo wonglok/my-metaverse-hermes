@@ -30,7 +30,7 @@ export function LandingPage() {
       <main className="relative z-10 mx-auto max-w-4xl px-4 pb-20">
         <section className="flex flex-col items-center gap-5 py-16 text-center sm:py-24">
           <h1 className="max-w-2xl text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
-            Hermes Metaverse
+            Lambobo Palace
           </h1>
           <p className="max-w-lg text-balance text-lg text-muted-foreground">
             Enter a multiplayer 3D world. Explore places, chat with others, and build together.

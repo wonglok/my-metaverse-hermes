@@ -89,7 +89,7 @@ export function useMetaverse(placeId: string): UseMetaverse {
       switch (msg.t) {
         case 'welcome': {
           // Apply saved nickname from localStorage
-          const saved = localStorage.getItem('hermes-nickname');
+          const saved = localStorage.getItem('lambobo-nickname');
           if (saved && saved !== msg.self.name) {
             msg.self.name = saved;
             setTimeout(() => send({ t: 'rename', name: saved }), 100);
@@ -209,7 +209,7 @@ export function useMetaverse(placeId: string): UseMetaverse {
     }
 
     sendNameRef.current = (name: string) => {
-      localStorage.setItem('hermes-nickname', name);
+      localStorage.setItem('lambobo-nickname', name);
       send({ t: 'rename', name })
     }
 

@@ -11,7 +11,7 @@ interface PlaceContent {
   groundColor: string
 }
 
-const STORAGE_KEY_PREFIX = 'hermes-place-'
+const STORAGE_KEY_PREFIX = 'lambobo-place-'
 
 function loadContent(placeId: string): PlaceContent {
   try {
