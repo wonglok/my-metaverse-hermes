@@ -5,6 +5,9 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  server: {
+    allowedHosts: ["laptop.smile-with-jesus.com"],
+  },
   plugins: [
     // Nitro v3 powers the server. `features.websocket` enables native crossws
     // support, which works the same in local dev and on Vercel — the Vercel

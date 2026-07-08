@@ -52,9 +52,19 @@ interface MySceneProps extends GameWorldProps {
     space: boolean;
   }>;
   spacePressedRef: React.MutableRefObject<boolean>;
+  joystickInputRef: React.MutableRefObject<{
+    active: boolean;
+    angle: number;
+    force: number;
+  }>;
 }
 
-function MyScene({ rt, keysRef, spacePressedRef }: MySceneProps) {
+function MyScene({
+  rt,
+  keysRef,
+  spacePressedRef,
+  joystickInputRef,
+}: MySceneProps) {
   const playerRef = useRef<THREE.Group>(null);
   const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
@@ -157,6 +167,25 @@ function MyScene({ rt, keysRef, spacePressedRef }: MySceneProps) {
     const clampedDelta = Math.min(delta, 0.1);
     const stepDelta = clampedDelta / PHYSICS_STEPS;
 
+    const joystick = joystickInputRef.current;
+    const walkAngle = joystick.active ? thetaRef.current + joystick.angle : thetaRef.current;
+    const keys = joystick.active
+      ? {
+          fwd: true,
+          bkd: false,
+          lft: false,
+          rgt: false,
+          space: keysRef.current.space,
+        }
+      : keysRef.current;
+
+    const params = joystick.active
+      ? {
+          ...PHYSICS_PARAMS,
+          playerSpeed: PHYSICS_PARAMS.playerSpeed * joystick.force,
+        }
+      : PHYSICS_PARAMS;
+
     for (let i = 0; i < PHYSICS_STEPS; i++) {
       updatePlayerPhysics(
         stepDelta,
@@ -165,10 +194,10 @@ function MyScene({ rt, keysRef, spacePressedRef }: MySceneProps) {
         physicsStateRef.current,
         // staticBVH,
         movingPlatformsRef.current,
-        keysRef.current,
+        keys,
         spacePressedRef.current,
-        thetaRef.current,
-        PHYSICS_PARAMS,
+        walkAngle,
+        params,
       );
     }
 
@@ -332,6 +361,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
     space: false,
   });
   const spacePressedRef = useRef(false);
+  const joystickInputRef = useRef({ active: false, angle: 0, force: 0 });
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -366,11 +396,16 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             placeId={_placeId}
             keysRef={keysRef}
             spacePressedRef={spacePressedRef}
+            joystickInputRef={joystickInputRef}
           />
         </Suspense>
       </Canvas>
 
-      <JoystickControls keysRef={keysRef} spacePressedRef={spacePressedRef} />
+      <JoystickControls
+        keysRef={keysRef}
+        spacePressedRef={spacePressedRef}
+        joystickInputRef={joystickInputRef}
+      />
 
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
         WASD to move &middot; Space to jump &middot; Drag mouse to orbit
