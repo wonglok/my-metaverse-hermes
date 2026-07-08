@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { ssgi } from "three/examples/jsm/tsl/display/SSGINode.js";
 import { traa } from "three/examples/jsm/tsl/display/TRAANode.js";
+import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
 
 //
 import {
@@ -155,55 +156,25 @@ export function EffectsSSGI({ children = null }: { children: any }) {
       return unpackRGBToNormal(scenePassNormal.sample(uv));
     });
 
+    const bloomPass = bloom(scenePassEmissive, 80, 1, 0.1);
+
     // gi
 
     const giPass = ssgi(scenePassColor, scenePassDepth, sceneNormal, camera);
     giPass.sliceCount.value = 2;
     giPass.stepCount.value = 8;
-    giPass.backfaceLighting = uniform(float(1));
+    // giPass.backfaceLighting = uniform(float(0.1));
     giPass.giIntensity = uniform(float(5));
     giPass.aoIntensity = uniform(float(1));
 
     const ao = giPass.getAONode().toInspector("SSGI.AO");
     const gi = giPass.getGINode().toInspector("SSGI.GI");
 
-    // bloom — gaussian blur of emissive channel, overlay on composite
-    const bloomWidth = uniform(float(gl.domElement.width));
-    const bloomHeight = uniform(float(gl.domElement.height));
-    const texelX = float(1).div(bloomWidth);
-    const texelY = float(1).div(bloomHeight);
-    const bloomIntensity = uniform(float(0.6));
-
-    const bloomOffsets = [-2, -1, 0, 1, 2];
-    const bloomWeights = [0.054, 0.244, 0.403, 0.244, 0.054];
-
-    const bloom = sample((_uv: any) => {
-      let col = vec3(float(0), float(0), float(0));
-      for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-          (col as any).addAssign(
-            scenePassEmissive
-              .sample(
-                _uv.add(
-                  vec2(
-                    float(bloomOffsets[i]).mul(texelX),
-                    float(bloomOffsets[j]).mul(texelY),
-                  ),
-                ),
-              )
-              .rgb.mul(bloomWeights[i] * bloomWeights[j]),
-          );
-        }
-      }
-      return col;
-    });
-    bloom.name = "Bloom";
-
     // composite (AO * scene + GI * diffuse, then overlay bloom)
     const compositePass = vec4(
       add(
         add(scenePassColor.rgb.mul(ao.r), scenePassDiffuse.rgb.mul(gi.rgb)),
-        bloom.mul(bloomIntensity),
+        vec3(bloomPass),
       ),
       scenePassColor.a,
     );

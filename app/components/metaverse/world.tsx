@@ -385,6 +385,9 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             depth: false,
             antialias: false,
             stencil: false,
+            requiredLimits: {
+              maxColorAttachmentBytesPerSample: 64, // Example override
+            },
           });
 
           renderer.setPixelRatio(1);

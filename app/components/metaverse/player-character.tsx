@@ -97,7 +97,7 @@ export function PlayerCharacter({
 
     // Trigger jump animation from keyboard/joystick input, hold for 0.4s
     if (spacePressedRef?.current) {
-      jumpTimer.current = 0.4;
+      jumpTimer.current = 1.0;
     }
     jumpTimer.current = Math.max(0, jumpTimer.current - delta);
 
