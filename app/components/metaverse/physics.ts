@@ -136,7 +136,6 @@ export function updatePlayerPhysics(
   player: THREE.Group,
   capsule: PlayerCapsule,
   state: PlayerPhysicsState,
-  // staticBVH: BVHContext,
   movingPlatforms: MovingPlatform[],
   keys: { fwd: boolean; bkd: boolean; lft: boolean; rgt: boolean },
   spacePressed: boolean,
