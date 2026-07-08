@@ -120,9 +120,9 @@ export default defineWebSocketHandler({
 
         send(peer, { t: "welcome", self: identity, peers });
 
-        // Broadcast join locally + to Redis
+        // Broadcast join to other local peers (excludes sender) + Redis
         const joinMsg: ServerMessage = { t: "join", peer: playerState };
-        broadcastLocal(placeId, joinMsg);
+        peer.publish(placeId, JSON.stringify(joinMsg));
         publishEvent(placeId, joinMsg);
         break;
       }
@@ -156,7 +156,7 @@ export default defineWebSocketHandler({
           rotation,
         };
 
-        broadcastLocal(placeId, moveMsg);
+        peer.publish(placeId, JSON.stringify(moveMsg));
         publishEvent(placeId, moveMsg);
         break;
       }
@@ -184,8 +184,8 @@ export default defineWebSocketHandler({
         // Echo back to sender
         send(peer, chatPayload);
 
-        // Broadcast locally + to Redis
-        broadcastLocal(placeId, chatPayload);
+        // Broadcast to other local peers (excludes sender) + Redis
+        peer.publish(placeId, JSON.stringify(chatPayload));
         publishEvent(placeId, chatPayload);
         break;
       }
@@ -211,7 +211,7 @@ export default defineWebSocketHandler({
         };
 
         send(peer, renameMsg);
-        broadcastLocal(placeId, renameMsg);
+        peer.publish(placeId, JSON.stringify(renameMsg));
         publishEvent(placeId, renameMsg);
         break;
       }
