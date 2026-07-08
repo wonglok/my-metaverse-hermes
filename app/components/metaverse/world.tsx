@@ -379,22 +379,23 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             antialias: false,
             stencil: false,
           });
+
           await renderer.init();
 
           return renderer;
         }}
       >
-        <EffectsSSGI></EffectsSSGI>
-
-        <Suspense fallback={null}>
-          <MyScene
-            rt={rt}
-            placeId={_placeId}
-            keysRef={keysRef}
-            spacePressedRef={spacePressedRef}
-            joystickInputRef={joystickInputRef}
-          />
-        </Suspense>
+        <EffectsSSGI>
+          <Suspense fallback={null}>
+            <MyScene
+              rt={rt}
+              placeId={_placeId}
+              keysRef={keysRef}
+              spacePressedRef={spacePressedRef}
+              joystickInputRef={joystickInputRef}
+            />
+          </Suspense>
+        </EffectsSSGI>
       </Canvas>
 
       <JoystickControls

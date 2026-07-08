@@ -1,6 +1,6 @@
 "use client";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { ssgi } from "three/examples/jsm/tsl/display/SSGINode.js";
 import { traa } from "three/examples/jsm/tsl/display/TRAANode.js";
@@ -63,7 +63,8 @@ import {
 } from "three";
 import { HDRLoader } from "three/examples/jsm/Addons.js";
 
-export function EffectsSSGI() {
+export function EffectsSSGI({ children = null }: { children: any }) {
+  const [ready, setReady] = useState(false);
   // let useDynamicStore = useStoreOfApp();
   let gl = useThree((r) => r.gl) as
     | (
@@ -215,6 +216,10 @@ export function EffectsSSGI() {
       scene.backgroundIntensity = 0.5;
 
       console.log(sky);
+
+      setTimeout(() => {
+        setReady(true);
+      });
       //
     });
     //
@@ -229,5 +234,5 @@ export function EffectsSSGI() {
 
   useFrame(() => {}, 11);
 
-  return <></>;
+  return <>{ready && children}</>;
 }
