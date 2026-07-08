@@ -363,7 +363,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
   const spacePressedRef = useRef(false);
   const joystickInputRef = useRef({ active: false, angle: 0, force: 0 });
   return (
-    <div className="absolute top-0  left-0 w-full h-full overflow-hidden touch-manipulation">
+    <div className="absolute top-0  left-0 w-full h-full overflow-hidden touch-manipulation select-none">
       <Canvas
         shadows
         camera={{ fov: 60, near: 0.1, far: 200, position: [0, 6, 8] }}
@@ -398,7 +398,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
         joystickInputRef={joystickInputRef}
       />
 
-      <div className="hidden lg:block pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
+      <div className="hidden lg:block pointer-events-none absolute right-4 top-4 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
         WASD to move &middot; Space to jump &middot; Drag mouse to orbit
         &middot; Scroll to zoom
       </div>
