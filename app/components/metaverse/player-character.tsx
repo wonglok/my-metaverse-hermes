@@ -8,6 +8,7 @@ import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { PlayerPhysicsState } from "./physics";
 
 interface PlayerCharacterProps {
+  name?: string;
   state: PlayerPhysicsState | { walkAnimation: number };
   isMe: boolean;
 }
@@ -36,10 +37,14 @@ let useFBXAction = (
  * Local player mesh with walk cycle animation.
  * RoundedBoxGeometry body/arms/head matching vanilla code style.
  */
-export function PlayerCharacter({ state, isMe = true }: PlayerCharacterProps) {
+export function PlayerCharacter({
+  name = "me",
+  state,
+  isMe = true,
+}: PlayerCharacterProps) {
   const meshRef = useRef<THREE.Group>(null);
 
-  let name = "me";
+  // let name = "me";
 
   let gltf = useGLTF(`/assets/avatar/lamb/lamb-in-beach-transformed.glb`);
 

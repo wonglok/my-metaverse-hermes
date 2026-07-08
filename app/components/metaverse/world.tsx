@@ -287,7 +287,11 @@ function MyScene({ rt }: GameWorldProps) {
       <group ref={playerRef} position={[0, 2, 0]} rotation={[0, 0, 0]}>
         <Suspense fallback={null}>
           <group rotation={[0, 0.5 * Math.PI, 0]}>
-            <PlayerCharacter isMe={true} state={physicsStateRef.current} />
+            <PlayerCharacter
+              name={rt.self?.name}
+              isMe={true}
+              state={physicsStateRef.current}
+            />
           </group>
         </Suspense>
       </group>
@@ -315,6 +319,7 @@ function MyScene({ rt }: GameWorldProps) {
 }
 
 export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
+  let [ready, setReady] = useState(false);
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -323,10 +328,14 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
         gl={async (props) => {
           const renderer = new WebGPURenderer(props as any);
           await renderer.init();
+
+          setReady(true);
           return renderer;
         }}
       >
-        <MyScene rt={rt} placeId={_placeId} />
+        <Suspense fallback={null}>
+          {ready && <MyScene rt={rt} placeId={_placeId} />}
+        </Suspense>
       </Canvas>
 
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
