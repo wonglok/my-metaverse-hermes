@@ -65,7 +65,7 @@ export function OtherAvatar({
         {name && (
           <group
             position={[0, 1.85 + 1, 0]}
-            rotation={[0, Math.PI * -0.5, 0]}
+            rotation={[0, Math.PI * -1.5, 0]}
             scale={[1, 1, 1]}
           >
             <Center key={name}>
