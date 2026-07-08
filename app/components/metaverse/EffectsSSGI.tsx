@@ -119,6 +119,7 @@ export function EffectsSSGI({ children = null }: { children: any }) {
         diffuseColor: diffuseColor,
         normal: packNormalToRGB(normalView),
         velocity: velocity,
+        emissive: emissive,
       }),
     );
 
@@ -138,6 +139,9 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     const scenePassVelocity = scenePass
       .getTextureNode("velocity")
       .toInspector("Velocity");
+    const scenePassEmissive = scenePass
+      .getTextureNode("emissive")
+      .toInspector("Emissive");
 
     // bandwidth optimization
 
@@ -163,42 +167,39 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     const ao = giPass.getAONode().toInspector("SSGI.AO");
     const gi = giPass.getGINode().toInspector("SSGI.GI");
 
-    // bloom — extract bright areas, gaussian blur, blend back
-    const bloomResolution = uniform(
-      vec2(gl.domElement.width, gl.domElement.height),
-    );
-    const bloomThreshold = uniform(float(0.8));
-    const bloomIntensity = uniform(float(0.4));
-    const bloomWeights = [
-      0.016, 0.054, 0.122, 0.186, 0.244, 0.186, 0.122, 0.054, 0.016,
-    ];
-    const bloomOffsets = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+    // bloom — gaussian blur of emissive channel, overlay on composite
+    const bloomWidth = uniform(float(gl.domElement.width));
+    const bloomHeight = uniform(float(gl.domElement.height));
+    const texelX = float(1).div(bloomWidth);
+    const texelY = float(1).div(bloomHeight);
+    const bloomIntensity = uniform(float(0.6));
 
-    // Horizontal blur of bright areas
-    const bloomBlurH = sample((_uv) => {
-      const texel = bloomResolution.oneOver();
-      let col = vec3(0);
-      for (let i = 0; i < 9; i++) {
-        const off = vec2(float(bloomOffsets[i]).mul(texel.x), 0);
-        const s = scenePassColor.sample(_uv.add(off));
-        col = col.add(s.rgb.sub(bloomThreshold).max(0).mul(bloomWeights[i]));
-      }
-      return col;
-    });
+    const bloomOffsets = [-2, -1, 0, 1, 2];
+    const bloomWeights = [0.054, 0.244, 0.403, 0.244, 0.054];
 
-    // Vertical blur
-    const bloom = sample((_uv) => {
-      const texel = bloomResolution.oneOver();
-      let col = vec3(0);
-      for (let i = 0; i < 9; i++) {
-        const off = vec2(0, float(bloomOffsets[i]).mul(texel.y));
-        col = col.add(bloomBlurH.sample(_uv.add(off)).mul(bloomWeights[i]));
+    const bloom = sample((_uv: any) => {
+      let col = vec3(float(0), float(0), float(0));
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          (col as any).addAssign(
+            scenePassEmissive
+              .sample(
+                _uv.add(
+                  vec2(
+                    float(bloomOffsets[i]).mul(texelX),
+                    float(bloomOffsets[j]).mul(texelY),
+                  ),
+                ),
+              )
+              .rgb.mul(bloomWeights[i] * bloomWeights[j]),
+          );
+        }
       }
       return col;
     });
     bloom.name = "Bloom";
 
-    // composite (AO * scene + GI * diffuse + bloom)
+    // composite (AO * scene + GI * diffuse, then overlay bloom)
     const compositePass = vec4(
       add(
         add(scenePassColor.rgb.mul(ao.r), scenePassDiffuse.rgb.mul(gi.rgb)),
