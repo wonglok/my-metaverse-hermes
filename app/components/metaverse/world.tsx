@@ -6,12 +6,14 @@ import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteCylinderAvatar } from "./cylinder-avatar";
 import { ProceduralColliders, type PlatformDef } from "./gltf-environment";
+import { KinematicPlatform } from "./kinematic-platform";
 import {
   updatePlayerPhysics,
   resetPlayer,
   type PlayerCapsule,
   type PlayerPhysicsState,
   type BVHContext,
+  type MovingPlatform,
 } from "./physics";
 
 // ── Default platforms (matching previous world layout) ─────────────────────
@@ -149,7 +151,8 @@ interface GameWorldProps {
 
 function MyScene({ rt }: GameWorldProps) {
   const playerRef = useRef<THREE.Group>(null);
-  const sceneBVHRef = useRef<BVHContext | null>(null);
+  const staticBVHRef = useRef<BVHContext | null>(null);
+  const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
     velocity: new THREE.Vector3(),
     isOnGround: false,
@@ -237,8 +240,8 @@ function MyScene({ rt }: GameWorldProps) {
   // Physics + walk animation
   useFrame((_, delta) => {
     const player = playerRef.current;
-    const bvhCtx = sceneBVHRef.current;
-    if (!player || !bvhCtx) return;
+    const staticBVH = staticBVHRef.current;
+    if (!player || !staticBVH) return;
 
     const clampedDelta = Math.min(delta, 0.1);
     const stepDelta = clampedDelta / PHYSICS_STEPS;
@@ -249,7 +252,8 @@ function MyScene({ rt }: GameWorldProps) {
         player,
         PLAYER_CAPSULE,
         physicsStateRef.current,
-        bvhCtx,
+        staticBVH,
+        movingPlatformsRef.current,
         keysRef.current,
         spacePressedRef.current,
         thetaRef.current,
@@ -289,9 +293,36 @@ function MyScene({ rt }: GameWorldProps) {
       <ProceduralColliders
         platforms={DEFAULT_PLATFORMS}
         onBVHReady={(bvh, root) => {
-          sceneBVHRef.current = { bvh, root };
+          staticBVHRef.current = { bvh, root };
         }}
       />
+
+      {/* Moving platforms */}
+      <KinematicPlatform
+        position={[0, 1.5, -8]}
+        motion={{ axis: "y", amplitude: 1.5, speed: 1.2 }}
+        onReady={(p) => {
+          movingPlatformsRef.current.push(p);
+        }}
+      >
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[3, 0.4, 3]} />
+          <meshStandardMaterial color="#e8a440" roughness={0.4} />
+        </mesh>
+      </KinematicPlatform>
+
+      <KinematicPlatform
+        position={[6, 2, -2]}
+        motion={{ axis: "x", amplitude: 2, speed: 0.7 }}
+        onReady={(p) => {
+          movingPlatformsRef.current.push(p);
+        }}
+      >
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[2, 0.3, 2]} />
+          <meshStandardMaterial color="#40a4e8" roughness={0.3} />
+        </mesh>
+      </KinematicPlatform>
 
       {/* Local player */}
       <group

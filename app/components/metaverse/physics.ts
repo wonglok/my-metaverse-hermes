@@ -44,6 +44,13 @@ export interface BVHContext {
   root: THREE.Group;
 }
 
+/** A platform that moves — exposes velocity so the player can ride it. */
+export interface MovingPlatform {
+  group: THREE.Group;
+  bvh: ObjectBVH;
+  velocity: THREE.Vector3; // world-space velocity (updated each frame)
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function isTransparent(obj: THREE.Object3D): boolean {
@@ -58,6 +65,74 @@ function isTransparent(obj: THREE.Object3D): boolean {
   );
 }
 
+/** Run the core shapecast loop against a single BVH context. */
+function shapecastBVH(
+  bvhCtx: BVHContext,
+  capsule: PlayerCapsule,
+  segmentStart: THREE.Vector3
+): void {
+  bvhCtx.root.updateMatrixWorld();
+  _invMat.copy(bvhCtx.root.matrixWorld).invert();
+
+  _sceneLocalBox.makeEmpty();
+  _sceneLocalBox.expandByPoint(_worldSegment.start);
+  _sceneLocalBox.expandByPoint(_worldSegment.end);
+  _sceneLocalBox.min.addScalar(-capsule.radius);
+  _sceneLocalBox.max.addScalar(capsule.radius);
+  _sceneLocalBox.applyMatrix4(_invMat);
+
+  bvhCtx.bvh.shapecast({
+    intersectsBounds: (box) => box.intersectsBox(_sceneLocalBox),
+
+    intersectsObject: (object) => {
+      if (!object.visible) return;
+      if (!(object as THREE.Mesh).isMesh) return;
+      if (isTransparent(object)) return;
+
+      _invMat.copy(object.matrixWorld).invert();
+
+      _objectLocalBox.makeEmpty();
+      _objectLocalBox.expandByPoint(_worldSegment.start);
+      _objectLocalBox.expandByPoint(_worldSegment.end);
+      _objectLocalBox.min.addScalar(-capsule.radius);
+      _objectLocalBox.max.addScalar(capsule.radius);
+      _objectLocalBox.applyMatrix4(_invMat);
+
+      _localSegment.copy(_worldSegment).applyMatrix4(_invMat);
+      _sphere.radius = capsule.radius;
+      _sphere.applyMatrix4(_invMat);
+      const localRadius = _sphere.radius;
+
+      const mesh = object as THREE.Mesh;
+      if (!mesh.geometry.boundsTree) return;
+
+      (mesh.geometry.boundsTree as any).shapecast({
+        intersectsBounds: (box: THREE.Box3) =>
+          box.intersectsBox(_objectLocalBox),
+
+        intersectsTriangle: (tri: THREE.Triangle) => {
+          const triPoint = _tempVector;
+          const capsulePoint = _tempVector2;
+
+          const distance = (tri as any).closestPointToSegment(
+            _localSegment,
+            triPoint,
+            capsulePoint,
+          );
+          if (distance < localRadius) {
+            const depth = localRadius - distance;
+            const direction = capsulePoint.sub(triPoint).normalize();
+            _localSegment.start.addScaledVector(direction, depth);
+            _localSegment.end.addScaledVector(direction, depth);
+          }
+        },
+      });
+
+      _worldSegment.copy(_localSegment).applyMatrix4(object.matrixWorld);
+    },
+  });
+}
+
 // ── Physics step ───────────────────────────────────────────────────────────
 
 export function updatePlayerPhysics(
@@ -65,17 +140,14 @@ export function updatePlayerPhysics(
   player: THREE.Group,
   capsule: PlayerCapsule,
   state: PlayerPhysicsState,
-  bvhCtx: BVHContext,
+  staticBVH: BVHContext,
+  movingPlatforms: MovingPlatform[],
   keys: { fwd: boolean; bkd: boolean; lft: boolean; rgt: boolean },
   spacePressed: boolean,
   walkAngle: number,
   params: PhysicsParams,
 ): void {
   player.updateMatrixWorld();
-
-  // Use root group's world matrix (ObjectBVH 0.9.x doesn't expose matrixWorld)
-  bvhCtx.root.updateMatrixWorld();
-  _invMat.copy(bvhCtx.root.matrixWorld).invert();
 
   // Get capsule in world space
   _worldSegment.copy(capsule.segment).applyMatrix4(player.matrixWorld);
@@ -139,74 +211,25 @@ export function updatePlayerPhysics(
     state.offGroundTimer = 0;
   }
 
-  // Get capsule AABB in scene BVH space
-  _sceneLocalBox.makeEmpty();
-  _sceneLocalBox.expandByPoint(_worldSegment.start);
-  _sceneLocalBox.expandByPoint(_worldSegment.end);
-  _sceneLocalBox.min.addScalar(-capsule.radius);
-  _sceneLocalBox.max.addScalar(capsule.radius);
-  _sceneLocalBox.applyMatrix4(_invMat);
-
   const segmentStart = _worldSegment.start.clone();
 
-  // Shapecast against scene BVH — resolves collisions against all meshes
-  // (ground, floating platforms, walls, etc.)
-  bvhCtx.bvh.shapecast({
-    intersectsBounds: (box) => box.intersectsBox(_sceneLocalBox),
+  // Shapecast against static environment
+  shapecastBVH(staticBVH, capsule, segmentStart);
 
-    intersectsObject: (object) => {
-      if (!object.visible) return;
-      if (!(object as THREE.Mesh).isMesh) return;
-      if (isTransparent(object)) return;
-
-      _invMat.copy(object.matrixWorld).invert();
-
-      // Get capsule AABB in object space
-      _objectLocalBox.makeEmpty();
-      _objectLocalBox.expandByPoint(_worldSegment.start);
-      _objectLocalBox.expandByPoint(_worldSegment.end);
-      _objectLocalBox.min.addScalar(-capsule.radius);
-      _objectLocalBox.max.addScalar(capsule.radius);
-      _objectLocalBox.applyMatrix4(_invMat);
-
-      // Get segment and sphere in local space
-      _localSegment.copy(_worldSegment).applyMatrix4(_invMat);
-      _sphere.radius = capsule.radius;
-      _sphere.applyMatrix4(_invMat);
-      const localRadius = _sphere.radius;
-
-      const mesh = object as THREE.Mesh;
-      if (!mesh.geometry.boundsTree) return;
-
-      (mesh.geometry.boundsTree as any).shapecast({
-        intersectsBounds: (box: THREE.Box3) =>
-          box.intersectsBox(_objectLocalBox),
-
-        intersectsTriangle: (tri: THREE.Triangle) => {
-          const triPoint = _tempVector;
-          const capsulePoint = _tempVector2;
-
-          const distance = (tri as any).closestPointToSegment(
-            _localSegment,
-            triPoint,
-            capsulePoint,
-          );
-          if (distance < localRadius) {
-            const depth = localRadius - distance;
-            const direction = capsulePoint.sub(triPoint).normalize();
-            _localSegment.start.addScaledVector(direction, depth);
-            _localSegment.end.addScaledVector(direction, depth);
-          }
-        },
-      });
-
-      _worldSegment.copy(_localSegment).applyMatrix4(object.matrixWorld);
-    },
-  });
+  // Shapecast against each moving platform
+  for (const mp of movingPlatforms) {
+    shapecastBVH(
+      { bvh: mp.bvh, root: mp.group },
+      capsule,
+      segmentStart,
+    );
+  }
 
   // Update player position
   const deltaVector = _tempVector2;
-  deltaVector.copy(capsule.segment.start).applyMatrix4(player.matrixWorld);
+  deltaVector
+    .copy(capsule.segment.start)
+    .applyMatrix4(player.matrixWorld);
   deltaVector.subVectors(_worldSegment.start, deltaVector);
   player.position.add(deltaVector);
 
@@ -218,6 +241,25 @@ export function updatePlayerPhysics(
   if (touchingGround) {
     state.offGroundTimer = OFF_GROUND_TIME;
     state.isOnGround = true;
+
+    // Carry the player with any moving platform they're standing on.
+    // Check each platform: if the player capsule overlaps the platform group
+    // AABB and the player was pushed upward, apply the platform's velocity.
+    for (const mp of movingPlatforms) {
+      const platBox = new THREE.Box3().setFromObject(mp.group);
+      platBox.expandByScalar(0.1); // small tolerance
+
+      const playerBottom = new THREE.Vector3(
+        player.position.x,
+        player.position.y, // capsule bottom is near player origin
+        player.position.z,
+      );
+
+      if (platBox.containsPoint(playerBottom)) {
+        player.position.addScaledVector(mp.velocity, delta);
+      }
+    }
+
     state.velocity.set(0, 0, 0);
   } else {
     state.offGroundTimer -= delta;
