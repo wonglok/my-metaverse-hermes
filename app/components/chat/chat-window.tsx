@@ -2,6 +2,30 @@ import { useState, useRef, useEffect } from "react";
 import type { ChatMessage } from "../../../shared/types/realtime";
 import { cn } from "@/lib/utils";
 
+let _audioCtx: AudioContext | null = null;
+
+function playDing() {
+  try {
+    if (!_audioCtx) _audioCtx = new AudioContext();
+    const ctx = _audioCtx;
+    const now = ctx.currentTime;
+
+    // Two quick sine tones: E6 → C7, short and clean
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1319, now); // E6
+    osc.frequency.setValueAtTime(2093, now + 0.06); // C7
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  } catch {
+    // Browser may block audio until user interaction
+  }
+}
+
 interface ChatWindowProps {
   messages: ChatMessage[];
   onSend: (text: string) => void;
@@ -11,7 +35,36 @@ interface ChatWindowProps {
 export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
+  const prevLenRef = useRef(messages.length);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Track unread messages + play ding for new ones
+  useEffect(() => {
+    const newMessages = messages.slice(prevLenRef.current);
+    prevLenRef.current = messages.length;
+
+    if (newMessages.length === 0) return;
+
+    // Count unread if chat is closed
+    if (!open) {
+      setUnread((n) => n + newMessages.length);
+    }
+
+    // Play a ding for messages from others (not self)
+    const hasIncoming = newMessages.some((m) => m.peerId !== selfId);
+    if (hasIncoming) {
+      playDing();
+    }
+  }, [messages, open, selfId]);
+
+  // Reset unread when opening the chat
+  function toggleOpen() {
+    setOpen((prev) => {
+      if (!prev) setUnread(0);
+      return !prev;
+    });
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -39,7 +92,7 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
           "fixed bottom-4 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
           "md:bottom-4 md:right-4",
         )}
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
         aria-label="Toggle chat"
       >
         <svg
@@ -54,9 +107,9 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
         >
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        {messages.length > 0 && (
+        {unread > 0 && (
           <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
-            {messages.length > 9 ? "9+" : messages.length}
+            {unread > 9 ? "9+" : unread}
           </span>
         )}
       </button>
