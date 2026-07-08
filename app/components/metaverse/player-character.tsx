@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { Center, Text3D } from "@react-three/drei";
+import { helveticaReglar } from "./helvetica";
 
 interface PlayerCharacterProps {
   walkAnimation: number;
@@ -28,6 +30,8 @@ export function PlayerCharacter({
     color: new THREE.Color(color),
     shadowSide: 2,
   });
+
+  let name = "me";
 
   return (
     <group ref={meshRef}>
@@ -58,6 +62,18 @@ export function PlayerCharacter({
         geometry={new THREE.SphereGeometry(0.5)}
         material={material}
       />
+
+      {name && (
+        <group
+          rotation={[0, Math.PI * -0.5, 0]}
+          position={[0, 3, 0]}
+          scale={[1, 1, 1]}
+        >
+          <Center key={name}>
+            <Text3D font={helveticaReglar as any}>{name}</Text3D>
+          </Center>
+        </group>
+      )}
     </group>
   );
 }

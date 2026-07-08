@@ -1,172 +1,27 @@
 import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
-import { Water } from "three/examples/jsm/objects/Water.js";
 import * as THREE from "three";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteCylinderAvatar } from "./cylinder-avatar";
-import { ProceduralColliders, type PlatformDef } from "./gltf-environment";
+import { ProceduralColliders } from "./gltf-environment";
 import { KinematicPlatform } from "./kinematic-platform";
 import {
   updatePlayerPhysics,
   resetPlayer,
-  type PlayerCapsule,
   type PlayerPhysicsState,
   type BVHContext,
   type MovingPlatform,
 } from "./physics";
-
-// ── Default platforms (matching previous world layout) ─────────────────────
-
-const DEFAULT_PLATFORMS: PlatformDef[] = [
-  // Ground-level platforms
-  { position: [3, 0.5, -3], size: [2, 1, 2] },
-  { position: [5, 0.3, 2], size: [2, 0.6, 4] },
-  { position: [-6, 0.5, 1], size: [2, 1, 2] },
-
-  // Elevated platforms (floating, no ground connection)
-  { position: [-4, 2.5, -3], size: [2, 0.4, 2] },
-  { position: [0, 3.5, -5], size: [2.5, 0.3, 2.5] },
-  { position: [4, 4.5, -4], size: [2, 0.3, 2] },
-
-  // Staircase to get up to floating platforms
-  { position: [-4, 0.75, 2], size: [2, 0.5, 1.5] },
-  { position: [-4, 1.5, 1], size: [2, 0.5, 1.5] },
-  { position: [-4, 2.25, 0], size: [2, 0.5, 1.5] },
-
-  // Wide elevated walkway
-  { position: [6, 2.0, -6], size: [5, 0.3, 1.5] },
-  { position: [8, 2.8, -6], size: [3, 0.3, 1.5] },
-];
-
-// ── Physics params ─────────────────────────────────────────────────────────
-
-const PHYSICS_PARAMS = { gravity: -80, playerSpeed: 10 };
-const PHYSICS_STEPS = 5;
-
-// ── Player capsule definition ──────────────────────────────────────────────
-
-const PLAYER_CAPSULE: PlayerCapsule = {
-  radius: 0.75,
-  segment: new THREE.Line3(
-    new THREE.Vector3(0, 0.75, 0),
-    new THREE.Vector3(0, 1.0, 0),
-  ),
-};
-
-// ── Third-person camera ────────────────────────────────────────────────────
-
-const MIN_PHI = 0.15;
-const MAX_PHI = Math.PI / 2 - 0.1;
-const MIN_DIST = 3;
-const MAX_DIST = 20;
-const DEFAULT_DIST = 8;
-const LERP_SPEED = 8;
-const LOOK_TARGET_Y = 1.0;
-
-interface CameraControllerProps {
-  thetaRef: React.RefObject<number>;
-  phiRef: React.RefObject<number>;
-  distRef: React.RefObject<number>;
-}
-
-function CameraController({ thetaRef, phiRef, distRef }: CameraControllerProps) {
-  const { gl } = useThree();
-
-  const dragging = useRef(false);
-  const lastMouse = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const canvas = gl.domElement;
-
-    function onDown(e: MouseEvent) {
-      dragging.current = true;
-      lastMouse.current = { x: e.clientX, y: e.clientY };
-    }
-    function onUp() {
-      dragging.current = false;
-    }
-    function onMove(e: MouseEvent) {
-      if (!dragging.current) return;
-      const dx = e.clientX - lastMouse.current.x;
-      const dy = e.clientY - lastMouse.current.y;
-      thetaRef.current -= dx * 0.005;
-      phiRef.current = Math.min(
-        MAX_PHI,
-        Math.max(MIN_PHI, phiRef.current - dy * 0.005),
-      );
-      lastMouse.current = { x: e.clientX, y: e.clientY };
-    }
-    function onWheel(e: WheelEvent) {
-      distRef.current = Math.min(
-        MAX_DIST,
-        Math.max(MIN_DIST, distRef.current + e.deltaY * 0.01),
-      );
-    }
-
-    canvas.addEventListener("mousedown", onDown);
-    window.addEventListener("mouseup", onUp);
-    window.addEventListener("mousemove", onMove);
-    canvas.addEventListener("wheel", onWheel, { passive: true });
-
-    return () => {
-      canvas.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mouseup", onUp);
-      window.removeEventListener("mousemove", onMove);
-      canvas.removeEventListener("wheel", onWheel);
-    };
-  }, [gl]);
-
-  return null;
-}
-
-// ── Water plane ────────────────────────────────────────────────────────────
-
-const WATER_GEOMETRY = new THREE.PlaneGeometry(500, 500);
-
-function WaterPlane() {
-  const { scene, gl } = useThree();
-  const waterRef = useRef<Water | null>(null);
-
-  useEffect(() => {
-    const normalsTexture = new THREE.TextureLoader().load(
-      "/assets/water/waternormals.jpg",
-      () => {
-        water.material.uniforms.time.value = 0;
-      },
-    );
-    normalsTexture.wrapS = normalsTexture.wrapT = THREE.RepeatWrapping;
-    normalsTexture.repeat.set(10, 10);
-
-    const water = new Water(WATER_GEOMETRY, {
-      textureWidth: 1024,
-      textureHeight: 1024,
-      waterNormals: normalsTexture,
-      sunDirection: new THREE.Vector3(0, 1, 0),
-      sunColor: 0xffffff,
-      waterColor: 0x001e3c,
-      distortionScale: 3.0,
-    });
-    water.position.set(0, -10, 0);
-    water.rotation.x = -Math.PI / 2;
-    waterRef.current = water;
-    scene.add(water);
-
-    return () => {
-      scene.remove(water);
-      water.geometry.dispose();
-      (water.material as THREE.ShaderMaterial).dispose();
-    };
-  }, [scene, gl]);
-
-  useFrame((_, delta) => {
-    if (!waterRef.current) return;
-    waterRef.current.material.uniforms.time.value += delta;
-  });
-
-  return null;
-}
+import { CameraController, DEFAULT_DIST, LERP_SPEED, LOOK_TARGET_Y } from "./camera-controller";
+import { WaterPlane } from "./water-plane";
+import {
+  DEFAULT_PLATFORMS,
+  PHYSICS_PARAMS,
+  PHYSICS_STEPS,
+  PLAYER_CAPSULE,
+} from "./scene-defaults";
 
 // ── Scene ──────────────────────────────────────────────────────────────────
 
@@ -232,8 +87,8 @@ function MyScene({ rt }: GameWorldProps) {
 
   // Broadcast position — throttled to ≤2 sends per 2s, only when moving
   useEffect(() => {
-    const MIN_DELTA = 0.01; // ignore sub-centimeter drift
-    const MIN_INTERVAL = 1000; // ms between sends (2 per 2s)
+    const MIN_DELTA = 0.01;
+    const MIN_INTERVAL = 1000;
 
     let lastSentPos = new THREE.Vector3();
     let lastSentRot = 0;
@@ -267,18 +122,18 @@ function MyScene({ rt }: GameWorldProps) {
     return () => cancelAnimationFrame(raf);
   }, [rt]);
 
-  // Directional light follows player at offset (10, 10, 10)
-  let offset = useMemo(() => new THREE.Vector3(20, 20, 20), []);
+  // Directional light follows player
+  const lightOffset = useMemo(() => new THREE.Vector3(20, 20, 20), []);
 
   useFrame(() => {
     const player = playerRef.current;
     const light = lightRef.current;
     if (!player || !light) return;
-    light.position.copy(player.position).add(offset);
+    light.position.copy(player.position).add(lightOffset);
     light.target.position.copy(player.position);
   });
 
-  // Physics + walk animation
+  // Physics + camera update (single useFrame — camera runs after physics)
   useFrame((_, delta) => {
     const player = playerRef.current;
     const staticBVH = staticBVHRef.current;
@@ -304,16 +159,11 @@ function MyScene({ rt }: GameWorldProps) {
 
     spacePressedRef.current = false;
 
-    // Reset if fallen too far
     if (player.position.y < -25) {
-      resetPlayer(
-        player,
-        physicsStateRef.current,
-        new THREE.Vector3(8, 10, 2.5),
-      );
+      resetPlayer(player, physicsStateRef.current, new THREE.Vector3(8, 10, 2.5));
     }
 
-    // Camera update — after physics so it reads the final position this frame
+    // Camera — after physics so it reads the final position this frame
     const px = player.position.x;
     const py = player.position.y;
     const pz = player.position.z;
@@ -326,19 +176,25 @@ function MyScene({ rt }: GameWorldProps) {
     const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta);
 
     const camT = 1 - Math.exp(-LERP_SPEED * clampedDelta);
-    camera.position.lerp(
-      new THREE.Vector3(targetX, targetY, targetZ),
-      camT,
-    );
+    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), camT);
     camera.lookAt(px, py + LOOK_TARGET_Y, pz);
   });
+
+  // Platform registration helper
+  const registerPlatform = (p: MovingPlatform) => {
+    const arr = movingPlatformsRef.current;
+    arr.push(p);
+    return () => {
+      const i = arr.indexOf(p);
+      if (i !== -1) arr.splice(i, 1);
+    };
+  };
 
   return (
     <>
       <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
 
       <ambientLight intensity={0.4} />
-
       <directionalLight
         ref={lightRef}
         intensity={2}
@@ -366,21 +222,13 @@ function MyScene({ rt }: GameWorldProps) {
         }}
       />
 
-      {/* GLTF */}
+      {/* GLTF environment (church model) */}
       <Suspense
         fallback={
           <KinematicPlatform
             position={[0, 0, 0]}
             motion={{ axis: "y", amplitude: 0, speed: 0 }}
-            onReady={(p) => {
-              const arr = movingPlatformsRef.current;
-              arr.push(p);
-
-              return () => {
-                const i = arr.indexOf(p);
-                if (i !== -1) arr.splice(i, 1);
-              };
-            }}
+            onReady={registerPlatform}
           >
             <mesh receiveShadow position={[0, -0.25, 0]}>
               <boxGeometry args={[50, 0.5, 50]} />
@@ -392,40 +240,19 @@ function MyScene({ rt }: GameWorldProps) {
         <KinematicPlatform
           position={[0, 0, 0]}
           motion={{ axis: "y", amplitude: 0, speed: 0 }}
-          onReady={(p) => {
-            const arr = movingPlatformsRef.current;
-            arr.push(p);
-
-            return () => {
-              const i = arr.indexOf(p);
-              if (i !== -1) arr.splice(i, 1);
-            };
-          }}
+          onReady={registerPlatform}
         >
-          <Gltf
-            src={`/assets/place/church.glb`}
-            receiveShadow
-            castShadow
-          ></Gltf>
+          <Gltf src="/assets/place/church.glb" receiveShadow castShadow />
         </KinematicPlatform>
       </Suspense>
-      {/* GLTF */}
 
-      {/* Water */}
       <WaterPlane />
 
       {/* Moving platforms */}
       <KinematicPlatform
         position={[0, 1.5, -8]}
         motion={{ axis: "y", amplitude: 1.5, speed: 1.2 }}
-        onReady={(p) => {
-          const arr = movingPlatformsRef.current;
-          arr.push(p);
-          return () => {
-            const i = arr.indexOf(p);
-            if (i !== -1) arr.splice(i, 1);
-          };
-        }}
+        onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
           <boxGeometry args={[3, 0.4, 3]} />
@@ -436,14 +263,7 @@ function MyScene({ rt }: GameWorldProps) {
       <KinematicPlatform
         position={[6, 2, -2]}
         motion={{ axis: "x", amplitude: 2, speed: 0.7 }}
-        onReady={(p) => {
-          const arr = movingPlatformsRef.current;
-          arr.push(p);
-          return () => {
-            const i = arr.indexOf(p);
-            if (i !== -1) arr.splice(i, 1);
-          };
-        }}
+        onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
           <boxGeometry args={[2, 0.3, 2]} />
@@ -452,11 +272,7 @@ function MyScene({ rt }: GameWorldProps) {
       </KinematicPlatform>
 
       {/* Local player */}
-      <group
-        ref={playerRef}
-        position={[0, 2, 0]}
-        rotation={[0, Math.PI / 2, 0]}
-      >
+      <group ref={playerRef} position={[0, 2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <PlayerCharacter
           walkAnimation={0}
           color={rt.self?.color ?? "#ff637e"}
