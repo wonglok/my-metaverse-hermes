@@ -39,37 +39,37 @@ export function CylinderAvatar({ color, position = [0, 0, 0], rotation = 0, isLo
 
   return (
     <group ref={groupRef}>
-      {/* Body - cylinder */}
-      <mesh ref={bodyRef} castShadow position={[0, 1, 0]}>
+      {/* Body - feet at y=0 (group origin). height=1.2, center at 0.6 */}
+      <mesh ref={bodyRef} castShadow position={[0, 0.6, 0]}>
         <cylinderGeometry args={[0.35, 0.4, 1.2, 16]} />
         <meshStandardMaterial color={color} roughness={0.5} />
       </mesh>
 
-      {/* Head - small cylinder */}
-      <mesh ref={headRef} castShadow position={[0, 1.85, 0]}>
+      {/* Head - sits on top of body (body top = 1.2), head height=0.45, center at 1.425 */}
+      <mesh ref={headRef} castShadow position={[0, 1.425, 0]}>
         <cylinderGeometry args={[0.25, 0.28, 0.45, 16]} />
         <meshStandardMaterial color={color} roughness={0.4} />
       </mesh>
 
       {/* Eyes */}
-      <mesh position={[0.08, 1.95, 0.22]}>
+      <mesh position={[0.08, 1.5, 0.22]}>
         <sphereGeometry args={[0.05, 8, 8]} />
         <meshBasicMaterial color="white" />
       </mesh>
-      <mesh position={[-0.08, 1.95, 0.22]}>
+      <mesh position={[-0.08, 1.5, 0.22]}>
         <sphereGeometry args={[0.05, 8, 8]} />
         <meshBasicMaterial color="white" />
       </mesh>
 
       {/* Direction indicator */}
-      <mesh position={[0, 1.5, 0.38]}>
+      <mesh position={[0, 0.8, 0.38]}>
         <boxGeometry args={[0.12, 0.06, 0.08]} />
         <meshStandardMaterial color={isLocal ? '#ffffff' : '#000000'} roughness={0.3} />
       </mesh>
 
-      {/* Name label - always face camera would need a Billboard, using a simple sprite */}
+      {/* Name label */}
       {name && (
-        <sprite position={[0, 2.4, 0]} scale={[1.5, 0.4, 1]}>
+        <sprite position={[0, 1.85, 0]} scale={[1.5, 0.4, 1]}>
           <spriteMaterial color={color} transparent opacity={0.9} />
         </sprite>
       )}

@@ -36,7 +36,7 @@ const MIN_DIST = 3
 const MAX_DIST = 20
 const DEFAULT_DIST = 8
 const LERP_SPEED = 8
-const LOOK_TARGET_Y = 1.5 // aim at upper body
+const LOOK_TARGET_Y = 1.0 // aim at mid-torso
 
 interface CameraControllerProps {
   targetRef: React.RefObject<BVHEcctrlApi | null>

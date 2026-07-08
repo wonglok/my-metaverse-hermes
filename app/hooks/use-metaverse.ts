@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Peer, PlayerState, ChatMessage, ServerMessage, ClientMessage } from '../../shared/types/realtime'
 
 export interface RemotePlayer extends PlayerState {
-  /** Smoothing target. */
   targetX: number
   targetY: number
   targetZ: number
@@ -29,11 +28,12 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   const playersRef = useRef(new Map<string, RemotePlayer>())
   const selfRef = useRef<Peer | null>(null)
-  const socketRef = useRef<WebSocket | null>(null)
-  const closedRef = useRef(false)
   const reconnectDelayRef = useRef(1000)
 
-  // Outgoing state
+  // Epoch counter: incremented on every connect(), so stale-socket event
+  // handlers from a React Strict Mode double-invoke are silently ignored.
+  const epochRef = useRef(0)
+
   const sendMoveRef = useRef<(x: number, y: number, z: number, rotation: number) => void>(() => {})
   const sendChatRef = useRef<(text: string) => void>(() => {})
   const pendingMoveRef = useRef<{ x: number; y: number; z: number; rotation: number } | null>(null)
@@ -53,15 +53,15 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   useEffect(() => {
     const placeIdStr = placeId
-    closedRef.current = false
     reconnectDelayRef.current = 1000
 
     let heartbeatTimer: ReturnType<typeof setInterval> | undefined
     let pongTimer: ReturnType<typeof setTimeout> | undefined
+    let socket: WebSocket | null = null
 
     function send(msg: ClientMessage) {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        socketRef.current.send(JSON.stringify(msg))
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(msg))
       }
     }
 
@@ -69,7 +69,7 @@ export function useMetaverse(placeId: string): UseMetaverse {
       stopHeartbeat()
       heartbeatTimer = setInterval(() => {
         send({ t: 'ping' })
-        pongTimer ??= setTimeout(() => socketRef.current?.close(), PONG_TIMEOUT)
+        pongTimer ??= setTimeout(() => socket?.close(), PONG_TIMEOUT)
       }, HEARTBEAT_INTERVAL)
     }
 
@@ -122,14 +122,21 @@ export function useMetaverse(placeId: string): UseMetaverse {
     }
 
     function connect() {
-      if (closedRef.current) return
+      // Close any previous socket first (belt and suspenders).
+      if (socket) {
+        socket.close()
+        socket = null
+      }
+
+      const epoch = ++epochRef.current
       setStatus('connecting')
 
       const protocol = location.protocol === 'https:' ? 'wss' : 'ws'
       const ws = new WebSocket(`${protocol}://${location.host}/api/ws`)
-      socketRef.current = ws
+      socket = ws
 
       ws.addEventListener('open', () => {
+        if (epochRef.current !== epoch) return
         reconnectDelayRef.current = 1000
         setStatus('connected')
         send({ t: 'join', placeId: placeIdStr })
@@ -137,26 +144,35 @@ export function useMetaverse(placeId: string): UseMetaverse {
       })
 
       ws.addEventListener('message', (event) => {
+        if (epochRef.current !== epoch) return
         try { handle(JSON.parse(event.data) as ServerMessage) } catch { /* ignore */ }
       })
 
       ws.addEventListener('close', () => {
+        if (epochRef.current !== epoch) return
         stopHeartbeat()
-        if (closedRef.current) return
+        // Only reconnect if this effect is still the active one —
+        // the epoch guard above already handles that, but we also check
+        // that we haven't been superseded by a new connect() call.
+        if (epochRef.current !== epoch) return
         setStatus('disconnected')
         selfRef.current = null
         setSelf(null)
         playersRef.current = new Map()
         syncPlayers()
         const delay = reconnectDelayRef.current
-        setTimeout(connect, delay)
+        setTimeout(() => {
+          if (epochRef.current === epoch) connect()
+        }, delay)
         reconnectDelayRef.current = Math.min(delay * 2, 30_000)
       })
 
-      ws.addEventListener('error', () => ws.close())
+      ws.addEventListener('error', () => {
+        if (epochRef.current !== epoch) return
+        ws.close()
+      })
     }
 
-    // Throttled move sends
     sendMoveRef.current = (x, y, z, rotation) => {
       pendingMoveRef.current = { x, y, z, rotation }
       if (rafRef.current == null) {
@@ -178,10 +194,14 @@ export function useMetaverse(placeId: string): UseMetaverse {
     connect()
 
     return () => {
-      closedRef.current = true
+      // Bump the epoch so all pending events from this connection are ignored.
+      ++epochRef.current
       stopHeartbeat()
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
-      socketRef.current?.close()
+      if (socket) {
+        socket.close()
+        socket = null
+      }
     }
   }, [placeId])
 
