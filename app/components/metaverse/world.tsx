@@ -29,9 +29,9 @@ import {
   PLAYER_CAPSULE,
 } from "./scene-defaults";
 import { WebGPURenderer } from "three/webgpu";
-import { HDRLoader } from "three/examples/jsm/Addons.js";
-import { equirectUV, texture, uv, vec3, vec4 } from "three/tsl";
-import { Fn } from "three/src/nodes/TSL.js";
+// import { HDRLoader } from "three/examples/jsm/Addons.js";
+// import { equirectUV, texture, uv, vec3, vec4 } from "three/tsl";
+// import { Fn } from "three/src/nodes/TSL.js";
 import { EffectsSSGI } from "./EffectsSSGI";
 
 declare module "@react-three/fiber" {
