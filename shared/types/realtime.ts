@@ -1,33 +1,62 @@
 /**
  * Wire protocol shared between the browser client and the WebSocket server.
- *
- * Every frame is JSON with a `t` (type) discriminator. Coordinates are
- * normalized to the 0..1 range so cursors map correctly across viewports
- * of different sizes.
+ * 3D multiplayer metaverse: player positions, chat, and room-based routing.
  */
 
-/** A connected participant. Identity is assigned by the server on connect. */
+/** A connected participant. */
 export interface Peer {
   id: string
   name: string
-  /** A CSS color (hsl) used for the cursor, label, and avatar. */
+  /** A CSS color (hsl) used for the avatar tint and label. */
   color: string
 }
 
-/** Messages the client sends to the server. */
-export type ClientMessage
-  = | { t: 'cursor', x: number, y: number }
-    | { t: 'reaction', emoji: string, x: number, y: number }
-    | { t: 'ping' }
+/** 3D position + rotation for player avatars. */
+export interface PlayerState {
+  id: string
+  name: string
+  color: string
+  /** World-space position. */
+  x: number
+  y: number
+  z: number
+  /** Y-axis rotation in radians. */
+  rotation: number
+}
 
-/** Messages the server sends to the client. */
-export type ServerMessage
-  = | { t: 'welcome', self: Peer, peers: Peer[] }
-    | { t: 'join', peer: Peer }
-    | { t: 'leave', id: string }
-    | { t: 'cursor', id: string, x: number, y: number }
-    | { t: 'reaction', id: string, emoji: string, x: number, y: number }
-    | { t: 'pong' }
+/** A chat message. */
+export interface ChatMessage {
+  id: string
+  peerId: string
+  name: string
+  color: string
+  text: string
+  timestamp: number
+}
+
+// ── Client → Server ──────────────────────────────────────────────────────────
+
+export type ClientMessage =
+  | { t: 'join'; placeId: string }
+  | { t: 'move'; x: number; y: number; z: number; rotation: number }
+  | { t: 'chat'; text: string }
+  | { t: 'ping' }
+  // Legacy — kept for backward compatibility with the original live-canvas demo.
+  | { t: 'cursor'; x: number; y: number }
+  | { t: 'reaction'; emoji: string; x: number; y: number }
+
+// ── Server → Client ──────────────────────────────────────────────────────────
+
+export type ServerMessage =
+  | { t: 'welcome'; self: Peer; peers: PlayerState[] }
+  | { t: 'join'; peer: PlayerState }
+  | { t: 'leave'; id: string }
+  | { t: 'move'; id: string; x: number; y: number; z: number; rotation: number }
+  | { t: 'chat'; message: ChatMessage }
+  | { t: 'pong' }
+  // Legacy
+  | { t: 'cursor'; id: string; x: number; y: number }
+  | { t: 'reaction'; id: string; emoji: string; x: number; y: number }
 
 export const REACTIONS = ['🎉', '❤️', '😮', '👍', '🔥', '✨'] as const
-export type Reaction = typeof REACTIONS[number]
+export type Reaction = (typeof REACTIONS)[number]

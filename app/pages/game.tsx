@@ -1,0 +1,43 @@
+import { useParams, useNavigate } from 'react-router'
+import { useMetaverse } from '@/hooks/use-metaverse'
+import { GameWorld } from '@/components/metaverse/world'
+import { ChatWindow } from '@/components/chat/chat-window'
+
+export function GamePage() {
+  const { placeId } = useParams<{ placeId: string }>()
+  const navigate = useNavigate()
+  const rt = useMetaverse(placeId ?? 'default')
+
+  return (
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
+      {/* Status bar */}
+      <div className="absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-4 py-2">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-1.5 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur transition hover:bg-black/70"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Leave
+        </button>
+
+        <div className="flex items-center gap-3 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
+          <span className="font-medium text-white">{placeId}</span>
+          <span className="text-white/40">|</span>
+          <span className={rt.status === 'connected' ? 'text-green-400' : rt.status === 'connecting' ? 'text-yellow-400' : 'text-red-400'}>
+            {rt.status}
+          </span>
+          <span className="text-white/40">|</span>
+          <span>{rt.players.length + (rt.self ? 1 : 0)} online</span>
+        </div>
+      </div>
+
+      {/* 3D World */}
+      <GameWorld rt={rt} placeId={placeId ?? 'default'} />
+
+      {/* Chat overlay */}
+      <ChatWindow messages={rt.messages} onSend={rt.sendChat} selfId={rt.self?.id ?? null} />
+    </div>
+  )
+}
