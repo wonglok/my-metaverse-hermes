@@ -5,12 +5,10 @@ import * as THREE from "three";
 import { Center, Gltf, Text3D, useFBX, useGLTF } from "@react-three/drei";
 import { helveticaReglar } from "./helvetica";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
+import type { PlayerPhysicsState } from "./physics";
 
 interface PlayerCharacterProps {
-  state: {
-    // walkAnimation={physicsStateRef.current.walkAnimation}
-    walkAnimation: 1 | 0;
-  };
+  state: PlayerPhysicsState;
 }
 
 let useFBXAction = (
