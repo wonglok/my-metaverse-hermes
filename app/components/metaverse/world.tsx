@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Sky, Environment } from '@react-three/drei'
 import BVHEcctrl, { type BVHEcctrlApi, StaticCollider } from 'bvhecctrl'
 import type { UseMetaverse } from '@/hooks/use-metaverse'
@@ -28,12 +28,98 @@ function Platform({ position, size }: { position: [number, number, number]; size
   )
 }
 
+// ── Third-person camera that follows the ecctrl avatar ────────────────────────
+
+const MIN_PHI = 0.15
+const MAX_PHI = Math.PI / 2 - 0.1
+const MIN_DIST = 3
+const MAX_DIST = 20
+const DEFAULT_DIST = 8
+const LERP_SPEED = 8
+const LOOK_TARGET_Y = 1.5 // aim at upper body
+
+interface CameraControllerProps {
+  targetRef: React.RefObject<BVHEcctrlApi | null>
+}
+
+function CameraController({ targetRef }: CameraControllerProps) {
+  const { camera, gl } = useThree()
+
+  const thetaRef = useRef(0) // horizontal orbit angle (radians)
+  const phiRef = useRef(0.5) // vertical orbit angle
+  const distRef = useRef(DEFAULT_DIST)
+  const dragging = useRef(false)
+  const lastMouse = useRef({ x: 0, y: 0 })
+
+  // Mouse orbit + scroll zoom
+  useEffect(() => {
+    const canvas = gl.domElement
+
+    function onDown(e: MouseEvent) {
+      dragging.current = true
+      lastMouse.current = { x: e.clientX, y: e.clientY }
+    }
+    function onUp() {
+      dragging.current = false
+    }
+    function onMove(e: MouseEvent) {
+      if (!dragging.current) return
+      const dx = e.clientX - lastMouse.current.x
+      const dy = e.clientY - lastMouse.current.y
+      thetaRef.current -= dx * 0.005
+      phiRef.current = Math.min(MAX_PHI, Math.max(MIN_PHI, phiRef.current - dy * 0.005))
+      lastMouse.current = { x: e.clientX, y: e.clientY }
+    }
+    function onWheel(e: WheelEvent) {
+      distRef.current = Math.min(MAX_DIST, Math.max(MIN_DIST, distRef.current + e.deltaY * 0.01))
+    }
+
+    canvas.addEventListener('mousedown', onDown)
+    window.addEventListener('mouseup', onUp)
+    window.addEventListener('mousemove', onMove)
+    canvas.addEventListener('wheel', onWheel, { passive: true })
+
+    return () => {
+      canvas.removeEventListener('mousedown', onDown)
+      window.removeEventListener('mouseup', onUp)
+      window.removeEventListener('mousemove', onMove)
+      canvas.removeEventListener('wheel', onWheel)
+    }
+  }, [gl])
+
+  useFrame((_, delta) => {
+    const group = targetRef.current?.group
+    if (!group) return
+
+    const px = group.position.x
+    const py = group.position.y
+    const pz = group.position.z
+
+    const theta = thetaRef.current
+    const phi = phiRef.current
+    const dist = distRef.current
+
+    // Spherical → Cartesian relative to the player
+    const targetX = px + dist * Math.sin(phi) * Math.sin(theta)
+    const targetY = py + dist * Math.cos(phi)
+    const targetZ = pz + dist * Math.sin(phi) * Math.cos(theta)
+
+    const t = 1 - Math.exp(-LERP_SPEED * delta)
+    camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), t)
+    camera.lookAt(px, py + LOOK_TARGET_Y, pz)
+  })
+
+  return null
+}
+
+// ── Scene ─────────────────────────────────────────────────────────────────────
+
 interface GameWorldProps {
   rt: UseMetaverse
   placeId: string
 }
 
-function Scene({ rt, placeId }: GameWorldProps) {
+function Scene({ rt }: GameWorldProps) {
   const ecctrlRef = useRef<BVHEcctrlApi>(null)
   const keysRef = useRef({ w: false, a: false, s: false, d: false, shift: false, space: false })
 
@@ -58,7 +144,7 @@ function Scene({ rt, placeId }: GameWorldProps) {
     }
   }, [])
 
-  // Drive the BVHEcctrl movement from keyboard input
+  // Drive BVHEcctrl movement from keyboard + broadcast position
   useEffect(() => {
     let raf: number
     function tick() {
@@ -74,7 +160,6 @@ function Scene({ rt, placeId }: GameWorldProps) {
           jump: k.space,
         })
 
-        // Broadcast position
         const group = api.group
         if (group) {
           const pos = group.position
@@ -90,6 +175,8 @@ function Scene({ rt, placeId }: GameWorldProps) {
 
   return (
     <>
+      <CameraController targetRef={ecctrlRef} />
+
       <ambientLight intensity={0.4} />
       <directionalLight
         position={[10, 20, 5]}
@@ -102,14 +189,12 @@ function Scene({ rt, placeId }: GameWorldProps) {
 
       <Ground />
 
-      {/* Some platforms to jump on */}
       <Platform position={[3, 0.5, -3]} size={[2, 1, 2]} />
       <Platform position={[-4, 0.75, -2]} size={[2, 1.5, 2]} />
       <Platform position={[0, 0.5, -6]} size={[4, 1, 1.5]} />
       <Platform position={[5, 0.3, 2]} size={[1.5, 0.6, 4]} />
       <Platform position={[-3, 1, 3]} size={[3, 2, 3]} />
 
-      {/* Local player with physics */}
       <BVHEcctrl
         ref={ecctrlRef}
         position={[0, 2, 0]}
@@ -126,7 +211,6 @@ function Scene({ rt, placeId }: GameWorldProps) {
         />
       </BVHEcctrl>
 
-      {/* Remote players */}
       {rt.players.map((p) => (
         <RemoteCylinderAvatar key={p.id} player={p} />
       ))}
@@ -139,15 +223,14 @@ export function GameWorld({ rt, placeId }: GameWorldProps) {
     <div className="absolute inset-0">
       <Canvas
         shadows
-        camera={{ fov: 60, near: 0.1, far: 200, position: [0, 4, 8] }}
+        camera={{ fov: 60, near: 0.1, far: 200, position: [0, 6, 8] }}
         gl={{ antialias: true }}
       >
         <Scene rt={rt} placeId={placeId} />
       </Canvas>
 
-      {/* Controls hint */}
       <div className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
-        WASD or Arrow keys to move &middot; Shift to run &middot; Space to jump &middot; Mouse to look around
+        WASD to move &middot; Shift to run &middot; Space to jump &middot; Drag mouse to orbit &middot; Scroll to zoom
       </div>
     </div>
   )
