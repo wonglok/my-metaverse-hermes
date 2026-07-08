@@ -263,7 +263,7 @@ function MyScene({ rt }: GameWorldProps) {
       {/* Moving platforms */}
       <KinematicPlatform
         position={[0, 1.5, -8]}
-        motion={{ axis: "y", amplitude: 1.5, speed: 1.2 }}
+        motion={{ axis: "y", amplitude: 2.0, speed: 1.2 }}
         onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
@@ -284,15 +284,12 @@ function MyScene({ rt }: GameWorldProps) {
       </KinematicPlatform>
 
       {/* Local player */}
-      <group
-        ref={playerRef}
-        position={[0, 2, 0]}
-        rotation={[0, Math.PI / 2, 0]}
-      >
-        <PlayerCharacter
-          walkAnimation={0}
-          color={rt.self?.color ?? "#ff637e"}
-        />
+      <group ref={playerRef} position={[0, 2, 0]} rotation={[0, 0, 0]}>
+        <Suspense fallback={null}>
+          <group rotation={[0, 0.5 * Math.PI, 0]}>
+            <PlayerCharacter state={physicsStateRef.current} />
+          </group>
+        </Suspense>
       </group>
 
       {/* Remote players */}

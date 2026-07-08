@@ -169,16 +169,11 @@ export function updatePlayerPhysics(
   }
 
   // Update walk animation
-  const animationStep = delta * 25;
-  state.walkAnimation =
-    (state.walkAnimation - animationStep + WALK_CYCLE_TIME) % WALK_CYCLE_TIME;
+  // const animationStep = delta * 25;
+  state.walkAnimation = 1;
 
-  const cycle = (state.walkAnimation / Math.PI) % 1;
-  const animationOnGround =
-    Math.abs(cycle) < (2 * animationStep) / Math.PI ||
-    Math.abs(1 - cycle) < (2 * animationStep) / Math.PI;
-  if (state.offGroundTimer < 0 && animationOnGround) {
-    state.walkAnimation = Math.round(state.walkAnimation / Math.PI) * Math.PI;
+  if (state.offGroundTimer < 0) {
+    state.walkAnimation = 0;
   }
 
   // Apply walk direction
@@ -195,8 +190,8 @@ export function updatePlayerPhysics(
       Math.sign(right.y) * dirAngle,
     );
     player.quaternion.slerp(quat, 1 - 2 ** (-delta / 0.05));
-  } else if (animationOnGround) {
-    state.walkAnimation = Math.round(state.walkAnimation / Math.PI) * Math.PI;
+  } else {
+    state.walkAnimation = 0;
   }
 
   // Jump

@@ -159,7 +159,9 @@ export default defineWebSocketHandler({
       }
 
       case "rename": {
-        const newName = String(msg.name || "").trim().slice(0, 24);
+        const newName = String(msg.name || "")
+          .trim()
+          .slice(0, 24);
         if (!newName) return;
 
         identity.name = newName;

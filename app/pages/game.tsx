@@ -90,12 +90,14 @@ export function GamePage() {
         <div className="flex items-center gap-3 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
           <span className="font-medium text-white">{placeId}</span>
           <span className="text-white/40">|</span>
+
           {rt.self && (
             <>
               <NameEditor name={rt.self.name} onSave={rt.sendName} />
               <span className="text-white/40">|</span>
             </>
           )}
+
           <span
             className={
               rt.status === "connected"
