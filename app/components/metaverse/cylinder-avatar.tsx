@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { Center, Text, Text3D } from "@react-three/drei";
+import { Center, Text3D } from "@react-three/drei";
 import { helveticaReglar } from "./helvetica";
 
 interface CylinderAvatarProps {
@@ -25,7 +25,6 @@ export function CylinderAvatar({
   const bodyRef = useRef<THREE.Mesh>(null);
   const headRef = useRef<THREE.Mesh>(null);
 
-  // Smooth position/rotation interpolation for remote players
   const targetPos = useRef(new THREE.Vector3(...position));
   const currentPos = useRef(new THREE.Vector3(...position));
   const targetRot = useRef(rotation);
@@ -52,19 +51,16 @@ export function CylinderAvatar({
   return (
     <group ref={groupRef}>
       <group position={[0, 0, 0]}>
-        {/* Body - feet at y=0 (group origin). height=1.2, center at 0.6 */}
         <mesh ref={bodyRef} castShadow position={[0, 0.6, 0]}>
           <cylinderGeometry args={[0.35, 0.4, 1.2, 16]} />
           <meshStandardMaterial color={color} roughness={0.5} />
         </mesh>
 
-        {/* Head - sits on top of body (body top = 1.2), head height=0.45, center at 1.425 */}
         <mesh ref={headRef} castShadow position={[0, 1.425, 0]}>
           <cylinderGeometry args={[0.25, 0.28, 0.45, 16]} />
           <meshStandardMaterial color={color} roughness={0.4} />
         </mesh>
 
-        {/* Eyes */}
         <mesh position={[0.08, 1.5, 0.22]}>
           <sphereGeometry args={[0.05, 8, 8]} />
           <meshBasicMaterial color="white" />
@@ -74,7 +70,6 @@ export function CylinderAvatar({
           <meshBasicMaterial color="white" />
         </mesh>
 
-        {/* Direction indicator */}
         <mesh position={[0, 0.8, 0.38]}>
           <boxGeometry args={[0.12, 0.06, 0.08]} />
           <meshStandardMaterial
@@ -83,7 +78,6 @@ export function CylinderAvatar({
           />
         </mesh>
 
-        {/* Name label */}
         {name && (
           <group position={[0, 1.85, 0]} scale={[0.5, 0.5, 0.5]}>
             <Center key={name}>
@@ -101,10 +95,10 @@ export function RemoteCylinderAvatar({
   player,
 }: {
   player: {
-    x: number;
-    y: number;
-    z: number;
-    rotation: number;
+    targetX: number;
+    targetY: number;
+    targetZ: number;
+    targetRotation: number;
     color: string;
     name: string;
   };
@@ -112,8 +106,8 @@ export function RemoteCylinderAvatar({
   return (
     <CylinderAvatar
       color={player.color}
-      position={[player.x, player.y, player.z]}
-      rotation={player.rotation}
+      position={[player.targetX, player.targetY, player.targetZ]}
+      rotation={player.targetRotation}
       name={player.name}
     />
   );

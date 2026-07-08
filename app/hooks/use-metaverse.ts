@@ -108,6 +108,7 @@ export function useMetaverse(placeId: string): UseMetaverse {
             p.targetY = msg.y
             p.targetZ = msg.z
             p.targetRotation = msg.rotation
+            syncPlayers()
           }
           break
         }
