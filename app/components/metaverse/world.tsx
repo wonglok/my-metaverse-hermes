@@ -1,4 +1,4 @@
-import { useRef, useEffect, Suspense } from "react";
+import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
 import * as THREE from "three";
@@ -239,12 +239,14 @@ function MyScene({ rt }: GameWorldProps) {
   }, [rt]);
 
   // Directional light follows player at offset (10, 10, 10)
+  let offset = useMemo(() => new THREE.Vector3(20, 20, 20), []);
+
   useFrame(() => {
     const player = playerRef.current;
     const light = lightRef.current;
     if (!player || !light) return;
-    light.position.copy(player.position).add(new THREE.Vector3(10, 10, 10));
-    light.lookAt(player.position);
+    light.position.copy(player.position).add(offset);
+    light.target.position.copy(player.position);
   });
 
   // Physics + walk animation
@@ -288,6 +290,7 @@ function MyScene({ rt }: GameWorldProps) {
       <CameraController targetRef={playerRef} thetaRef={thetaRef} />
 
       <ambientLight intensity={0.4} />
+
       <directionalLight
         ref={lightRef}
         intensity={2}
