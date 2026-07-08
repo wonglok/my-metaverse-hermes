@@ -1,6 +1,6 @@
 import { useRef, useEffect, Suspense } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Sky, Environment } from "@react-three/drei";
+import { Sky, Environment, Gltf } from "@react-three/drei";
 import * as THREE from "three";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
@@ -168,6 +168,7 @@ function MyScene({ rt }: GameWorldProps) {
   });
   const spacePressedRef = useRef(false);
   const thetaRef = useRef(0);
+  const lightRef = useRef<THREE.DirectionalLight>(null);
 
   // Keyboard input
   useEffect(() => {
@@ -237,6 +238,15 @@ function MyScene({ rt }: GameWorldProps) {
     return () => cancelAnimationFrame(raf);
   }, [rt]);
 
+  // Directional light follows player at offset (10, 10, 10)
+  useFrame(() => {
+    const player = playerRef.current;
+    const light = lightRef.current;
+    if (!player || !light) return;
+    light.position.copy(player.position).add(new THREE.Vector3(10, 10, 10));
+    light.lookAt(player.position);
+  });
+
   // Physics + walk animation
   useFrame((_, delta) => {
     const player = playerRef.current;
@@ -279,11 +289,19 @@ function MyScene({ rt }: GameWorldProps) {
 
       <ambientLight intensity={0.4} />
       <directionalLight
-        position={[10, 20, 5]}
-        intensity={1}
+        ref={lightRef}
+        intensity={2}
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-1e-4}
+        shadow-normalBias={0.05}
+        shadow-radius={3}
+        shadow-camera-left={-30}
+        shadow-camera-bottom={-30}
+        shadow-camera-right={45}
+        shadow-camera-top={30}
       />
+
       <Sky sunPosition={[100, 50, 100]} />
 
       <Suspense fallback={null}>
@@ -296,6 +314,51 @@ function MyScene({ rt }: GameWorldProps) {
           staticBVHRef.current = { bvh, root };
         }}
       />
+
+      {/* GLTF */}
+      <Suspense
+        fallback={
+          <KinematicPlatform
+            position={[0, 0, 0]}
+            motion={{ axis: "y", amplitude: 0, speed: 0 }}
+            onReady={(p) => {
+              const arr = movingPlatformsRef.current;
+              arr.push(p);
+
+              return () => {
+                const i = arr.indexOf(p);
+                if (i !== -1) arr.splice(i, 1);
+              };
+            }}
+          >
+            <mesh receiveShadow position={[0, -0.25, 0]}>
+              <boxGeometry args={[50, 0.5, 50]} />
+              <meshStandardMaterial color="#2d5a27" roughness={0.8} />
+            </mesh>
+          </KinematicPlatform>
+        }
+      >
+        <KinematicPlatform
+          position={[0, 0, 0]}
+          motion={{ axis: "y", amplitude: 0, speed: 0 }}
+          onReady={(p) => {
+            const arr = movingPlatformsRef.current;
+            arr.push(p);
+
+            return () => {
+              const i = arr.indexOf(p);
+              if (i !== -1) arr.splice(i, 1);
+            };
+          }}
+        >
+          <Gltf
+            src={`/assets/place/church.glb`}
+            receiveShadow
+            castShadow
+          ></Gltf>
+        </KinematicPlatform>
+      </Suspense>
+      {/* GLTF */}
 
       {/* Moving platforms */}
       <KinematicPlatform

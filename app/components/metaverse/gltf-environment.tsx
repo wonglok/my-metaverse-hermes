@@ -112,10 +112,11 @@ export function ProceduralColliders({
   return (
     <group ref={groupRef}>
       {/* Ground */}
-      <mesh receiveShadow position={[0, -0.25, 0]}>
+      {/*  */}
+      {/* <mesh receiveShadow position={[0, -0.25, 0]}>
         <boxGeometry args={[50, 0.5, 50]} />
         <meshStandardMaterial color="#2d5a27" roughness={0.8} />
-      </mesh>
+      </mesh> */}
 
       {/* Platforms */}
       {platforms.map((p, i) => (
