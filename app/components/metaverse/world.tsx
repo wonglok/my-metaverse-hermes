@@ -7,7 +7,7 @@ import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
-import { RemoteCylinderAvatar } from "./cylinder-avatar";
+import { RemoteAvatar } from "./cylinder-avatar";
 import { KinematicPlatform } from "./kinematic-platform";
 import {
   updatePlayerPhysics,
@@ -305,7 +305,7 @@ function MyScene({ rt }: GameWorldProps) {
         }) => {
           return (
             <group key={p.id}>
-              <RemoteCylinderAvatar player={p} />
+              <RemoteAvatar player={p} />
             </group>
           );
         },
