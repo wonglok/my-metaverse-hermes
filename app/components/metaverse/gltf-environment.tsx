@@ -100,7 +100,7 @@ export function ProceduralColliders({
     group.traverse((c) => {
       const mesh = c as THREE.Mesh;
       if (mesh.isMesh) {
-        mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
+        mesh.geometry.boundsTree = new MeshBVH(mesh.geometry) as any;
       }
     });
 
@@ -119,12 +119,12 @@ export function ProceduralColliders({
       </mesh> */}
 
       {/* Platforms */}
-      {platforms.map((p, i) => (
+      {/* {platforms.map((p, i) => (
         <mesh key={i} position={p.position} castShadow receiveShadow>
           <boxGeometry args={p.size} />
           <meshStandardMaterial color="#555" roughness={0.6} />
         </mesh>
-      ))}
+      ))} */}
     </group>
   );
 }

@@ -213,20 +213,28 @@ function MyScene({ rt }: GameWorldProps) {
     <>
       <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
 
-      <ambientLight intensity={0.4} />
-      <directionalLight
-        ref={lightRef}
-        intensity={2}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-        shadow-bias={-1e-4}
-        shadow-normalBias={0.05}
-        shadow-radius={3}
-        shadow-camera-left={-30}
-        shadow-camera-bottom={-30}
-        shadow-camera-right={45}
-        shadow-camera-top={30}
-      />
+      <Suspense fallback={null}>
+        <ambientLight intensity={0.4} />
+        <Environment
+          files={[`/assets/place/sky.hdr`]}
+          environmentIntensity={0.75}
+          background
+        />
+
+        <directionalLight
+          ref={lightRef}
+          intensity={2}
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-bias={-1e-4}
+          shadow-normalBias={0.05}
+          shadow-radius={3}
+          shadow-camera-left={-30}
+          shadow-camera-bottom={-30}
+          shadow-camera-right={45}
+          shadow-camera-top={30}
+        />
+      </Suspense>
 
       <ProceduralColliders
         platforms={DEFAULT_PLATFORMS}
@@ -261,11 +269,6 @@ function MyScene({ rt }: GameWorldProps) {
         >
           <Gltf src="/assets/place/church.glb" receiveShadow castShadow />
           <WaterPlane />
-          <Environment
-            files={[`/assets/place/sky.hdr`]}
-            environmentIntensity={0.75}
-            background
-          />
         </KinematicPlatform>
       </Suspense>
 

@@ -81,7 +81,11 @@ export function CylinderAvatar({
         {name && (
           <group position={[0, 1.85, 0]} scale={[0.5, 0.5, 0.5]}>
             <Center key={name}>
-              <Text3D font={helveticaReglar as any}>{name}</Text3D>
+              <Text3D font={helveticaReglar as any}>
+                {name}
+
+                <meshStandardMaterial></meshStandardMaterial>
+              </Text3D>
             </Center>
           </group>
         )}

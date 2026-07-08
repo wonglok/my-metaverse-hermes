@@ -70,7 +70,10 @@ export function PlayerCharacter({
           scale={[1, 1, 1]}
         >
           <Center key={name}>
-            <Text3D font={helveticaReglar as any}>{name}</Text3D>
+            <Text3D font={helveticaReglar as any}>
+              {name}
+              <meshStandardMaterial></meshStandardMaterial>
+            </Text3D>
           </Center>
         </group>
       )}
