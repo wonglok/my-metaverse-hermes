@@ -53,7 +53,8 @@ function isTransparent(obj: THREE.Object3D): boolean {
     ? mesh.material
     : [mesh.material];
   return materials.some(
-    (m) => (m as THREE.Material & { transparent?: boolean }).transparent === true,
+    (m) =>
+      (m as THREE.Material & { transparent?: boolean }).transparent === true,
   );
 }
 
@@ -205,9 +206,7 @@ export function updatePlayerPhysics(
 
   // Update player position
   const deltaVector = _tempVector2;
-  deltaVector
-    .copy(capsule.segment.start)
-    .applyMatrix4(player.matrixWorld);
+  deltaVector.copy(capsule.segment.start).applyMatrix4(player.matrixWorld);
   deltaVector.subVectors(_worldSegment.start, deltaVector);
   player.position.add(deltaVector);
 

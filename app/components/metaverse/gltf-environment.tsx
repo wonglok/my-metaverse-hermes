@@ -119,12 +119,7 @@ export function ProceduralColliders({
 
       {/* Platforms */}
       {platforms.map((p, i) => (
-        <mesh
-          key={i}
-          position={p.position}
-          castShadow
-          receiveShadow
-        >
+        <mesh key={i} position={p.position} castShadow receiveShadow>
           <boxGeometry args={p.size} />
           <meshStandardMaterial color="#555" roughness={0.6} />
         </mesh>
