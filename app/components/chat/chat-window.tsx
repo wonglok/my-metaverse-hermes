@@ -89,7 +89,7 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
       {/* Floating toggle button (desktop) / bottom bar (mobile) */}
       <button
         className={cn(
-          "fixed bottom-4 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
+          "fixed top-12 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
           "md:bottom-4 md:right-4",
         )}
         onClick={toggleOpen}
@@ -203,7 +203,7 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
             onKeyDown={handleKey}
             placeholder="Type a message..."
             maxLength={500}
-            className="min-w-0 flex-1 rounded-lg border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className="min-w-0 flex-1 rounded-lg border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring text-[17px]"
           />
           <button
             onClick={handleSend}

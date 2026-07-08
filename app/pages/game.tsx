@@ -45,7 +45,7 @@ function NameEditor({
           }
           ev.stopPropagation();
         }}
-        className="w-24 rounded bg-black/40 px-1.5 py-0.5 text-xs text-white outline-none ring-1 ring-white/30"
+        className="w-24 rounded bg-black/40 px-1.5 py-0.5 text-xs text-white outline-none ring-1 ring-white/30 text-[17px]"
       />
     );
   }
