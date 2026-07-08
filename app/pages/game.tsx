@@ -112,6 +112,8 @@ export function GamePage() {
           <span className="text-white/40">|</span>
           <span>{rt.players.length + (rt.self ? 1 : 0)} online</span>
         </div>
+
+        <div className="w-[80px]"></div>
       </div>
 
       {/* 3D World */}

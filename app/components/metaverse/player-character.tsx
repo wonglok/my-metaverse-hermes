@@ -79,27 +79,36 @@ export function PlayerCharacter({
       mixer,
       clonedScene,
     ),
+    jump: useFBXAction(
+      `/assets/avatar/lamb/motion/jump.fbx`,
+      mixer,
+      clonedScene,
+    ),
   };
+
+  const isOnGround = "isOnGround" in state ? state.isOnGround : true;
 
   useFrame(() => {
     if (clonedScene) {
       clonedScene.rotation.x = Math.PI * -0.5;
     }
 
-    if (state.walkAnimation === 0) {
-      if (fbx.idle) {
-        fbx.idle.weight = THREE.MathUtils.lerp(fbx.idle.weight, 1, 0.1);
-      }
-      if (fbx.run) {
-        fbx.run.weight = THREE.MathUtils.lerp(fbx.run.weight, 0, 0.1);
-      }
-    } else {
-      if (fbx.idle) {
-        fbx.idle.weight = THREE.MathUtils.lerp(fbx.idle.weight, 0, 0.1);
-      }
-      if (fbx.run) {
-        fbx.run.weight = THREE.MathUtils.lerp(fbx.run.weight, 1, 0.1);
-      }
+    const jumping = !isOnGround;
+    const walking = state.walkAnimation !== 0;
+
+    const targetIdle = !jumping && !walking ? 1 : 0;
+    const targetRun = !jumping && walking ? 1 : 0;
+
+    const targetJump = jumping ? 1 : 0;
+
+    if (fbx.idle) {
+      fbx.idle.weight = THREE.MathUtils.lerp(fbx.idle.weight, targetIdle, 0.1);
+    }
+    if (fbx.run) {
+      fbx.run.weight = THREE.MathUtils.lerp(fbx.run.weight, targetRun, 0.1);
+    }
+    if (fbx.jump) {
+      fbx.jump.weight = THREE.MathUtils.lerp(fbx.jump.weight, targetJump, 0.15);
     }
   });
 

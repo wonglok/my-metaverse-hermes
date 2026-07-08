@@ -27,7 +27,8 @@ export function OtherAvatar({
   const targetPos = useRef(new THREE.Vector3(...position));
   const targetRot = useRef(rotation);
 
-  const [state] = useState({ walkAnimation: 0 });
+  const [state] = useState({ walkAnimation: 0, isOnGround: true as boolean });
+  const prevTargetY = useRef(targetPos.current.y);
 
   // Update targets from latest props (not in useEffect, so useFrame always
   // sees current values without a render-commit round-trip)
@@ -42,6 +43,15 @@ export function OtherAvatar({
     } else {
       state.walkAnimation = 0.0;
     }
+
+    // Detect jump from vertical position change
+    const dy = Math.abs(targetPos.current.y - prevTargetY.current);
+    if (dy > 0.05) {
+      state.isOnGround = false;
+    } else {
+      state.isOnGround = true;
+    }
+    prevTargetY.current = targetPos.current.y;
 
     const t = 1 - Math.exp(-LERP_FACTOR * delta * 60);
     currentPos.current.lerp(targetPos.current, t);
