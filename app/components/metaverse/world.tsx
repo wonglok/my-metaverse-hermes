@@ -302,7 +302,12 @@ function MyScene({ rt }: GameWorldProps) {
         position={[0, 1.5, -8]}
         motion={{ axis: "y", amplitude: 1.5, speed: 1.2 }}
         onReady={(p) => {
-          movingPlatformsRef.current.push(p);
+          const arr = movingPlatformsRef.current;
+          arr.push(p);
+          return () => {
+            const i = arr.indexOf(p);
+            if (i !== -1) arr.splice(i, 1);
+          };
         }}
       >
         <mesh castShadow receiveShadow>
@@ -315,7 +320,12 @@ function MyScene({ rt }: GameWorldProps) {
         position={[6, 2, -2]}
         motion={{ axis: "x", amplitude: 2, speed: 0.7 }}
         onReady={(p) => {
-          movingPlatformsRef.current.push(p);
+          const arr = movingPlatformsRef.current;
+          arr.push(p);
+          return () => {
+            const i = arr.indexOf(p);
+            if (i !== -1) arr.splice(i, 1);
+          };
         }}
       >
         <mesh castShadow receiveShadow>

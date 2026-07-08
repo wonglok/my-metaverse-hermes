@@ -116,11 +116,12 @@ export function KinematicPlatform({
     bvhRef.current = bvh;
     prevPos.current.copy(group.position);
 
-    onReady?.({
+    const platform: MovingPlatform = {
       group,
       bvh,
       velocity: velocity.current,
-    });
+    };
+    unregisterRef.current = onReady?.(platform) ?? null;
     readyRef.current = true;
   }
 
