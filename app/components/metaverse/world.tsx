@@ -9,8 +9,11 @@ import * as THREE from 'three'
 function Ground() {
   return (
     <StaticCollider>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow position={[0, 0, 0]}>
-        <planeGeometry args={[50, 50]} />
+      {/* BoxGeometry gives the ground real depth so three-mesh-bvh produces a
+          solid BVH that shapecasts and raycasts can reliably hit. The top
+          surface sits at y=0. */}
+      <mesh receiveShadow position={[0, -0.25, 0]}>
+        <boxGeometry args={[50, 0.5, 50]} />
         <meshStandardMaterial color="#2d5a27" roughness={0.8} />
       </mesh>
     </StaticCollider>
@@ -201,7 +204,8 @@ function Scene({ rt }: GameWorldProps) {
         maxWalkSpeed={4}
         maxRunSpeed={7}
         jumpVel={6}
-        floatHeight={1.0}
+        floatHeight={0.2}
+        floatCheckType="BOTH"
         colliderCapsuleArgs={[0.35, 1.0, 8, 16]}
       >
         <CylinderAvatar
