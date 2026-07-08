@@ -53,6 +53,10 @@ export function PlayerCharacter({
   }, [gltf.scene]);
 
   let show = useMemo(() => {
+    clonedScene.traverse((it) => {
+      it.receiveShadow = true;
+      it.castShadow = true;
+    });
     return <primitive object={clonedScene}></primitive>;
   }, [clonedScene]);
 

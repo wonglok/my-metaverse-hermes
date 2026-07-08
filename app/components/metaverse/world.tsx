@@ -4,7 +4,7 @@ import { extend, type ThreeToJSXElements } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
 import { useRef, useEffect, Suspense, useMemo, useState } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Sky, Environment, Gltf } from "@react-three/drei";
+import { Sky, Environment, Gltf, Sphere, Cylinder } from "@react-three/drei";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteAvatar } from "./other-avatar";
@@ -206,30 +206,29 @@ function MyScene({ rt }: GameWorldProps) {
 
   return (
     <>
+      <directionalLight
+        ref={lightRef}
+        intensity={2}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-1e-9 - 0.0005}
+        shadow-normalBias={0.05}
+        shadow-radius={3}
+        shadow-camera-left={-100}
+        shadow-camera-bottom={-100}
+        shadow-camera-right={100}
+        shadow-camera-top={100}
+      />
+
+      <Environment
+        files={[`/assets/place/sky.hdr`]}
+        environmentIntensity={0.75}
+        background
+      />
+
+      <ambientLight intensity={0.4} />
+
       <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
-
-      <Suspense fallback={null}>
-        <ambientLight intensity={0.4} />
-        <Environment
-          files={[`/assets/place/sky.hdr`]}
-          environmentIntensity={0.75}
-          background
-        />
-
-        <directionalLight
-          ref={lightRef}
-          intensity={2}
-          castShadow
-          shadow-mapSize={[2048, 2048]}
-          shadow-bias={-1e-9 - 0.0005}
-          shadow-normalBias={0.05}
-          shadow-radius={3}
-          shadow-camera-left={-100}
-          shadow-camera-bottom={-100}
-          shadow-camera-right={100}
-          shadow-camera-top={100}
-        />
-      </Suspense>
 
       {/* GLTF environment (church model) */}
       <Suspense
@@ -266,10 +265,9 @@ function MyScene({ rt }: GameWorldProps) {
         motion={{ axis: "y", amplitude: 2.0, speed: 1.2 }}
         onReady={registerPlatform}
       >
-        <mesh castShadow receiveShadow>
-          <boxGeometry args={[3, 0.4, 3]} />
+        <Cylinder castShadow receiveShadow scale={[3, 0.1, 3]}>
           <meshStandardNodeMaterial color="#e8a440" roughness={0.4} />
-        </mesh>
+        </Cylinder>
       </KinematicPlatform>
 
       <KinematicPlatform
