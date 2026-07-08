@@ -58,6 +58,7 @@ function MyScene({ rt }: GameWorldProps) {
     rgt: false,
     space: false,
   });
+
   const spacePressedRef = useRef(false);
   const thetaRef = useRef(0);
   const phiRef = useRef(0.5);
@@ -79,6 +80,7 @@ function MyScene({ rt }: GameWorldProps) {
         ArrowRight: "rgt",
         Space: "space",
       };
+
       const key = map[e.code];
       if (key) {
         keysRef.current[key] = e.type === "keydown";
@@ -98,8 +100,8 @@ function MyScene({ rt }: GameWorldProps) {
 
   // Broadcast position — throttled to ≤2 sends per 2s, only when moving
   useEffect(() => {
-    const MIN_DELTA = 0.01;
-    const MIN_INTERVAL = 1000;
+    const MIN_DELTA = 0.1;
+    const MIN_INTERVAL = 2000;
 
     let lastSentPos = new Vector3();
     let lastSentRot = 0;
