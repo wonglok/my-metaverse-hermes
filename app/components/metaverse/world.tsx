@@ -1,7 +1,10 @@
+import { DoubleSide, Euler, Vector3 } from "three/webgpu";
+// import * as TSL from "three/tsl";
+import { extend, type ThreeToJSXElements } from "@react-three/fiber";
+import * as THREE from "three/webgpu";
 import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
-import * as THREE from "three";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteCylinderAvatar } from "./cylinder-avatar";
@@ -14,7 +17,12 @@ import {
   type BVHContext,
   type MovingPlatform,
 } from "./physics";
-import { CameraController, DEFAULT_DIST, LERP_SPEED, LOOK_TARGET_Y } from "./camera-controller";
+import {
+  CameraController,
+  DEFAULT_DIST,
+  LERP_SPEED,
+  LOOK_TARGET_Y,
+} from "./camera-controller";
 import { WaterPlane } from "./water-plane";
 import {
   DEFAULT_PLATFORMS,
@@ -22,6 +30,13 @@ import {
   PHYSICS_STEPS,
   PLAYER_CAPSULE,
 } from "./scene-defaults";
+import { WebGPURenderer } from "three/webgpu";
+
+declare module "@react-three/fiber" {
+  interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
+}
+
+extend(THREE as any);
 
 // ── Scene ──────────────────────────────────────────────────────────────────
 
@@ -90,7 +105,7 @@ function MyScene({ rt }: GameWorldProps) {
     const MIN_DELTA = 0.01;
     const MIN_INTERVAL = 1000;
 
-    let lastSentPos = new THREE.Vector3();
+    let lastSentPos = new Vector3();
     let lastSentRot = 0;
     let lastSentTime = 0;
     let raf: number;
@@ -100,8 +115,8 @@ function MyScene({ rt }: GameWorldProps) {
       if (!player) return;
 
       const pos = player.position;
-      const euler = new THREE.Euler().setFromQuaternion(player.quaternion);
-      const now = performance.now();
+      const euler = new Euler().setFromQuaternion(player.quaternion);
+      const now = new Date().getTime();
 
       const moved =
         Math.abs(pos.x - lastSentPos.x) > MIN_DELTA ||
@@ -160,7 +175,11 @@ function MyScene({ rt }: GameWorldProps) {
     spacePressedRef.current = false;
 
     if (player.position.y < -25) {
-      resetPlayer(player, physicsStateRef.current, new THREE.Vector3(8, 10, 2.5));
+      resetPlayer(
+        player,
+        physicsStateRef.current,
+        new THREE.Vector3(8, 10, 2.5),
+      );
     }
 
     // Camera — after physics so it reads the final position this frame
@@ -209,12 +228,6 @@ function MyScene({ rt }: GameWorldProps) {
         shadow-camera-top={30}
       />
 
-      <Sky sunPosition={[100, 50, 100]} />
-
-      <Suspense fallback={null}>
-        <Environment preset="park" />
-      </Suspense>
-
       <ProceduralColliders
         platforms={DEFAULT_PLATFORMS}
         onBVHReady={(bvh, root) => {
@@ -232,7 +245,11 @@ function MyScene({ rt }: GameWorldProps) {
           >
             <mesh receiveShadow position={[0, -0.25, 0]}>
               <boxGeometry args={[50, 0.5, 50]} />
-              <meshStandardMaterial color="#2d5a27" roughness={0.8} />
+              <meshStandardNodeMaterial
+                color="#ffffff"
+                side={DoubleSide}
+                roughness={1.0}
+              />
             </mesh>
           </KinematicPlatform>
         }
@@ -242,11 +259,15 @@ function MyScene({ rt }: GameWorldProps) {
           motion={{ axis: "y", amplitude: 0, speed: 0 }}
           onReady={registerPlatform}
         >
+          <WaterPlane />
           <Gltf src="/assets/place/church.glb" receiveShadow castShadow />
+          <Environment
+            files={[`/assets/place/sky.hdr`]}
+            environmentIntensity={0.75}
+            background
+          />
         </KinematicPlatform>
       </Suspense>
-
-      <WaterPlane />
 
       {/* Moving platforms */}
       <KinematicPlatform
@@ -256,7 +277,7 @@ function MyScene({ rt }: GameWorldProps) {
       >
         <mesh castShadow receiveShadow>
           <boxGeometry args={[3, 0.4, 3]} />
-          <meshStandardMaterial color="#e8a440" roughness={0.4} />
+          <meshStandardNodeMaterial color="#e8a440" roughness={0.4} />
         </mesh>
       </KinematicPlatform>
 
@@ -267,12 +288,16 @@ function MyScene({ rt }: GameWorldProps) {
       >
         <mesh castShadow receiveShadow>
           <boxGeometry args={[2, 0.3, 2]} />
-          <meshStandardMaterial color="#40a4e8" roughness={0.3} />
+          <meshStandardNodeMaterial color="#40a4e8" roughness={0.3} />
         </mesh>
       </KinematicPlatform>
 
       {/* Local player */}
-      <group ref={playerRef} position={[0, 2, 0]} rotation={[0, Math.PI / 2, 0]}>
+      <group
+        ref={playerRef}
+        position={[0, 2, 0]}
+        rotation={[0, Math.PI / 2, 0]}
+      >
         <PlayerCharacter
           walkAnimation={0}
           color={rt.self?.color ?? "#ff637e"}
@@ -293,7 +318,11 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
       <Canvas
         shadows
         camera={{ fov: 60, near: 0.1, far: 200, position: [0, 6, 8] }}
-        gl={{ antialias: true }}
+        gl={async (props) => {
+          const renderer = new WebGPURenderer(props as any);
+          await renderer.init();
+          return renderer;
+        }}
       >
         <MyScene rt={rt} placeId={_placeId} />
       </Canvas>

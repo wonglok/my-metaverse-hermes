@@ -1,28 +1,23 @@
 import { useEffect, useRef } from "react";
-import { useThree, useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { Water } from "three/examples/jsm/objects/Water.js";
+import { useThree } from "@react-three/fiber";
+import * as THREE from "three/webgpu";
+import { WaterMesh } from "three/examples/jsm/objects/WaterMesh.js";
 
 const WATER_GEOMETRY = new THREE.PlaneGeometry(500, 500);
 
-/** Large reflective water plane at y=-10. Animates via time uniform. */
+/** Large reflective water plane at y=-10. Time animation handled internally by TSL. */
 export function WaterPlane() {
   const { scene } = useThree();
-  const waterRef = useRef<Water | null>(null);
+  const waterRef = useRef<WaterMesh | null>(null);
 
   useEffect(() => {
     const normalsTexture = new THREE.TextureLoader().load(
       "/assets/water/waternormals.jpg",
-      () => {
-        water.material.uniforms.time.value = 0;
-      },
     );
     normalsTexture.wrapS = normalsTexture.wrapT = THREE.RepeatWrapping;
     normalsTexture.repeat.set(10, 10);
 
-    const water = new Water(WATER_GEOMETRY, {
-      textureWidth: 1024,
-      textureHeight: 1024,
+    const water = new WaterMesh(WATER_GEOMETRY, {
       waterNormals: normalsTexture,
       sunDirection: new THREE.Vector3(0, 1, 0),
       sunColor: 0xffffff,
@@ -37,14 +32,9 @@ export function WaterPlane() {
     return () => {
       scene.remove(water);
       water.geometry.dispose();
-      (water.material as THREE.ShaderMaterial).dispose();
+      water.material.dispose();
     };
   }, [scene]);
-
-  useFrame((_, delta) => {
-    if (!waterRef.current) return;
-    waterRef.current.material.uniforms.time.value += delta;
-  });
 
   return null;
 }
