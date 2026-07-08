@@ -220,12 +220,6 @@ function MyScene({ rt }: GameWorldProps) {
         shadow-camera-top={100}
       />
 
-      <Environment
-        files={[`/assets/place/sky.hdr`]}
-        environmentIntensity={0.75}
-        background
-      />
-
       <ambientLight intensity={0.4} />
 
       <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
@@ -327,12 +321,27 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
           const renderer = new WebGPURenderer(props as any);
           await renderer.init();
 
-          setReady(true);
+          setTimeout(() => {
+            setReady(true);
+          }, 500);
           return renderer;
         }}
       >
+        {ready && (
+          <>
+            {/*  */}
+            <Suspense fallback={null}>
+              <Environment
+                files={[`/assets/place/sky.hdr`]}
+                environmentIntensity={0.75}
+                background
+              />
+            </Suspense>
+            {/*  */}
+          </>
+        )}
         <Suspense fallback={null}>
-          {ready && <MyScene rt={rt} placeId={_placeId} />}
+          <MyScene rt={rt} placeId={_placeId} />
         </Suspense>
       </Canvas>
 
