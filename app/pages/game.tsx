@@ -31,11 +31,19 @@ function NameEditor({
         onChange={(e) => setValue(e.target.value.slice(0, 24))}
         onBlur={commit}
         onKeyDown={(e) => {
-          if (e.key === "Enter") commit();
+          if (e.key === "Enter") {
+            commit();
+          }
           if (e.key === "Escape") {
             setValue(name);
             setEditing(false);
           }
+        }}
+        onKeyDownCapture={(ev) => {
+          if (ev.key === "Enter") {
+            return;
+          }
+          ev.stopPropagation();
         }}
         className="w-24 rounded bg-black/40 px-1.5 py-0.5 text-xs text-white outline-none ring-1 ring-white/30"
       />

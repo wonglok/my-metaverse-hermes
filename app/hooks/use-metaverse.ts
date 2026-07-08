@@ -88,6 +88,12 @@ export function useMetaverse(placeId: string): UseMetaverse {
     function handle(msg: ServerMessage) {
       switch (msg.t) {
         case 'welcome': {
+          // Apply saved nickname from localStorage
+          const saved = localStorage.getItem('hermes-nickname');
+          if (saved && saved !== msg.self.name) {
+            msg.self.name = saved;
+            setTimeout(() => send({ t: 'rename', name: saved }), 100);
+          }
           selfRef.current = msg.self
           setSelf(msg.self)
           const map = new Map<string, RemotePlayer>()
@@ -203,6 +209,7 @@ export function useMetaverse(placeId: string): UseMetaverse {
     }
 
     sendNameRef.current = (name: string) => {
+      localStorage.setItem('hermes-nickname', name);
       send({ t: 'rename', name })
     }
 
