@@ -8,7 +8,8 @@ import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { PlayerPhysicsState } from "./physics";
 
 interface PlayerCharacterProps {
-  state: PlayerPhysicsState;
+  state: PlayerPhysicsState | { walkAnimation: number };
+  isMe: boolean;
 }
 
 let useFBXAction = (
@@ -35,7 +36,7 @@ let useFBXAction = (
  * Local player mesh with walk cycle animation.
  * RoundedBoxGeometry body/arms/head matching vanilla code style.
  */
-export function PlayerCharacter({ state }: PlayerCharacterProps) {
+export function PlayerCharacter({ state, isMe = true }: PlayerCharacterProps) {
   const meshRef = useRef<THREE.Group>(null);
 
   let name = "me";
@@ -99,7 +100,7 @@ export function PlayerCharacter({ state }: PlayerCharacterProps) {
         {show}
       </group>
 
-      {name && (
+      {name && isMe && (
         <group rotation={[0, 0, 0]} position={[0, 3, 0]} scale={[1, 1, 1]}>
           <Center key={name}>
             <Text3D font={helveticaReglar as any}>

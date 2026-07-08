@@ -2,7 +2,7 @@ import { DoubleSide, Euler, Vector3 } from "three/webgpu";
 // import * as TSL from "three/tsl";
 import { extend, type ThreeToJSXElements } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
-import { useRef, useEffect, Suspense, useMemo } from "react";
+import { useRef, useEffect, Suspense, useMemo, useState } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Sky, Environment, Gltf } from "@react-three/drei";
 import type { UseMetaverse } from "@/hooks/use-metaverse";
@@ -293,9 +293,23 @@ function MyScene({ rt }: GameWorldProps) {
       </group>
 
       {/* Remote players */}
-      {rt.players.map((p) => (
-        <RemoteCylinderAvatar key={p.id} player={p} />
-      ))}
+      {rt.players.map(
+        (p: {
+          id: string;
+          targetX: number;
+          targetY: number;
+          targetZ: number;
+          targetRotation: number;
+          color: string;
+          name: string;
+        }) => {
+          return (
+            <group key={p.id}>
+              <RemoteCylinderAvatar player={p} />
+            </group>
+          );
+        },
+      )}
     </>
   );
 }
