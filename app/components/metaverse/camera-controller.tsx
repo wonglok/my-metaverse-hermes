@@ -51,6 +51,9 @@ export function CameraController({
       lastPos.current = { x: e.clientX, y: e.clientY };
     }
     function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       distRef.current = Math.min(
         MAX_DIST,
         Math.max(MIN_DIST, distRef.current + e.deltaY * 0.01),
@@ -105,7 +108,7 @@ export function CameraController({
     canvas.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mouseup", onMouseUp);
     window.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("wheel", onWheel, { passive: true });
+    canvas.addEventListener("wheel", onWheel, { passive: false });
     canvas.addEventListener("touchstart", onTouchStart, { passive: false });
     canvas.addEventListener("touchmove", onTouchMove, { passive: false });
     canvas.addEventListener("touchend", onTouchEnd);
