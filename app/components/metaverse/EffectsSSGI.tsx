@@ -106,14 +106,7 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     }
   }, []);
 
-  // let lighting = useDynamicStore(
-  //   (r: any) => r.lighting,
-  // ) as SunlightObject | null;
-
   useEffect(() => {
-    // if (!lighting) {
-    //   return;
-    // }
     if (!scene || !camera || !gl) {
       return;
     }
@@ -122,6 +115,7 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     const scenePass = pass(scene, camera);
     scenePass.setMRT(
       mrt({
+        emissive: emissive,
         output: output,
         diffuseColor: diffuseColor,
         normal: packNormalToRGB(normalView),
@@ -163,7 +157,9 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     const giPass = ssgi(scenePassColor, scenePassDepth, sceneNormal, camera);
     giPass.sliceCount.value = 2;
     giPass.stepCount.value = 8;
-
+    giPass.backfaceLighting = uniform(float(1));
+    giPass.giIntensity = uniform(float(5));
+    giPass.aoIntensity = uniform(float(1));
     // composite
 
     const ao = giPass.getAONode().toInspector("SSGI.AO");
