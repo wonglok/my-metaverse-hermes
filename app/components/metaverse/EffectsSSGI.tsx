@@ -159,13 +159,51 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     giPass.backfaceLighting = uniform(float(1));
     giPass.giIntensity = uniform(float(5));
     giPass.aoIntensity = uniform(float(1));
-    // composite
 
     const ao = giPass.getAONode().toInspector("SSGI.AO");
     const gi = giPass.getGINode().toInspector("SSGI.GI");
 
+    // bloom — extract bright areas, gaussian blur, blend back
+    const bloomResolution = uniform(
+      vec2(gl.domElement.width, gl.domElement.height),
+    );
+    const bloomThreshold = uniform(float(0.8));
+    const bloomIntensity = uniform(float(0.4));
+    const bloomWeights = [
+      0.016, 0.054, 0.122, 0.186, 0.244, 0.186, 0.122, 0.054, 0.016,
+    ];
+    const bloomOffsets = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+
+    // Horizontal blur of bright areas
+    const bloomBlurH = sample((_uv) => {
+      const texel = bloomResolution.oneOver();
+      let col = vec3(0);
+      for (let i = 0; i < 9; i++) {
+        const off = vec2(float(bloomOffsets[i]).mul(texel.x), 0);
+        const s = scenePassColor.sample(_uv.add(off));
+        col = col.add(s.rgb.sub(bloomThreshold).max(0).mul(bloomWeights[i]));
+      }
+      return col;
+    });
+
+    // Vertical blur
+    const bloom = sample((_uv) => {
+      const texel = bloomResolution.oneOver();
+      let col = vec3(0);
+      for (let i = 0; i < 9; i++) {
+        const off = vec2(0, float(bloomOffsets[i]).mul(texel.y));
+        col = col.add(bloomBlurH.sample(_uv.add(off)).mul(bloomWeights[i]));
+      }
+      return col;
+    });
+    bloom.name = "Bloom";
+
+    // composite (AO * scene + GI * diffuse + bloom)
     const compositePass = vec4(
-      add(scenePassColor.rgb.mul(ao.r), scenePassDiffuse.rgb.mul(gi.rgb)),
+      add(
+        add(scenePassColor.rgb.mul(ao.r), scenePassDiffuse.rgb.mul(gi.rgb)),
+        bloom.mul(bloomIntensity),
+      ),
       scenePassColor.a,
     );
     compositePass.name = "Composite";
