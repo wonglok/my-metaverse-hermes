@@ -134,14 +134,14 @@ function MyScene({ rt }: GameWorldProps) {
   }, [rt]);
 
   // Directional light follows player
-  const lightOffset = useMemo(() => new THREE.Vector3(20, 20, 20), []);
+  const lightOffset = useMemo(() => new THREE.Vector3(10, 35, 50), []);
 
   useFrame(() => {
     const player = playerRef.current;
     const light = lightRef.current;
     if (!player || !light) return;
-    light.position.copy(player.position).add(lightOffset);
     light.target.position.copy(player.position);
+    light.position.copy(player.position).add(lightOffset);
   });
 
   // Physics + camera update (single useFrame — camera runs after physics)
