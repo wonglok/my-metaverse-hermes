@@ -16,7 +16,11 @@ interface CameraControllerProps {
 }
 
 /** Handles mouse orbit + scroll zoom. Writes camera angles/dist to shared refs. */
-export function CameraController({ thetaRef, phiRef, distRef }: CameraControllerProps) {
+export function CameraController({
+  thetaRef,
+  phiRef,
+  distRef,
+}: CameraControllerProps) {
   const { gl } = useThree();
 
   const dragging = useRef(false);
