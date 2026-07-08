@@ -275,7 +275,7 @@ function MyScene({
             onReady={registerPlatform}
           >
             <mesh receiveShadow position={[0, -0.25, 0]}>
-              <boxGeometry args={[50, 0.5, 50]} />
+              <cylinderGeometry args={[100, 100, 0.5]} />
               <meshStandardNodeMaterial
                 color="#ffffff"
                 side={DoubleSide}
