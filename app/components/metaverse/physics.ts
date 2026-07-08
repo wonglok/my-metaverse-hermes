@@ -69,7 +69,6 @@ function isTransparent(obj: THREE.Object3D): boolean {
 function shapecastBVH(
   bvhCtx: BVHContext,
   capsule: PlayerCapsule,
-  segmentStart: THREE.Vector3
 ): void {
   bvhCtx.root.updateMatrixWorld();
   _invMat.copy(bvhCtx.root.matrixWorld).invert();
@@ -214,14 +213,13 @@ export function updatePlayerPhysics(
   const segmentStart = _worldSegment.start.clone();
 
   // Shapecast against static environment
-  shapecastBVH(staticBVH, capsule, segmentStart);
+  shapecastBVH(staticBVH, capsule);
 
   // Shapecast against each moving platform
   for (const mp of movingPlatforms) {
     shapecastBVH(
       { bvh: mp.bvh, root: mp.group },
       capsule,
-      segmentStart,
     );
   }
 

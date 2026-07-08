@@ -41,9 +41,7 @@ export function KinematicPlatform({
   const { scene } = useThree();
   const groupRef = useRef<THREE.Group>(null);
   const bvhRef = useRef<ObjectBVH | null>(null);
-  const prevPos = useRef(new THREE.Vector3());
   const velocity = useRef(new THREE.Vector3());
-  const phaseRef = useRef(Math.random() * Math.PI * 2);
   const readyRef = useRef(false);
   const unregisterRef = useRef<(() => void) | null>(null);
 
@@ -114,7 +112,6 @@ export function KinematicPlatform({
 
     const bvh = new ObjectBVH(group, { maxLeafTris: 1 });
     bvhRef.current = bvh;
-    prevPos.current.copy(group.position);
 
     const platform: MovingPlatform = {
       group,
@@ -125,32 +122,35 @@ export function KinematicPlatform({
     readyRef.current = true;
   }
 
-  // Animate and refit BVH
-  useFrame((_, delta) => {
+  // Animate using wall-clock time so all peers stay in sync without network
+  useFrame(() => {
     const group = groupRef.current;
     if (!group || !readyRef.current) return;
 
-    const phase = phaseRef.current;
+    const t = Date.now() / 1000; // seconds since epoch
     const axis = motion.axis;
-    const offset = Math.sin(phase) * motion.amplitude;
+    const { amplitude, speed } = motion;
+    const phase = t * speed;
 
-    if (axis === "x") group.position.x = position[0] + offset;
-    else if (axis === "y") group.position.y = position[1] + offset;
-    else group.position.z = position[2] + offset;
+    // Position: base + amplitude * sin(time * speed)
+    const offset = Math.sin(phase) * amplitude;
+    const velValue = Math.cos(phase) * amplitude * speed; // analytical derivative
 
-    // Run on axis-agnostic position sync for non-moving axes
+    if (axis === "x") {
+      group.position.x = position[0] + offset;
+      velocity.current.set(velValue, 0, 0);
+    } else if (axis === "y") {
+      group.position.y = position[1] + offset;
+      velocity.current.set(0, velValue, 0);
+    } else {
+      group.position.z = position[2] + offset;
+      velocity.current.set(0, 0, velValue);
+    }
+
+    // Sync non-moving axes to base position
     if (axis !== "x") group.position.x = position[0];
     if (axis !== "y") group.position.y = position[1];
     if (axis !== "z") group.position.z = position[2];
-
-    // Compute frame velocity for player-on-platform carry
-    velocity.current
-      .copy(group.position)
-      .sub(prevPos.current)
-      .divideScalar(Math.max(delta, 0.001));
-    prevPos.current.copy(group.position);
-
-    phaseRef.current += motion.speed * delta;
 
     // Refit BVH so shapecast sees the updated position
     group.updateMatrixWorld();
