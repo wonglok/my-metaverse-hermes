@@ -15,12 +15,22 @@ export async function loadFFmpeg(): Promise<void> {
       coreURL: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js",
       wasmURL:
         "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm",
+
       // coreURL: path.join(location.origin, "./vendor/ffmpeg/ffmpeg-core.js"),
       // wasmURL: path.join(location.origin, "./vendor/ffmpeg/ffmpeg-core.wasm"),
     })
     .then(() => {
       ffmpegLoading = null;
     });
+
+  await new Promise((resolve) => {
+    let ttt = setInterval(() => {
+      if (ffmpegLoading === null) {
+        clearInterval(ttt);
+        resolve(null);
+      }
+    });
+  });
 
   return ffmpegLoading;
 }
