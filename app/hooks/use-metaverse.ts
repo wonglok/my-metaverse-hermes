@@ -15,6 +15,7 @@ export interface UseMetaverse {
   messages: ChatMessage[]
   sendMove: (x: number, y: number, z: number, rotation: number) => void
   sendChat: (text: string) => void
+  sendVoice: (data: string, duration: number) => void
   sendName: (name: string) => void
 }
 
@@ -37,6 +38,7 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   const sendMoveRef = useRef<(x: number, y: number, z: number, rotation: number) => void>(() => {})
   const sendChatRef = useRef<(text: string) => void>(() => {})
+  const sendVoiceRef = useRef<(data: string, duration: number) => void>(() => {})
   const pendingMoveRef = useRef<{ x: number; y: number; z: number; rotation: number } | null>(null)
   const rafRef = useRef<number | undefined>(undefined)
 
@@ -50,6 +52,10 @@ export function useMetaverse(placeId: string): UseMetaverse {
 
   const sendChat = useCallback((text: string) => {
     sendChatRef.current(text)
+  }, [])
+
+  const sendVoice = useCallback((data: string, duration: number) => {
+    sendVoiceRef.current(data, duration)
   }, [])
 
   const sendNameRef = useRef<(name: string) => void>(() => {})
@@ -125,7 +131,8 @@ export function useMetaverse(placeId: string): UseMetaverse {
           }
           break
         }
-        case 'chat': {
+        case 'chat':
+        case 'voice': {
           setMessages(prev => [...prev.slice(-99), msg.message])
           break
         }
@@ -208,6 +215,10 @@ export function useMetaverse(placeId: string): UseMetaverse {
       send({ t: 'chat', text })
     }
 
+    sendVoiceRef.current = (data: string, duration: number) => {
+      send({ t: 'voice', data, duration })
+    }
+
     sendNameRef.current = (name: string) => {
       localStorage.setItem('lambobo-nickname', name);
       send({ t: 'rename', name })
@@ -227,5 +238,5 @@ export function useMetaverse(placeId: string): UseMetaverse {
     }
   }, [placeId])
 
-  return { status, self, players, messages, sendMove, sendChat, sendName }
+  return { status, self, players, messages, sendMove, sendChat, sendVoice, sendName }
 }

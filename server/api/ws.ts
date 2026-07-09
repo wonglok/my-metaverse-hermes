@@ -195,6 +195,35 @@ export default defineWebSocketHandler({
         break;
       }
 
+      case "voice": {
+        const placeId = peerRoom.get(identity.id);
+        if (!placeId) return;
+
+        const data = String(msg.data || "").slice(0, 800_000); // ~600KB MP3
+        const duration = Math.min(60, Math.max(0, Number(msg.duration) || 0));
+        if (!data || duration <= 0) return;
+
+        const voiceMsg: ChatMessage = {
+          id: `chat_${chatSeq++}`,
+          peerId: identity.id,
+          name: identity.name,
+          color: identity.color,
+          audioData: data,
+          audioDuration: duration,
+          timestamp: Date.now(),
+        };
+
+        const voicePayload: ServerMessage = { t: "voice", message: voiceMsg };
+
+        // Echo back to sender
+        send(peer, voicePayload);
+
+        // Broadcast to other local peers (excludes sender) + Redis
+        peer.publish(placeId, JSON.stringify(voicePayload));
+        publishEvent(placeId, voicePayload);
+        break;
+      }
+
       case "rename": {
         const newName = String(msg.name || "")
           .trim()

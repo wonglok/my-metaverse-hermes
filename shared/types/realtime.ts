@@ -24,13 +24,17 @@ export interface PlayerState {
   rotation: number
 }
 
-/** A chat message. */
+/** A chat message (text, voice, or both). */
 export interface ChatMessage {
   id: string
   peerId: string
   name: string
   color: string
-  text: string
+  text?: string
+  /** Base64-encoded MP3 audio data for voice messages. */
+  audioData?: string
+  /** Audio duration in seconds. */
+  audioDuration?: number
   timestamp: number
 }
 
@@ -40,6 +44,7 @@ export type ClientMessage =
   | { t: 'join'; placeId: string }
   | { t: 'move'; x: number; y: number; z: number; rotation: number }
   | { t: 'chat'; text: string }
+  | { t: 'voice'; data: string; duration: number }
   | { t: 'rename'; name: string }
   | { t: 'ping' }
   // Legacy — kept for backward compatibility with the original live-canvas demo.
@@ -54,6 +59,7 @@ export type ServerMessage =
   | { t: 'leave'; id: string }
   | { t: 'move'; id: string; x: number; y: number; z: number; rotation: number }
   | { t: 'chat'; message: ChatMessage }
+  | { t: 'voice'; message: ChatMessage }
   | { t: 'rename'; id: string; name: string }
   | { t: 'pong' }
   // Legacy

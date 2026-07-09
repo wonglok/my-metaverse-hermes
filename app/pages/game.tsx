@@ -123,6 +123,7 @@ export function GamePage() {
       <ChatWindow
         messages={rt.messages}
         onSend={rt.sendChat}
+        onSendVoice={rt.sendVoice}
         selfId={rt.self?.id ?? null}
       />
     </div>

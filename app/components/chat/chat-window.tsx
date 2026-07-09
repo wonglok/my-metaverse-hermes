@@ -1,6 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { ChatMessage } from "../../../shared/types/realtime";
 import { cn } from "@/lib/utils";
+import {
+  encodeAudioToMp3,
+  base64ToAudioUrl,
+  formatDuration,
+} from "@/lib/audio";
 
 let _audioCtx: AudioContext | null = null;
 
@@ -9,13 +14,11 @@ function playDing() {
     if (!_audioCtx) _audioCtx = new AudioContext();
     const ctx = _audioCtx;
     const now = ctx.currentTime;
-
-    // Two quick sine tones: E6 → C7, short and clean
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(1319, now); // E6
-    osc.frequency.setValueAtTime(2093, now + 0.06); // C7
+    osc.frequency.setValueAtTime(1319, now);
+    osc.frequency.setValueAtTime(2093, now + 0.06);
     gain.gain.setValueAtTime(0.15, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
     osc.connect(gain).connect(ctx.destination);
@@ -26,39 +29,184 @@ function playDing() {
   }
 }
 
+// ── Voice message bubble (inline audio player) ──────────────────────────
+
+function VoiceBubble({
+  audioData,
+  duration,
+  isSelf,
+}: {
+  audioData: string;
+  duration: number;
+  isSelf: boolean;
+}) {
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    try {
+      const url = base64ToAudioUrl(audioData);
+      setAudioUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } catch {
+      return; // Invalid audio data
+    }
+  }, [audioData]);
+
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
+    };
+  }, []);
+
+  const stopAndReset = useCallback(() => {
+    cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  const tick = useCallback(() => {
+    if (!audioRef.current) return;
+    setCurrentTime(audioRef.current.currentTime);
+    rafRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  function togglePlay() {
+    if (!audioUrl) return;
+
+    if (playing) {
+      audioRef.current?.pause();
+      setPlaying(false);
+      stopAndReset();
+      return;
+    }
+
+    // Stop any other playing audio on the page
+    document.querySelectorAll("audio").forEach((a) => {
+      if (a !== audioRef.current) {
+        a.pause();
+        a.currentTime = 0;
+      }
+    });
+
+    if (!audioRef.current) {
+      const audio = new Audio(audioUrl);
+      audio.addEventListener("ended", () => {
+        setPlaying(false);
+        setCurrentTime(0);
+        cancelAnimationFrame(rafRef.current);
+      });
+      audio.addEventListener("error", () => setPlaying(false));
+      audioRef.current = audio;
+    }
+
+    audioRef.current.play().catch(() => setPlaying(false));
+    setPlaying(true);
+    rafRef.current = requestAnimationFrame(tick);
+  }
+
+  const progress = duration > 0 ? currentTime / duration : 0;
+
+  return (
+    <div className="flex items-center gap-2 min-w-[140px]">
+      <button
+        onClick={togglePlay}
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-full transition",
+          isSelf
+            ? "bg-primary-foreground/20 text-primary-foreground"
+            : "bg-foreground/10 text-foreground",
+        )}
+        aria-label={playing ? "Pause" : "Play"}
+      >
+        {playing ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16" rx="1" />
+            <rect x="14" y="4" width="4" height="16" rx="1" />
+          </svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        )}
+      </button>
+
+      {/* Progress bar */}
+      <div className="flex-1 h-1.5 rounded-full bg-black/20 overflow-hidden">
+        <div
+          className={cn(
+            "h-full rounded-full transition-all duration-100",
+            isSelf ? "bg-primary-foreground/60" : "bg-foreground/40",
+          )}
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
+
+      <span
+        className={cn(
+          "text-[11px] tabular-nums shrink-0",
+          isSelf ? "text-primary-foreground/70" : "text-muted-foreground",
+        )}
+      >
+        {formatDuration(playing ? currentTime : duration)}
+      </span>
+    </div>
+  );
+}
+
+// ── Recording state machine ──────────────────────────────────────────────
+
+type RecState =
+  | { phase: "idle" }
+  | { phase: "recording"; startedAt: number }
+  | { phase: "encoding" };
+
+// ── Chat window ──────────────────────────────────────────────────────────
+
 interface ChatWindowProps {
   messages: ChatMessage[];
   onSend: (text: string) => void;
+  onSendVoice: (data: string, duration: number) => void;
   selfId: string | null;
 }
 
-export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
+const MAX_RECORD_SECS = 60;
+
+export function ChatWindow({
+  messages,
+  onSend,
+  onSendVoice,
+  selfId,
+}: ChatWindowProps) {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [recState, setRecState] = useState<RecState>({ phase: "idle" });
+  const [recElapsed, setRecElapsed] = useState(0);
+
   const prevLenRef = useRef(messages.length);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const recIntervalRef = useRef<number>(0);
+  const micSupported = typeof MediaRecorder !== "undefined";
 
   // Track unread messages + play ding for new ones
   useEffect(() => {
     const newMessages = messages.slice(prevLenRef.current);
     prevLenRef.current = messages.length;
-
     if (newMessages.length === 0) return;
-
-    // Count unread if chat is closed
-    if (!open) {
-      setUnread((n) => n + newMessages.length);
-    }
-
-    // Play a ding for messages from others (not self)
+    if (!open) setUnread((n) => n + newMessages.length);
     const hasIncoming = newMessages.some((m) => m.peerId !== selfId);
-    if (hasIncoming) {
-      playDing();
-    }
+    if (hasIncoming) playDing();
   }, [messages, open, selfId]);
 
-  // Reset unread when opening the chat
+  // Reset unread when opening
   function toggleOpen() {
     setOpen((prev) => {
       if (!prev) setUnread(0);
@@ -66,6 +214,7 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
     });
   }
 
+  // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -84,9 +233,109 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
     }
   }
 
+  // ── Voice recording ──────────────────────────────────────────────────
+
+  async function startRecording() {
+    if (!micSupported) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : "audio/webm";
+
+      const recorder = new MediaRecorder(stream, { mimeType });
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        // Stop all tracks
+        stream.getTracks().forEach((t) => t.stop());
+
+        if (chunksRef.current.length === 0) {
+          setRecState({ phase: "idle" });
+          return;
+        }
+
+        setRecState({ phase: "encoding" });
+
+        try {
+          const blob = new Blob(chunksRef.current, { type: mimeType });
+          const { base64, duration } = await encodeAudioToMp3(blob);
+          onSendVoice(base64, duration);
+        } catch {
+          // Encoding failed — silently discard
+        }
+
+        setRecState({ phase: "idle" });
+        setRecElapsed(0);
+      };
+
+      recorder.start(250); // collect chunks every 250ms
+      mediaRecorderRef.current = recorder;
+
+      const startedAt = Date.now();
+      setRecState({ phase: "recording", startedAt });
+      setRecElapsed(0);
+
+      // Tick every 100ms for elapsed counter
+      recIntervalRef.current = window.setInterval(() => {
+        const elapsed = (Date.now() - startedAt) / 1000;
+        setRecElapsed(elapsed);
+        if (elapsed >= MAX_RECORD_SECS) {
+          stopRecording(true);
+        }
+      }, 100);
+    } catch {
+      // Permission denied or no mic
+    }
+  }
+
+  function stopRecording(send: boolean) {
+    window.clearInterval(recIntervalRef.current);
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      if (send) {
+        mediaRecorderRef.current.stop();
+      } else {
+        // Cancel — discard chunks and stop
+        chunksRef.current = [];
+        const stream = mediaRecorderRef.current.stream;
+        stream.getTracks().forEach((t) => t.stop());
+        mediaRecorderRef.current.stop();
+        setRecState({ phase: "idle" });
+        setRecElapsed(0);
+      }
+    } else {
+      setRecState({ phase: "idle" });
+      setRecElapsed(0);
+    }
+  }
+
+  // Cleanup recorder on unmount
+  useEffect(() => {
+    return () => {
+      window.clearInterval(recIntervalRef.current);
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        chunksRef.current = [];
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
+
+  const isRecording = recState.phase === "recording";
+  const isEncoding = recState.phase === "encoding";
+
   return (
     <>
-      {/* Floating toggle button (desktop) / bottom bar (mobile) */}
+      {/* Floating toggle button */}
       <button
         className={cn(
           "fixed top-12 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
@@ -118,7 +367,6 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
       <div
         className={cn(
           "fixed bottom-4 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
-          // Mobile: full-width tabs style at bottom
           "max-sm:bottom-0 max-sm:right-0 max-sm:left-0 max-sm:rounded-b-none max-sm:rounded-t-xl",
           open
             ? "max-sm:h-[60vh] h-[420px] w-[340px] max-sm:w-full opacity-100"
@@ -155,6 +403,8 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
           )}
           {messages.map((m) => {
             const isSelf = m.peerId === selfId;
+            const isVoice = !!m.audioData;
+
             return (
               <div
                 key={m.id}
@@ -177,7 +427,15 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
                       : "bg-muted text-foreground",
                   )}
                 >
-                  {m.text}
+                  {isVoice && m.audioData && m.audioDuration ? (
+                    <VoiceBubble
+                      audioData={m.audioData}
+                      duration={m.audioDuration}
+                      isSelf={isSelf}
+                    />
+                  ) : (
+                    m.text
+                  )}
                 </div>
               </div>
             );
@@ -185,34 +443,115 @@ export function ChatWindow({ messages, onSend, selfId }: ChatWindowProps) {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
-        <div className="flex gap-2 border-t px-3 py-2">
-          <input
-            onKeyDownCapture={(ev) => {
-              if (ev.key === "Enter") {
-                setTimeout(() => {
-                  setText("");
-                });
-              } else {
-                ev.stopPropagation();
-              }
-            }}
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKey}
-            placeholder="Type a message..."
-            maxLength={500}
-            className="min-w-0 flex-1 rounded-lg border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring text-[17px]"
-          />
-          <button
-            onClick={handleSend}
-            disabled={!text.trim()}
-            className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition disabled:opacity-40 hover:opacity-90"
-          >
-            Send
-          </button>
-        </div>
+        {/* Input area */}
+        {isEncoding ? (
+          <div className="flex items-center gap-2 border-t px-3 py-2">
+            <span className="text-xs text-muted-foreground">
+              Encoding audio...
+            </span>
+          </div>
+        ) : isRecording ? (
+          <div className="flex items-center gap-2 border-t px-3 py-2">
+            {/* Cancel button */}
+            <button
+              onClick={() => stopRecording(false)}
+              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive hover:bg-destructive/20 transition"
+              aria-label="Cancel recording"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Recording indicator */}
+            <div className="flex flex-1 items-center gap-2">
+              <span className="relative flex size-2.5">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex size-2.5 rounded-full bg-red-500" />
+              </span>
+              <span className="text-sm font-mono tabular-nums text-muted-foreground">
+                {formatDuration(recElapsed)}
+              </span>
+            </div>
+
+            {/* Send button */}
+            <button
+              onClick={() => stopRecording(true)}
+              disabled={recElapsed < 0.5}
+              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition disabled:opacity-40 hover:opacity-90"
+              aria-label="Send voice message"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m22 2-7 20-4-9-9-4Z" />
+                <path d="M22 2 11 13" />
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-2 border-t px-3 py-2">
+            <input
+              onKeyDownCapture={(ev) => {
+                if (ev.key === "Enter") {
+                  setTimeout(() => setText(""));
+                } else {
+                  ev.stopPropagation();
+                }
+              }}
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleKey}
+              placeholder="Type a message..."
+              maxLength={500}
+              className="min-w-0 flex-1 rounded-lg border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring text-[17px]"
+            />
+            {micSupported && (
+              <button
+                onClick={startRecording}
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted-foreground/15 transition"
+                aria-label="Record voice message"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" x2="12" y1="19" y2="22" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={handleSend}
+              disabled={!text.trim()}
+              className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition disabled:opacity-40 hover:opacity-90"
+            >
+              Send
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

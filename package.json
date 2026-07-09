@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "ioredis": "^5.11.1",
+    "lamejs": "^1.2.1",
     "lucide-react": "^1.18.0",
     "md5": "^2.3.0",
     "nipplejs": "^1.0.4",

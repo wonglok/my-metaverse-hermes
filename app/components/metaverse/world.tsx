@@ -377,7 +377,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
     <div className="absolute top-0  left-0 w-full h-full overflow-hidden touch-manipulation select-none">
       <Canvas
         shadows
-        dpr={[1, 1]}
+        dpr={[1, 1.25]}
         camera={{ fov: 60, near: 0.1, far: 200 }}
         gl={async (props) => {
           const renderer = new WebGPURenderer({
@@ -390,7 +390,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             },
           });
 
-          renderer.setPixelRatio(1);
+          renderer.setPixelRatio(1.25);
 
           await renderer.init();
 
