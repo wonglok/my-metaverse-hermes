@@ -10,6 +10,21 @@ import {
 } from "@/lib/audio";
 
 let _audioCtx: AudioContext | null = null;
+let _currentAudio: HTMLAudioElement | null = null;
+
+function stopAllAudio() {
+  // Stop tracked programmatic Audio (not in DOM)
+  if (_currentAudio) {
+    _currentAudio.pause();
+    _currentAudio.src = "";
+    _currentAudio = null;
+  }
+  // Stop any <audio> elements in the DOM
+  document.querySelectorAll("audio").forEach((a) => {
+    a.pause();
+    a.currentTime = 0;
+  });
+}
 
 function playDing() {
   try {
@@ -67,19 +82,21 @@ function VoiceBubble({
     autoPlayedRef.current = true;
 
     // Stop any other playing audio first
-    document.querySelectorAll("audio").forEach((a) => {
-      a.pause();
-      a.currentTime = 0;
-    });
+    stopAllAudio();
 
     const audio = new Audio(audioUrl);
+    _currentAudio = audio;
     audioRef.current = audio;
     audio.addEventListener("ended", () => {
       setPlaying(false);
       setCurrentTime(0);
       cancelAnimationFrame(rafRef.current);
+      _currentAudio = null;
     });
-    audio.addEventListener("error", () => setPlaying(false));
+    audio.addEventListener("error", () => {
+      setPlaying(false);
+      _currentAudio = null;
+    });
 
     audio.play().then(() => {
       setPlaying(true);
@@ -95,6 +112,7 @@ function VoiceBubble({
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
+        if (_currentAudio === audioRef.current) _currentAudio = null;
       }
     };
   }, []);
@@ -119,13 +137,8 @@ function VoiceBubble({
       return;
     }
 
-    // Stop any other playing audio on the page
-    document.querySelectorAll("audio").forEach((a) => {
-      if (a !== audioRef.current) {
-        a.pause();
-        a.currentTime = 0;
-      }
-    });
+    // Stop any other playing audio
+    stopAllAudio();
 
     if (!audioRef.current) {
       const audio = new Audio(audioUrl);
@@ -133,12 +146,20 @@ function VoiceBubble({
         setPlaying(false);
         setCurrentTime(0);
         cancelAnimationFrame(rafRef.current);
+        _currentAudio = null;
       });
-      audio.addEventListener("error", () => setPlaying(false));
+      audio.addEventListener("error", () => {
+        setPlaying(false);
+        _currentAudio = null;
+      });
       audioRef.current = audio;
     }
 
-    audioRef.current.play().catch(() => setPlaying(false));
+    _currentAudio = audioRef.current;
+    audioRef.current.play().catch(() => {
+      setPlaying(false);
+      _currentAudio = null;
+    });
     setPlaying(true);
     rafRef.current = requestAnimationFrame(tick);
   }
