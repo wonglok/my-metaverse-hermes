@@ -397,7 +397,7 @@ export function ChatWindow({
           "fixed bottom-20 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
           "max-sm:bottom-20 max-sm:right-0 max-sm:left-0 max-sm:rounded-b-none max-sm:rounded-t-xl",
           open
-            ? "max-sm:h-[60vh] h-[420px] w-[340px] max-sm:w-full opacity-100"
+            ? "max-sm:h-[60vh] h-[520px] w-[380px] max-sm:w-full opacity-100"
             : "h-0 w-0 opacity-0 pointer-events-none",
         )}
       >
