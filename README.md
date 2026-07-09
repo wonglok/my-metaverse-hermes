@@ -1,5 +1,7 @@
 # Lambobo Palace
 
+<img width="2752" height="1536" alt="Gemini_Generated_Image_iwghzeiwghzeiwgh" src="https://github.com/user-attachments/assets/9253f689-bec8-4f10-88f2-250a517d8ec8" />
+
 A multiplayer 3D world that runs in your browser. You walk around, see other people in real time, and chat with them — no download, no account, just open the link and jump in.
 
 ## What you can do
