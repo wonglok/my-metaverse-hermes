@@ -32,7 +32,7 @@ import { WebGPURenderer } from "three/webgpu";
 // import { HDRLoader } from "three/examples/jsm/Addons.js";
 // import { equirectUV, texture, uv, vec3, vec4 } from "three/tsl";
 // import { Fn } from "three/src/nodes/TSL.js";
-import { EffectsSSGI } from "./EffectsSSGI";
+import { EffectsSSGI } from "./render-pipeline";
 import { GLBEnv } from "./GLBEnv";
 
 declare module "@react-three/fiber" {
@@ -63,11 +63,7 @@ interface MySceneProps {
   }>;
 }
 
-function MyScene({
-  keysRef,
-  spacePressedRef,
-  joystickInputRef,
-}: MySceneProps) {
+function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
   const playerRef = useRef<THREE.Group>(null);
   const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
@@ -375,6 +371,8 @@ export function GameWorld({ placeId: _placeId }: GameWorldProps) {
 
   return (
     <div className="absolute top-0  left-0 w-full h-full overflow-hidden touch-manipulation select-none">
+      {/*  */}
+
       <Canvas
         shadows
         dpr={[1, 1.25]}
@@ -382,12 +380,12 @@ export function GameWorld({ placeId: _placeId }: GameWorldProps) {
         gl={async (props) => {
           const renderer = new WebGPURenderer({
             ...(props as any),
-            depth: false,
-            antialias: false,
+            depth: true,
+            antialias: true,
             stencil: false,
-            requiredLimits: {
-              maxColorAttachmentBytesPerSample: 64, // Example override
-            },
+            // requiredLimits: {
+            //   maxColorAttachmentBytesPerSample: 64, // Example override
+            // },
           });
 
           await renderer.init();

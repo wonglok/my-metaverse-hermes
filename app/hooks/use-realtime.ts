@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import ReconnectingWebSocket from "reconnecting-websocket";
 import type {
   ClientMessage,
   Peer,
@@ -69,9 +70,6 @@ export function useRealtime(): UseRealtime {
   );
 
   useEffect(() => {
-    let socket: WebSocket | undefined;
-    let reconnectDelay = 1000;
-    let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
     let closed = false;
     let reactionKey = 0;
 
@@ -89,8 +87,8 @@ export function useRealtime(): UseRealtime {
     }
 
     function send(msg: ClientMessage) {
-      if (socket?.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(msg));
+      if (rws.readyState === WebSocket.OPEN) {
+        rws.send(JSON.stringify(msg));
       }
     }
 
@@ -155,8 +153,8 @@ export function useRealtime(): UseRealtime {
       stopHeartbeat();
       heartbeatTimer = setInterval(() => {
         send({ t: "ping" });
-        // Expect a pong before the next beat; if none arrives, the socket is dead.
-        pongTimer ??= setTimeout(() => socket?.close(), PONG_TIMEOUT);
+        // Expect a pong before the next beat; if none arrives, force a reconnect.
+        pongTimer ??= setTimeout(() => rws.reconnect(), PONG_TIMEOUT);
       }, HEARTBEAT_INTERVAL);
     }
 
@@ -175,43 +173,43 @@ export function useRealtime(): UseRealtime {
       clearPong();
     }
 
-    function connect() {
+    const protocol = location.protocol === "https:" ? "wss" : "ws";
+    const rws = new ReconnectingWebSocket(
+      `${protocol}://${location.host}/api/ws`,
+      [],
+      {
+        minReconnectionDelay: 1000,
+        maxReconnectionDelay: 30000,
+        reconnectionDelayGrowFactor: 2,
+        connectionTimeout: 4000,
+      },
+    );
+
+    rws.addEventListener("open", () => {
       if (closed) return;
-      setStatus("connecting");
+      setStatus("connected");
+      startHeartbeat();
+    });
 
-      const protocol = location.protocol === "https:" ? "wss" : "ws";
-      socket = new WebSocket(`${protocol}://${location.host}/api/ws`);
+    rws.addEventListener("message", (event) => {
+      try {
+        handle(JSON.parse(event.data) as ServerMessage);
+      } catch {
+        // Ignore malformed frames.
+      }
+    });
 
-      socket.addEventListener("open", () => {
-        reconnectDelay = 1000;
-        setStatus("connected");
-        startHeartbeat();
-      });
-
-      socket.addEventListener("message", (event) => {
-        try {
-          handle(JSON.parse(event.data) as ServerMessage);
-        } catch {
-          // Ignore malformed frames.
-        }
-      });
-
-      socket.addEventListener("close", () => {
-        stopHeartbeat();
-        // Intentional close (unmount, or React StrictMode's dev double-invoke):
-        // a superseding socket owns the shared state now, so don't clobber it.
-        if (closed) return;
-        setStatus("disconnected");
-        selfRef.current = null;
-        setSelf(null);
-        peersRef.current = new Map();
-        syncOthers();
-        reconnectTimer = setTimeout(connect, reconnectDelay);
-        reconnectDelay = Math.min(reconnectDelay * 2, 30000);
-      });
-
-      socket.addEventListener("error", () => socket?.close());
-    }
+    rws.addEventListener("close", () => {
+      stopHeartbeat();
+      // Intentional close (unmount, or React StrictMode's dev double-invoke):
+      // a superseding socket owns the shared state now, so don't clobber it.
+      if (closed) return;
+      setStatus("disconnected");
+      selfRef.current = null;
+      setSelf(null);
+      peersRef.current = new Map();
+      syncOthers();
+    });
 
     /** Queue a normalized (0..1) cursor position; flushed once per frame. */
     moveCursorRef.current = (x: number, y: number) => {
@@ -231,14 +229,11 @@ export function useRealtime(): UseRealtime {
       addReaction(emoji, x, y, selfRef.current?.color ?? "var(--primary)");
     };
 
-    connect();
-
     return () => {
       closed = true;
-      if (reconnectTimer) clearTimeout(reconnectTimer);
       if (rafId) cancelAnimationFrame(rafId);
       stopHeartbeat();
-      socket?.close();
+      rws.close();
     };
   }, []);
 

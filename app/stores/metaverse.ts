@@ -6,6 +6,7 @@ import type {
   ClientMessage,
 } from "../../shared/types/realtime";
 import type { PlayerState } from "../../shared/types/realtime";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 export interface RemotePlayer extends PlayerState {
   targetX: number;
@@ -16,24 +17,20 @@ export interface RemotePlayer extends PlayerState {
 
 // ── Module-level non-reactive state (socket, timers, move throttle) ───────
 
-const RECONNECT_DELAY = 5_000;
 const HEARTBEAT_INTERVAL = 25_000;
 const PONG_TIMEOUT = 10_000;
-const PERIODIC_RECONNECT_MS = 2 * 60 * 1000; // 2 minutes
 
 let _epoch = 0;
-let _socket: WebSocket | null = null;
+let _rws: ReconnectingWebSocket | null = null;
 let _heartbeatTimer: ReturnType<typeof setInterval> | undefined;
 let _pongTimer: ReturnType<typeof setTimeout> | undefined;
-let _reconnectTimer: ReturnType<typeof setTimeout> | undefined;
-let _periodicTimer: ReturnType<typeof setInterval> | undefined;
 let _pendingMove: { x: number; y: number; z: number; rotation: number } | null =
   null;
 let _rafId: number | undefined;
 
 function _sendRaw(msg: ClientMessage) {
-  if (_socket?.readyState === WebSocket.OPEN) {
-    _socket.send(JSON.stringify(msg));
+  if (_rws?.readyState === WebSocket.OPEN) {
+    _rws.send(JSON.stringify(msg));
   }
 }
 
@@ -73,23 +70,17 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
 
   connect: (placeId: string) => {
     // Close any existing socket
-    if (_socket) {
-      _socket.close();
-      _socket = null;
+    if (_rws) {
+      _rws.close();
+      _rws = null;
     }
 
     // Clear existing timers
     if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = undefined; }
     if (_pongTimer) { clearTimeout(_pongTimer); _pongTimer = undefined; }
-    if (_reconnectTimer) { clearTimeout(_reconnectTimer); _reconnectTimer = undefined; }
-    if (_periodicTimer) { clearInterval(_periodicTimer); _periodicTimer = undefined; }
 
     const epoch = ++_epoch;
     set({ status: "connecting" });
-
-    const protocol = location.protocol === "https:" ? "wss" : "ws";
-    const ws = new WebSocket(`${protocol}://${location.host}/api/ws`);
-    _socket = ws;
 
     // ── Helpers ──────────────────────────────────────────────────────
 
@@ -97,7 +88,7 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
       stopHeartbeat();
       _heartbeatTimer = setInterval(() => {
         _sendRaw({ t: "ping" });
-        _pongTimer ??= setTimeout(() => ws.close(), PONG_TIMEOUT);
+        _pongTimer ??= setTimeout(() => _rws?.reconnect(), PONG_TIMEOUT);
       }, HEARTBEAT_INTERVAL);
     }
 
@@ -188,58 +179,51 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
 
     // ── Connect ───────────────────────────────────────────────────────
 
-    function connectWs() {
-      const innerEpoch = epoch;
+    const protocol = location.protocol === "https:" ? "wss" : "ws";
+    const rws = new ReconnectingWebSocket(
+      `${protocol}://${location.host}/api/ws`,
+      [],
+      {
+        minReconnectionDelay: 5000,
+        maxReconnectionDelay: 30000,
+        reconnectionDelayGrowFactor: 1.5,
+        connectionTimeout: 4000,
+      },
+    );
+    _rws = rws;
+    const innerEpoch = epoch;
 
-      ws.addEventListener("open", () => {
-        if (_epoch !== innerEpoch) return;
-        set({ status: "connected" });
-        _sendRaw({ t: "join", placeId });
-        startHeartbeat();
-        _periodicTimer = setInterval(() => {
-          ws.close();
-        }, PERIODIC_RECONNECT_MS);
-      });
+    rws.addEventListener("open", () => {
+      if (_epoch !== innerEpoch) return;
+      set({ status: "connected" });
+      _sendRaw({ t: "join", placeId });
+      startHeartbeat();
+    });
 
-      ws.addEventListener("message", (event) => {
-        if (_epoch !== innerEpoch) return;
-        try {
-          handle(JSON.parse(event.data) as ServerMessage);
-        } catch { /* ignore */ }
-      });
+    rws.addEventListener("message", (event) => {
+      if (_epoch !== innerEpoch) return;
+      try {
+        handle(JSON.parse(event.data) as ServerMessage);
+      } catch { /* ignore */ }
+    });
 
-      ws.addEventListener("close", () => {
-        if (_epoch !== innerEpoch) return;
-        stopHeartbeat();
-        if (_periodicTimer) { clearInterval(_periodicTimer); _periodicTimer = undefined; }
-        if (_epoch !== innerEpoch) return;
-        set({ status: "disconnected", self: null });
-        playerMap.clear();
-        set({ players: [] });
-        _reconnectTimer = setTimeout(() => {
-          if (_epoch === innerEpoch) connectWs();
-        }, RECONNECT_DELAY);
-      });
-
-      ws.addEventListener("error", () => {
-        if (_epoch !== innerEpoch) return;
-        ws.close();
-      });
-    }
-
-    connectWs();
+    rws.addEventListener("close", () => {
+      if (_epoch !== innerEpoch) return;
+      stopHeartbeat();
+      set({ status: "disconnected", self: null });
+      playerMap.clear();
+      set({ players: [] });
+    });
 
     // ── Cleanup ───────────────────────────────────────────────────────
 
     return () => {
       ++_epoch;
       stopHeartbeat();
-      if (_periodicTimer) { clearInterval(_periodicTimer); _periodicTimer = undefined; }
-      if (_reconnectTimer) { clearTimeout(_reconnectTimer); _reconnectTimer = undefined; }
       if (_rafId != null) { cancelAnimationFrame(_rafId); _rafId = undefined; }
-      if (_socket) {
-        _socket.close();
-        _socket = null;
+      if (_rws) {
+        _rws.close();
+        _rws = null;
       }
       playerMap.clear();
       set({ status: "disconnected", self: null, players: [], messages: [] });

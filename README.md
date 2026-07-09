@@ -28,10 +28,11 @@ The 3D world is rendered with Three.js. The real-time stuff happens over WebSock
 ### Tech stack
 
 - **Frontend** — React + Three.js (React Three Fiber) for the 3D world
-- **Real-time** — WebSockets via Nitro + crossws
+- **Real-time** — WebSockets via Nitro + crossws, with `reconnecting-websocket` for automatic reconnect and message buffering
 - **Server** — Nitro v3 running on Vercel Functions
 - **Multi-server (optional)** — Redis pub/sub for scaling across servers. Works fine without it on a single server
 - **Styling** — Tailwind CSS + shadcn/ui
+- **Post-processing** — Bloom via Three.js TSL render pipeline
 
 ### Project layout
 
@@ -44,9 +45,10 @@ app/                  # Browser-side code (React SPA)
 │   ├── metaverse/    # 3D rendering: world, avatars, physics, camera, joystick
 │   ├── chat/         # Chat window and voice recording
 │   └── ui/           # shadcn/ui primitives
-└── hooks/
-    ├── use-realtime.ts   # WebSocket connection, reconnect, heartbeat
-    └── use-metaverse.ts  # Game state: players, chat, movement
+├── hooks/
+│   └── use-realtime.ts   # WebSocket connection, reconnect, heartbeat
+├── stores/
+│   └── metaverse.ts      # Zustand store for 3D world WebSocket + reconnect
 
 shared/
 └── types/realtime.ts     # The message types shared between client and server
