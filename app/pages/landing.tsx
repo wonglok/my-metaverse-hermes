@@ -1,26 +1,38 @@
-import { useNavigate } from 'react-router'
-import { useState } from 'react'
-import { HeroBackdrop } from '@/components/hero-backdrop'
-import { cn } from '@/lib/utils'
+import { useNavigate } from "react-router";
+import { useState } from "react";
+import { HeroBackdrop } from "@/components/hero-backdrop";
+import { cn } from "@/lib/utils";
 
 const DEMO_PLACES = [
-  { id: 'plaza', name: 'Central Plaza', description: 'The main gathering hub. Meet, chat, and explore.' },
-  { id: 'garden', name: 'Sky Garden', description: 'A floating garden with platforms to discover.' },
-  { id: 'arena', name: 'Battle Arena', description: 'Open space for games and challenges.' },
-]
+  {
+    id: "plaza",
+    name: "Central Plaza",
+    description: "The main gathering hub. Meet, chat, and explore.",
+  },
+  // {
+  //   id: "garden",
+  //   name: "Sky Garden",
+  //   description: "A floating garden with platforms to discover.",
+  // },
+  // {
+  //   id: "arena",
+  //   name: "Battle Arena",
+  //   description: "Open space for games and challenges.",
+  // },
+];
 
 export function LandingPage() {
-  const navigate = useNavigate()
-  const [customId, setCustomId] = useState('')
+  const navigate = useNavigate();
+  const [customId, setCustomId] = useState("");
 
   function enterPlace(placeId: string) {
-    navigate(`/game/${placeId}`)
+    navigate(`/game/${placeId}`);
   }
 
   function handleCustomEnter(e: React.FormEvent) {
-    e.preventDefault()
-    const id = customId.trim().toLowerCase().replace(/\s+/g, '-')
-    if (id) enterPlace(id)
+    e.preventDefault();
+    const id = customId.trim().toLowerCase().replace(/\s+/g, "-");
+    if (id) enterPlace(id);
   }
 
   return (
@@ -33,7 +45,8 @@ export function LandingPage() {
             Lambobo Palace
           </h1>
           <p className="max-w-lg text-balance text-lg leading-relaxed text-gray-600">
-            Enter a multiplayer 3D world. Explore places, chat with others, and build together.
+            Enter a multiplayer 3D world. Explore places, chat with others, and
+            build together.
           </p>
         </section>
 
@@ -52,7 +65,9 @@ export function LandingPage() {
                 <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors">
                   {place.name}
                 </h3>
-                <p className="text-sm leading-relaxed text-gray-600">{place.description}</p>
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {place.description}
+                </p>
                 <span className="mt-2 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                   Enter &rarr;
                 </span>
@@ -63,8 +78,13 @@ export function LandingPage() {
 
         {/* Custom place */}
         <section className="mt-10 flex flex-col items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-8 text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Or create a new place</h3>
-          <form onSubmit={handleCustomEnter} className="flex w-full max-w-sm gap-2">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Or create a new place
+          </h3>
+          <form
+            onSubmit={handleCustomEnter}
+            className="flex w-full max-w-sm gap-2"
+          >
             <input
               type="text"
               value={customId}
@@ -76,8 +96,8 @@ export function LandingPage() {
               type="submit"
               disabled={!customId.trim()}
               className={cn(
-                'rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition',
-                'hover:opacity-90 disabled:opacity-40',
+                "rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition",
+                "hover:opacity-90 disabled:opacity-40",
               )}
             >
               Go
@@ -88,11 +108,11 @@ export function LandingPage() {
         {/* Admin link */}
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
-            Managing a place?{' '}
+            Managing a place?{" "}
             <button
               onClick={() => {
-                const id = customId.trim() || DEMO_PLACES[0].id
-                navigate(`/admin/${id}`)
+                const id = customId.trim() || DEMO_PLACES[0].id;
+                navigate(`/admin/${id}`);
               }}
               className="font-medium text-gray-700 underline hover:text-gray-900 transition-colors"
             >
@@ -102,5 +122,5 @@ export function LandingPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
