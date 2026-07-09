@@ -25,7 +25,7 @@ The 3D world is rendered with Three.js. The real-time stuff happens over WebSock
 - **Frontend** — React + Three.js (React Three Fiber) for the 3D world
 - **Real-time** — WebSockets via Nitro + crossws
 - **Server** — Nitro v3 running on Vercel Functions
-- **Multi-server** — Redis pub/sub so people on different servers still see each other
+- **Multi-server (optional)** — Redis pub/sub for scaling across servers. Works fine without it on a single server
 - **Styling** — Tailwind CSS + shadcn/ui
 
 ### Project layout
@@ -66,7 +66,7 @@ Open `http://localhost:3000` in two browser tabs to see live multiplayer in acti
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `METAVERSE_REDIS_URL` | No | Redis connection for multi-server mode. Without it, everything runs in memory on a single server. |
+| `METAVERSE_REDIS_URL` | No | Redis connection for scaling across multiple servers. Skip this — the project works perfectly on a single server without Redis. Only set it if you're running multiple server instances and need them to share player state. |
 
 ### Adding features
 
