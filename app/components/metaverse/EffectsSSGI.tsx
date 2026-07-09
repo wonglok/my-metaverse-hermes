@@ -163,7 +163,7 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     const giPass = ssgi(scenePassColor, scenePassDepth, sceneNormal, camera);
     giPass.sliceCount.value = 2;
     giPass.stepCount.value = 8;
-    // giPass.backfaceLighting = uniform(float(0.1));
+    giPass.backfaceLighting = uniform(float(0.5));
     giPass.giIntensity = uniform(float(5));
     giPass.aoIntensity = uniform(float(1));
 
