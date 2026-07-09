@@ -104,22 +104,6 @@ export function LandingPage() {
             </button>
           </form>
         </section>
-
-        {/* Admin link */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            Managing a place?{" "}
-            <button
-              onClick={() => {
-                const id = customId.trim() || DEMO_PLACES[0].id;
-                navigate(`/admin/${id}`);
-              }}
-              className="font-medium text-gray-700 underline hover:text-gray-900 transition-colors"
-            >
-              Open Admin Portal
-            </button>
-          </p>
-        </div>
       </main>
     </div>
   );
