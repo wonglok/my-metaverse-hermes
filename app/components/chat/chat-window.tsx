@@ -37,16 +37,19 @@ function VoiceBubble({
   audioData,
   duration,
   isSelf,
+  autoPlay = false,
 }: {
   audioData: string;
   duration: number;
   isSelf: boolean;
+  autoPlay?: boolean;
 }) {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const rafRef = useRef<number>(0);
+  const autoPlayedRef = useRef(false);
 
   useEffect(() => {
     try {
@@ -57,6 +60,34 @@ function VoiceBubble({
       return; // Invalid audio data
     }
   }, [audioData]);
+
+  // Auto-play voice messages from others
+  useEffect(() => {
+    if (!audioUrl || !autoPlay || autoPlayedRef.current) return;
+    autoPlayedRef.current = true;
+
+    // Stop any other playing audio first
+    document.querySelectorAll("audio").forEach((a) => {
+      a.pause();
+      a.currentTime = 0;
+    });
+
+    const audio = new Audio(audioUrl);
+    audioRef.current = audio;
+    audio.addEventListener("ended", () => {
+      setPlaying(false);
+      setCurrentTime(0);
+      cancelAnimationFrame(rafRef.current);
+    });
+    audio.addEventListener("error", () => setPlaying(false));
+
+    audio.play().then(() => {
+      setPlaying(true);
+      rafRef.current = requestAnimationFrame(tick);
+    }).catch(() => {
+      // Browser blocked autoplay — user can tap play manually
+    });
+  }, [audioUrl, autoPlay]);
 
   useEffect(() => {
     return () => {
@@ -460,6 +491,7 @@ export function ChatWindow({
                       audioData={m.audioData}
                       duration={m.audioDuration}
                       isSelf={isSelf}
+                      autoPlay={!isSelf}
                     />
                   ) : (
                     m.text
