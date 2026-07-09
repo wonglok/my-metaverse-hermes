@@ -390,11 +390,12 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             },
           });
 
+          await renderer.init();
+
+          renderer.setSize(window.innerWidth, window.innerHeight);
           renderer.setPixelRatio(
             Math.min(1.25, window.devicePixelRatio || 1.0),
           );
-
-          await renderer.init();
 
           return renderer;
         }}
