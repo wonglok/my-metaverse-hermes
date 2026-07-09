@@ -5,7 +5,7 @@ import * as THREE from "three/webgpu";
 import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Gltf, Cylinder } from "@react-three/drei";
-import type { UseMetaverse } from "@/hooks/use-metaverse";
+import { useMetaverseStore } from "@/stores/metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteAvatar } from "./other-avatar";
 import { KinematicPlatform } from "./kinematic-platform";
@@ -44,11 +44,10 @@ extend(THREE as any);
 // ── Scene ──────────────────────────────────────────────────────────────────
 
 interface GameWorldProps {
-  rt: UseMetaverse;
   placeId: string;
 }
 
-interface MySceneProps extends GameWorldProps {
+interface MySceneProps {
   keysRef: React.RefObject<{
     fwd: boolean;
     bkd: boolean;
@@ -65,7 +64,6 @@ interface MySceneProps extends GameWorldProps {
 }
 
 function MyScene({
-  rt,
   keysRef,
   spacePressedRef,
   joystickInputRef,
@@ -83,6 +81,8 @@ function MyScene({
   const distRef = useRef(DEFAULT_DIST);
   const lightRef = useRef<THREE.DirectionalLight>(null);
   const { camera } = useThree();
+  const selfName = useMetaverseStore((s) => s.self?.name);
+  const players = useMetaverseStore((s) => s.players);
 
   // Keyboard input
   useEffect(() => {
@@ -141,7 +141,7 @@ function MyScene({
         Math.abs(euler.y - lastSentRot) > 0.001;
 
       if (moved && now - lastSentTime >= MIN_INTERVAL) {
-        rt.sendMove(pos.x, pos.y, pos.z, euler.y);
+        useMetaverseStore.getState().sendMove(pos.x, pos.y, pos.z, euler.y);
         lastSentPos.copy(pos);
         lastSentRot = euler.y;
         lastSentTime = now;
@@ -151,7 +151,7 @@ function MyScene({
     }
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [rt]);
+  }, []);
 
   // Directional light follows player
   const lightOffset = useMemo(() => new THREE.Vector3(10, 35, 50), []);
@@ -325,7 +325,7 @@ function MyScene({
         <Suspense fallback={null}>
           <group rotation={[0, 0.5 * Math.PI, 0]}>
             <PlayerCharacter
-              name={rt.self?.name}
+              name={selfName}
               isMe={true}
               state={physicsStateRef.current}
               spacePressedRef={spacePressedRef}
@@ -335,7 +335,7 @@ function MyScene({
       </group>
 
       {/* Remote players */}
-      {rt.players.map(
+      {players.map(
         (p: {
           id: string;
           targetX: number;
@@ -358,7 +358,7 @@ function MyScene({
   );
 }
 
-export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
+export function GameWorld({ placeId: _placeId }: GameWorldProps) {
   //
 
   const keysRef = useRef({
@@ -404,8 +404,6 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
           <WaterPlane />
           <Suspense fallback={null}>
             <MyScene
-              rt={rt}
-              placeId={_placeId}
               keysRef={keysRef}
               spacePressedRef={spacePressedRef}
               joystickInputRef={joystickInputRef}

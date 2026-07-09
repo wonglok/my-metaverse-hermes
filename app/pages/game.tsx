@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useMetaverse } from "@/hooks/use-metaverse";
+import { useMetaverseStore } from "@/stores/metaverse";
 import { GameWorld } from "@/components/metaverse/world";
 import { ChatWindow } from "@/components/chat/chat-window";
 import { VoiceRecordButton } from "@/components/chat/voice-record-button";
@@ -65,7 +65,25 @@ function NameEditor({
 export function GamePage() {
   const { placeId } = useParams<{ placeId: string }>();
   const navigate = useNavigate();
-  const rt = useMetaverse(placeId ?? "default");
+  const pid = placeId ?? "default";
+
+  // Connect the WebSocket for this place
+  useEffect(() => {
+    return useMetaverseStore.getState().connect(pid);
+  }, [pid]);
+
+  // Read state with selectors (avoids re-renders from high-frequency player moves)
+  const status = useMetaverseStore((s) => s.status);
+  const self = useMetaverseStore((s) => s.self);
+  const onlineCount = useMetaverseStore(
+    (s) => s.players.length + (s.self ? 1 : 0),
+  );
+  const messages = useMetaverseStore((s) => s.messages);
+
+  // Send actions are stable references
+  const sendName = useMetaverseStore((s) => s.sendName);
+  const sendChat = useMetaverseStore((s) => s.sendChat);
+  const sendVoice = useMetaverseStore((s) => s.sendVoice);
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
@@ -89,48 +107,48 @@ export function GamePage() {
         </button>
 
         <div className="flex items-center gap-3 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
-          <span className="font-medium text-white">{placeId}</span>
+          <span className="font-medium text-white">{pid}</span>
           <span className="text-white/40">|</span>
 
-          {rt.self && (
+          {self && (
             <>
-              <NameEditor name={rt.self.name} onSave={rt.sendName} />
+              <NameEditor name={self.name} onSave={sendName} />
               <span className="text-white/40">|</span>
             </>
           )}
 
           <span
             className={
-              rt.status === "connected"
+              status === "connected"
                 ? "text-green-400"
-                : rt.status === "connecting"
+                : status === "connecting"
                   ? "text-yellow-400"
                   : "text-red-400"
             }
           >
-            {rt.status}
+            {status}
           </span>
           <span className="text-white/40">|</span>
-          <span>{rt.players.length + (rt.self ? 1 : 0)} online</span>
+          <span>{onlineCount} online</span>
         </div>
 
         <div className="w-[80px]"></div>
       </div>
 
       {/* 3D World */}
-      <GameWorld rt={rt} placeId={placeId ?? "default"} />
+      <GameWorld placeId={pid} />
 
       {/* Center-bottom mic button */}
       <div className="absolute bottom-17 left-1/2 -translate-x-1/2 z-30">
-        <VoiceRecordButton onSendVoice={rt.sendVoice} />
+        <VoiceRecordButton onSendVoice={sendVoice} />
       </div>
 
       {/* Chat overlay */}
       <ChatWindow
-        messages={rt.messages}
-        onSend={rt.sendChat}
-        onSendVoice={rt.sendVoice}
-        selfId={rt.self?.id ?? null}
+        messages={messages}
+        onSend={sendChat}
+        onSendVoice={sendVoice}
+        selfId={self?.id ?? null}
       />
     </div>
   );
