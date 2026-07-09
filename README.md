@@ -1,9 +1,6 @@
 # Lambobo Palace
 
-
 <img width="2752" height="1536" alt="Gemini_Generated_Image_iwghzeiwghzeiwgh" src="https://github.com/user-attachments/assets/9253f689-bec8-4f10-88f2-250a517d8ec8" />
-
-
 
 A multiplayer 3D world that runs in your browser. You walk around, see other people in real time, and chat with them — no download, no account, just open the link and jump in.
 
@@ -13,7 +10,6 @@ A multiplayer 3D world that runs in your browser. You walk around, see other peo
 - **See others** — other people in the same place appear as avatars you can see moving in real time
 - **Chat** — send text messages or short voice clips that everyone nearby can hear
 - **Name yourself** — pick any name you want; change it anytime
-- **Create places** — type any name to make a new room and invite friends
 
 https://github.com/user-attachments/assets/9288a33b-dc95-4333-a3d6-fd400a56517f
 
@@ -32,8 +28,6 @@ The 3D world is rendered with Three.js. The real-time stuff happens over WebSock
 - **Server** — Nitro v3 running on Vercel Functions
 - **Multi-server (optional)** — Redis pub/sub for scaling across servers. Works fine without it on a single server
 - **Styling** — Tailwind CSS + shadcn/ui
-
-
 
 ### Project layout
 
@@ -71,9 +65,9 @@ Open `http://localhost:3000` in two browser tabs to see live multiplayer in acti
 
 ### Environment variables
 
-| Variable | Required | Purpose |
-|---|---|---|
-| `METAVERSE_REDIS_URL` | No | Redis connection for scaling across multiple servers. Skip this — the project works perfectly on a single server without Redis. Only set it if you're running multiple server instances and need them to share player state. |
+| Variable              | Required | Purpose                                                                                                                                                                                                                      |
+| --------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `METAVERSE_REDIS_URL` | No       | Redis connection for scaling across multiple servers. Skip this — the project works perfectly on a single server without Redis. Only set it if you're running multiple server instances and need them to share player state. |
 
 ### Adding features
 
