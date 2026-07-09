@@ -103,6 +103,9 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
         }
         e.preventDefault();
       }
+      if (e.type === "keyup") {
+        spacePressedRef.current = false;
+      }
     }
     window.addEventListener("keydown", onKey);
     window.addEventListener("keyup", onKey);
@@ -203,8 +206,6 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
         params,
       );
     }
-
-    spacePressedRef.current = false;
 
     if (player.position.y < -25) {
       resetPlayer(

@@ -98,12 +98,15 @@ function VoiceBubble({
       _currentAudio = null;
     });
 
-    audio.play().then(() => {
-      setPlaying(true);
-      rafRef.current = requestAnimationFrame(tick);
-    }).catch(() => {
-      // Browser blocked autoplay — user can tap play manually
-    });
+    audio
+      .play()
+      .then(() => {
+        setPlaying(true);
+        rafRef.current = requestAnimationFrame(tick);
+      })
+      .catch(() => {
+        // Browser blocked autoplay — user can tap play manually
+      });
   }, [audioUrl, autoPlay]);
 
   useEffect(() => {
@@ -418,7 +421,7 @@ export function ChatWindow({
       {/* Floating toggle button */}
       <button
         className={cn(
-          "fixed bottom-4 right-[130px] z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
+          "fixed bottom-4 right-[100px] z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
           "",
         )}
         onClick={toggleOpen}

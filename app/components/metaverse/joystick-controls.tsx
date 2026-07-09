@@ -69,10 +69,6 @@ export function JoystickControls({
     const startJump = (e: TouchEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      spacePressedRef.current = true;
-      jumpInterval = setInterval(() => {
-        spacePressedRef.current = true;
-      }, 150);
     };
 
     const stopJump = () => {

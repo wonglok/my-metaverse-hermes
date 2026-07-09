@@ -104,6 +104,8 @@ export function PlayerCharacter({
       (!isMe && !isOnGround) ||
       spacePressedRef?.current;
 
+    console.log(spacePressedRef?.current);
+
     const walking = state.walkAnimation !== 0;
 
     const targetIdle = !jumping && !walking ? 1 : 0;
@@ -111,13 +113,13 @@ export function PlayerCharacter({
     const targetJump = jumping ? 1 : 0;
 
     if (fbx.idle) {
-      fbx.idle.weight = THREE.MathUtils.lerp(fbx.idle.weight, targetIdle, 0.1);
+      fbx.idle.weight = THREE.MathUtils.lerp(fbx.idle.weight, targetIdle, 0.2);
     }
     if (fbx.run) {
-      fbx.run.weight = THREE.MathUtils.lerp(fbx.run.weight, targetRun, 0.1);
+      fbx.run.weight = THREE.MathUtils.lerp(fbx.run.weight, targetRun, 0.2);
     }
     if (fbx.jump) {
-      fbx.jump.weight = THREE.MathUtils.lerp(fbx.jump.weight, targetJump, 0.5);
+      fbx.jump.weight = THREE.MathUtils.lerp(fbx.jump.weight, targetJump, 0.2);
     }
   });
 
