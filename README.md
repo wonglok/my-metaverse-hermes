@@ -8,7 +8,7 @@ A multiplayer 3D world that runs in your browser. You walk around, see other peo
 
 - **Explore** — walk around a 3D world with joystick or keyboard controls
 - **See others** — other people in the same place appear as avatars you can see moving in real time
-- **Chat** — send text messages or short voice clips that everyone nearby can hear
+- **Voice Message Chat** — send voice and text messages or short voice clips that everyone nearby can hear
 - **Name yourself** — pick any name you want; change it anytime
 
 https://github.com/user-attachments/assets/9288a33b-dc95-4333-a3d6-fd400a56517f
