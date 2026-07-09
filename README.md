@@ -1,6 +1,10 @@
 # Lambobo Palace
 
-<img width="2752" height="1536" alt="Gemini_Generated_Image_iwghzeiwghzeiwgh" src="https://github.com/user-attachments/assets/9253f689-bec8-4f10-88f2-250a517d8ec8" />
+
+
+https://github.com/user-attachments/assets/c5aaae1b-2b6e-430f-82db-fb0e202c45b7
+
+
 
 A multiplayer 3D world that runs in your browser. You walk around, see other people in real time, and chat with them — no download, no account, just open the link and jump in.
 
@@ -78,3 +82,5 @@ Open `http://localhost:3000` in two browser tabs to see live multiplayer in acti
 ## License
 
 MIT — see [LICENSE](./LICENSE)
+
+<img width="2752" height="1536" alt="Gemini_Generated_Image_iwghzeiwghzeiwgh" src="https://github.com/user-attachments/assets/9253f689-bec8-4f10-88f2-250a517d8ec8" />
