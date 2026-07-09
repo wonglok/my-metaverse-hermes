@@ -1,4 +1,3 @@
-import Redis from "ioredis";
 import type { ServerMessage } from "../../shared/types/realtime";
 
 const REDIS_URL = process.env.METAVERSE_REDIS_URL;
@@ -15,23 +14,48 @@ interface RedisMessage {
   p: ServerMessage; // payload
 }
 
-let pub: Redis | null = null;
-let sub: Redis | null = null;
-
-function getClients(): { pub: Redis; sub: Redis } | null {
+// Lazy-loaded ioredis — only imported when METAVERSE_REDIS_URL is set.
+let _module: typeof import("ioredis") | null = null;
+async function getIoredis(): Promise<typeof import("ioredis") | null> {
   if (!REDIS_URL) return null;
-  if (!pub || !sub) {
-    pub = new Redis(REDIS_URL, { lazyConnect: true });
-    sub = new Redis(REDIS_URL, { lazyConnect: true });
+  if (_module) return _module;
+  try {
+    _module = await import("ioredis");
+    return _module;
+  } catch {
+    return null;
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let pub: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let sub: any = null;
+
+async function getClients(): Promise<{ pub: any; sub: any } | null> {
+  if (!REDIS_URL) return null;
+  if (pub && sub) return { pub, sub };
+
+  const ioredis = await getIoredis();
+  if (!ioredis) return null;
+
+  if (!pub) {
+    pub = new ioredis.default(REDIS_URL, { lazyConnect: true });
     pub.connect().catch(() => {});
+  }
+  if (!sub) {
+    sub = new ioredis.default(REDIS_URL, { lazyConnect: true });
     sub.connect().catch(() => {});
   }
-  return { pub: pub!, sub: sub! };
+  return { pub, sub };
 }
 
 /** Publish a server message to Redis so other instances can rebroadcast it. */
-export function publishEvent(placeId: string, payload: ServerMessage): void {
-  const clients = getClients();
+export async function publishEvent(
+  placeId: string,
+  payload: ServerMessage,
+): Promise<void> {
+  const clients = await getClients();
   if (!clients) return;
   const msg: RedisMessage = { iid: instanceId, pid: placeId, p: payload };
   clients.pub.publish(CHANNEL, JSON.stringify(msg)).catch(() => {});
@@ -41,10 +65,10 @@ export function publishEvent(placeId: string, payload: ServerMessage): void {
  * Subscribe to Redis events. The callback receives `(placeId, payload)` for
  * events originating from other server instances. Returns an unsubscribe fn.
  */
-export function subscribeEvents(
+export async function subscribeEvents(
   cb: (placeId: string, payload: ServerMessage) => void,
-): () => void {
-  const clients = getClients();
+): Promise<() => void> {
+  const clients = await getClients();
   if (!clients) return () => {};
 
   const handler = (_channel: string, message: string) => {

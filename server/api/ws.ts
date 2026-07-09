@@ -26,7 +26,7 @@ let chatSeq = 0;
 
 // ── Redis cross-instance relay ───────────────────────────────────────────
 
-const unsubRedis = subscribeEvents((placeId, payload) => {
+const unsubRedis = await subscribeEvents((placeId, payload) => {
   const peers = roomPeers.get(placeId);
   if (!peers || peers.size === 0) return;
 
