@@ -1,14 +1,80 @@
-import { Mp3Encoder } from "lamejs";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
 
-/** Convert Float32Array audio samples (-1..1) to Int16Array (-32768..32767). */
-function floatToInt16(float32: Float32Array): Int16Array {
-  const out = new Int16Array(float32.length);
-  for (let i = 0; i < float32.length; i++) {
-    const s = Math.max(-1, Math.min(1, float32[i]));
-    out[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
-  }
-  return out;
+let ffmpeg: FFmpeg | null = null;
+let ffmpegLoading: Promise<void> | null = null;
+
+/** Load ffmpeg.wasm (once). Call freely — subsequent calls are no-ops. */
+export async function loadFFmpeg(): Promise<void> {
+  if (ffmpeg?.loaded) return;
+  if (ffmpegLoading) return ffmpegLoading;
+
+  ffmpeg = new FFmpeg();
+  ffmpegLoading = ffmpeg
+    .load({
+      coreURL:
+        "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js",
+      wasmURL:
+        "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm",
+    })
+    .then(() => {
+      ffmpegLoading = null;
+    });
+
+  return ffmpegLoading;
 }
+
+export function isFFmpegReady(): boolean {
+  return ffmpeg?.loaded ?? false;
+}
+
+/**
+ * Encode an audio blob (WebM/Opus from MediaRecorder) to low-bitrate MP3.
+ * Returns base64-encoded MP3 data and the original duration in seconds.
+ */
+export async function encodeAudioToMp3(
+  blob: Blob,
+): Promise<{ base64: string; duration: number }> {
+  if (!ffmpeg?.loaded) {
+    throw new Error("ffmpeg not loaded — call loadFFmpeg() first");
+  }
+
+  // Read blob as Uint8Array for ffmpeg virtual filesystem
+  const arrayBuf = await blob.arrayBuffer();
+  const inputData = new Uint8Array(arrayBuf);
+
+  const inputName = `input_${Date.now()}.webm`;
+  const outputName = `output_${Date.now()}.mp3`;
+
+  await ffmpeg.writeFile(inputName, inputData);
+
+  // Low-bitrate mono MP3 tuned for voice
+  await ffmpeg.exec([
+    "-i",
+    inputName,
+    "-b:a",
+    "32k", // 32 kbps — voice stays clear at this rate
+    "-ac",
+    "1", // mono
+    "-ar",
+    "22050", // 22.05 kHz sample rate
+    "-f",
+    "mp3",
+    outputName,
+  ]);
+
+  const mp3Data = (await ffmpeg.readFile(outputName)) as Uint8Array;
+
+  // Cleanup virtual filesystem
+  await ffmpeg.deleteFile(inputName);
+  await ffmpeg.deleteFile(outputName);
+
+  // Estimate duration from blob size / bitrate (approximate)
+  const duration = blob.size > 0 ? (blob.size * 8) / 128000 : 1;
+
+  return { base64: uint8ToBase64(mp3Data), duration };
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────
 
 /** Convert Uint8Array to base64 string (chunked to avoid stack overflow). */
 function uint8ToBase64(data: Uint8Array): string {
@@ -21,56 +87,7 @@ function uint8ToBase64(data: Uint8Array): string {
   return btoa(binary);
 }
 
-/**
- * Encode an audio blob (WebM/Opus from MediaRecorder) to MP3 base64.
- * Returns the base64-encoded MP3 data and the duration in seconds.
- */
-export async function encodeAudioToMp3(
-  blob: Blob,
-): Promise<{ base64: string; duration: number }> {
-  const audioCtx = new AudioContext();
-  const arrayBuf = await blob.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(arrayBuf);
-  const sampleRate = audioBuffer.sampleRate;
-  const channels = audioBuffer.numberOfChannels;
-  const duration = audioBuffer.duration;
-
-  const encoder = new Mp3Encoder(channels, sampleRate, 64);
-  const sampleSize = 1152;
-
-  const left = audioBuffer.getChannelData(0);
-  const right = channels > 1 ? audioBuffer.getChannelData(1) : null;
-
-  const chunks: Int8Array[] = [];
-
-  for (let i = 0; i < left.length; i += sampleSize) {
-    const leftChunk = floatToInt16(left.subarray(i, i + sampleSize));
-    const rightChunk = right
-      ? floatToInt16(right.subarray(i, i + sampleSize))
-      : undefined;
-    const encoded = encoder.encodeBuffer(leftChunk, rightChunk as Int16Array);
-    if (encoded.length > 0) chunks.push(encoded);
-  }
-
-  const final = encoder.flush();
-  if (final.length > 0) chunks.push(final);
-
-  audioCtx.close();
-
-  const totalLen = chunks.reduce((s, c) => s + c.length, 0);
-  const result = new Uint8Array(totalLen);
-  let offset = 0;
-  for (const c of chunks) {
-    result.set(c, offset);
-    offset += c.length;
-  }
-
-  return { base64: uint8ToBase64(result), duration };
-}
-
-/**
- * Convert a base64 MP3 string to a playable Blob URL.
- */
+/** Convert a base64 MP3 string to a playable Blob URL. */
 export function base64ToAudioUrl(base64: string): string {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);

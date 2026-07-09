@@ -2,7 +2,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import type { ChatMessage } from "../../../shared/types/realtime";
 import { cn } from "@/lib/utils";
 import {
+  loadFFmpeg,
   encodeAudioToMp3,
+  isFFmpegReady,
   base64ToAudioUrl,
   formatDuration,
 } from "@/lib/audio";
@@ -194,7 +196,17 @@ export function ChatWindow({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recIntervalRef = useRef<number>(0);
+  const recElapsedRef = useRef(0);
   const micSupported = typeof MediaRecorder !== "undefined";
+  const [ffmpegReady, setFFmpegReady] = useState(false);
+
+  // Eagerly load ffmpeg.wasm so it's ready when the user records
+  useEffect(() => {
+    if (!micSupported) return;
+    loadFFmpeg()
+      .then(() => setFFmpegReady(true))
+      .catch(() => {}); // Will retry on first record attempt
+  }, [micSupported]);
 
   // Track unread messages + play ding for new ones
   useEffect(() => {
@@ -237,6 +249,17 @@ export function ChatWindow({
 
   async function startRecording() {
     if (!micSupported) return;
+
+    // Ensure ffmpeg is loaded before recording
+    if (!isFFmpegReady()) {
+      try {
+        await loadFFmpeg();
+        setFFmpegReady(true);
+      } catch {
+        return; // ffmpeg failed to load, can't encode
+      }
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
@@ -263,10 +286,14 @@ export function ChatWindow({
 
         try {
           const blob = new Blob(chunksRef.current, { type: mimeType });
-          const { base64, duration } = await encodeAudioToMp3(blob);
+          const { base64 } = await encodeAudioToMp3(blob);
+          const duration = recElapsedRef.current;
           onSendVoice(base64, duration);
-        } catch {
-          // Encoding failed — silently discard
+        } catch (err) {
+          console.error("Voice encoding failed:", err);
+          setRecState({ phase: "idle" });
+          setRecElapsed(0);
+          return;
         }
 
         setRecState({ phase: "idle" });
@@ -283,6 +310,7 @@ export function ChatWindow({
       // Tick every 100ms for elapsed counter
       recIntervalRef.current = window.setInterval(() => {
         const elapsed = (Date.now() - startedAt) / 1000;
+        recElapsedRef.current = elapsed;
         setRecElapsed(elapsed);
         if (elapsed >= MAX_RECORD_SECS) {
           stopRecording(true);
@@ -338,8 +366,8 @@ export function ChatWindow({
       {/* Floating toggle button */}
       <button
         className={cn(
-          "fixed top-12 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
-          "md:bottom-4 md:right-4",
+          "fixed bottom-4 right-[130px] z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
+          "",
         )}
         onClick={toggleOpen}
         aria-label="Toggle chat"
@@ -366,8 +394,8 @@ export function ChatWindow({
       {/* Chat panel */}
       <div
         className={cn(
-          "fixed bottom-4 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
-          "max-sm:bottom-0 max-sm:right-0 max-sm:left-0 max-sm:rounded-b-none max-sm:rounded-t-xl",
+          "fixed bottom-20 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
+          "max-sm:bottom-20 max-sm:right-0 max-sm:left-0 max-sm:rounded-b-none max-sm:rounded-t-xl",
           open
             ? "max-sm:h-[60vh] h-[420px] w-[340px] max-sm:w-full opacity-100"
             : "h-0 w-0 opacity-0 pointer-events-none",
