@@ -1,4 +1,5 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg";
+import path from "path";
 
 let ffmpeg: FFmpeg | null = null;
 let ffmpegLoading: Promise<void> | null = null;
@@ -11,10 +12,11 @@ export async function loadFFmpeg(): Promise<void> {
   ffmpeg = new FFmpeg();
   ffmpegLoading = ffmpeg
     .load({
-      coreURL:
-        "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js",
+      coreURL: "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js",
       wasmURL:
         "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm",
+      // coreURL: path.join(location.origin, "./vendor/ffmpeg/ffmpeg-core.js"),
+      // wasmURL: path.join(location.origin, "./vendor/ffmpeg/ffmpeg-core.wasm"),
     })
     .then(() => {
       ffmpegLoading = null;
@@ -80,9 +82,7 @@ export async function encodeAudioToMp3(
 function uint8ToBase64(data: Uint8Array): string {
   let binary = "";
   for (let i = 0; i < data.byteLength; i += 8192) {
-    binary += String.fromCharCode(
-      ...Array.from(data.subarray(i, i + 8192)),
-    );
+    binary += String.fromCharCode(...Array.from(data.subarray(i, i + 8192)));
   }
   return btoa(binary);
 }
