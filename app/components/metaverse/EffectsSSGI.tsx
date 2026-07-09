@@ -204,8 +204,6 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     };
     frame = requestAnimationFrame(hh);
 
-    console.log(gl);
-
     const loader = new HDRLoader();
     loader.loadAsync(`/assets/place/sky.hdr`).then((sky) => {
       //
@@ -216,11 +214,9 @@ export function EffectsSSGI({ children = null }: { children: any }) {
       const rtt = prm.fromEquirectangular(sky);
 
       scene.environment = rtt.texture;
-      scene.environmentIntensity = 0.5;
+      scene.environmentIntensity = 0.35;
       scene.background = rtt.texture;
       scene.backgroundIntensity = 0.5;
-
-      console.log(sky);
 
       setTimeout(() => {
         setReady(true);

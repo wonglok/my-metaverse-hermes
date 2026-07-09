@@ -378,7 +378,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
       <Canvas
         shadows
         dpr={[1, 1.25]}
-        camera={{ fov: 60, near: 0.1, far: 200 }}
+        camera={{ fov: 60, near: 0.5, far: 500 }}
         gl={async (props) => {
           const renderer = new WebGPURenderer({
             ...(props as any),

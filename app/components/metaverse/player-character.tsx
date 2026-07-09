@@ -117,7 +117,7 @@ export function PlayerCharacter({
       fbx.run.weight = THREE.MathUtils.lerp(fbx.run.weight, targetRun, 0.1);
     }
     if (fbx.jump) {
-      fbx.jump.weight = THREE.MathUtils.lerp(fbx.jump.weight, targetJump, 0.15);
+      fbx.jump.weight = THREE.MathUtils.lerp(fbx.jump.weight, targetJump, 0.5);
     }
   });
 

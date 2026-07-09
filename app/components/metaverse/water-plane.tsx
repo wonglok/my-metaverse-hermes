@@ -3,7 +3,7 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
 import { WaterMesh } from "three/examples/jsm/objects/WaterMesh.js";
 
-const WATER_GEOMETRY = new THREE.PlaneGeometry(500, 500);
+const WATER_GEOMETRY = new THREE.CircleGeometry(1000, 32);
 
 /** Large reflective water plane at y=-10. Time animation handled internally by TSL. */
 export function WaterPlane() {
