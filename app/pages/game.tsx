@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { useMetaverse } from "@/hooks/use-metaverse";
 import { GameWorld } from "@/components/metaverse/world";
 import { ChatWindow } from "@/components/chat/chat-window";
+import { VoiceRecordButton } from "@/components/chat/voice-record-button";
 
 function NameEditor({
   name,
@@ -118,6 +119,11 @@ export function GamePage() {
 
       {/* 3D World */}
       <GameWorld rt={rt} placeId={placeId ?? "default"} />
+
+      {/* Center-bottom mic button */}
+      <div className="absolute bottom-17 left-1/2 -translate-x-1/2 z-30">
+        <VoiceRecordButton onSendVoice={rt.sendVoice} />
+      </div>
 
       {/* Chat overlay */}
       <ChatWindow
