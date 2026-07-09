@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useState } from "react";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js";
+// import { smaa } from "three/examples/jsm/tsl/display/SMAANode.js";
 
 import { pass, mrt, output, emissive, vec4 } from "three/tsl";
 
@@ -71,15 +72,13 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     );
 
     const scenePassColor = scenePass.getTextureNode("output");
-    const scenePassEmissive = scenePass
-      .getTextureNode("emissive")
-      .toInspector("Emissive");
+    const scenePassEmissive = scenePass.getTextureNode("emissive");
 
     const bloomPass = bloom(scenePassEmissive, 80, 1, 0.1);
 
     // composite: scene color + bloom
     const compositePass = vec4(
-      scenePassColor.rgb.add(bloomPass),
+      scenePassColor.rgb.add(bloomPass.rgb),
       scenePassColor.a,
     );
 
