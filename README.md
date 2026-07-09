@@ -1,84 +1,77 @@
-# Nitro + WebSockets Starter
+# Lambobo Palace
 
-[![Nitro](https://img.shields.io/badge/Nitro-black?logo=nitrojs&logoColor=FECE00)](https://nitro.build)
+A multiplayer 3D world that runs in your browser. You walk around, see other people in real time, and chat with them — no download, no account, just open the link and jump in.
 
-Minimal **realtime** starter built with **[Nitro v3](https://nitro.build)**, **React**, **[shadcn/ui](https://ui.shadcn.com)** (on [Base UI](https://base-ui.com) primitives), and the [Vercel Functions WebSockets beta](https://vercel.com/docs/functions/websockets). Move your cursor and everyone in the room sees it live — presence, cursors, and emoji reactions over a single WebSocket connection. No auth, no client SDK.
+## What you can do
 
-## Deploy
+- **Explore** — walk around a 3D world with joystick or keyboard controls
+- **See others** — other people in the same place appear as avatars you can see moving in real time
+- **Chat** — send text messages or short voice clips that everyone nearby can hear
+- **Name yourself** — pick any name you want; change it anytime
+- **Create places** — type any name to make a new room and invite friends
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fwebsockets%2Fnitro&project-name=nitro-websockets&repository-name=nitro-websockets)
+## How it works (the simple version)
 
-No environment variables and no external services — the realtime layer runs entirely on native WebSocket pub/sub (see [How it works](#how-it-works)).
+When you open the site, your browser connects to a server and joins a "place" — think of it like a chat room, but with a 3D map. Your position, movement, name, and messages are sent to everyone else in that place. When you move, other people see you move. When they chat, you see their messages.
 
-## Run locally
+The 3D world is rendered with Three.js. The real-time stuff happens over WebSockets — a technology that keeps a live connection open between your browser and the server, like a phone call instead of sending letters back and forth.
+
+## For developers
+
+### Tech stack
+
+- **Frontend** — React + Three.js (React Three Fiber) for the 3D world
+- **Real-time** — WebSockets via Nitro + crossws
+- **Server** — Nitro v3 running on Vercel Functions
+- **Multi-server** — Redis pub/sub so people on different servers still see each other
+- **Styling** — Tailwind CSS + shadcn/ui
+
+### Project layout
+
+```
+app/                  # Browser-side code (React SPA)
+├── pages/
+│   ├── landing.tsx   # Home page — pick a place to enter
+│   └── game.tsx      # The 3D world — game loop, HUD, chat
+├── components/
+│   ├── metaverse/    # 3D rendering: world, avatars, physics, camera, joystick
+│   ├── chat/         # Chat window and voice recording
+│   └── ui/           # shadcn/ui primitives
+└── hooks/
+    ├── use-realtime.ts   # WebSocket connection, reconnect, heartbeat
+    └── use-metaverse.ts  # Game state: players, chat, movement
+
+shared/
+└── types/realtime.ts     # The message types shared between client and server
+
+server/
+├── api/ws.ts             # WebSocket handler — join, move, chat, voice
+└── utils/
+    ├── identity.ts       # Random name + color for each connection
+    └── redis.ts          # Redis pub/sub for multi-server scaling
+```
+
+### Running locally
 
 ```bash
-npx giget@latest gh:vercel/examples/websockets/nitro my-realtime-app
-cd my-realtime-app
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000` in two browser tabs (or share the URL) to see live cursors, presence, and reactions.
+Open `http://localhost:3000` in two browser tabs to see live multiplayer in action.
 
-## How it works
+### Environment variables
 
-A Vercel Function can accept a WebSocket upgrade and keep a bidirectional connection open. Nitro v3 ships **native WebSocket support** powered by [crossws](https://crossws.h3.dev), enabled with a single flag:
+| Variable | Required | Purpose |
+|---|---|---|
+| `METAVERSE_REDIS_URL` | No | Redis connection for multi-server mode. Without it, everything runs in memory on a single server. |
 
-```ts
-// vite.config.ts
-nitro({ features: { websocket: true } })
-```
+### Adding features
 
-The headline: **one transport, every environment.** The same `defineWebSocketHandler` (`server/api/ws.ts`) at `/api/ws` powers local dev _and_ production — locally through Nitro's dev server, on Vercel through the preset's `crossws/adapters/vercel` bridge, which hands the handler the runtime's socket upgrade. There's no Vercel-specific code path and no `experimental_upgradeWebSocket` bridge to maintain.
-
-All room logic lives in the handler (`server/api/ws.ts`) itself.
-
-### State and pub/sub
-
-Each connection subscribes to a single `room` topic. Cursor moves, reactions, and join/leave events are broadcast with crossws's native `peer.publish` (`server/api/ws.ts`) — no external store and no client SDK. The connected roster is held in memory and replayed to each client in the `welcome` frame on connect, so a reconnect rebuilds it from scratch.
-
-## Architecture
-
-```
-app/                        # React SPA (Vite)
-├── App.tsx                 # page composition
-├── hooks/use-realtime.ts   # connection, reconnect, heartbeat
-├── components/             # LiveCanvas, Cursor, PresenceBar, HeroBackdrop
-└── components/ui/          # shadcn/ui primitives (Base UI)
-
-shared/
-└── types/realtime.ts       # ClientMessage / ServerMessage / Peer — the wire protocol
-
-server/
-├── api/ws.ts               # /api/ws — native WebSocket handler + room pub/sub
-└── utils/
-    └── identity.ts         # anonymous identity (name + color) per connection
-```
-
-The frontend and the Nitro server are wired together by the [`nitro/vite`](https://nitro.build) plugin: `index.html` is served as the SPA renderer for all unmatched routes, and `server/` routes (like `/api/ws`) are matched first.
-
-## Reconnects
-
-WebSocket connections close when a Vercel Function reaches its [maximum duration](https://vercel.com/docs/functions/limitations#max-duration). The client reconnects with exponential backoff and reloads the roster from the `welcome` frame on each new connection — see `use-realtime.ts`.
-
-A lightweight heartbeat (`ping`/`pong`) runs over the same socket so the client can detect a half-open connection (a missed pong) and force a reconnect. On disconnect, the server's `close`/`error` handlers publish a `leave` frame so the peer drops from everyone's roster.
-
-## Adapting this starter
-
-- **Identity** — swap the anonymous name/color in `server/utils/identity.ts` for your authenticated user.
-- **New message types** — add a variant to `ClientMessage` / `ServerMessage` in `shared/types/realtime.ts`, then handle it in the handler `server/api/ws.ts`. The types are shared, so the client and server stay in sync.
-- **Rooms** — key the topic by a room id to isolate multiple rooms. Nitro also derives a pub/sub [namespace](https://nitro.build/docs/websocket#namespaces) from the connection path, so per-room routes work out of the box.
-- **More components** — the UI primitives are [shadcn/ui](https://ui.shadcn.com) built on [Base UI](https://base-ui.com). Copy more from the [Base UI component docs](https://ui.shadcn.com/docs/components/base/button), or scaffold a fresh project with `pnpm dlx shadcn@latest init -b base` to generate them.
-
-## Links
-
-- [Vercel WebSockets docs](https://vercel.com/docs/functions/websockets)
-- [Nitro WebSocket docs](https://nitro.build/docs/websocket)
-- [Nitro Vite plugin](https://nitro.build/docs/quick-start)
-- [shadcn/ui](https://ui.shadcn.com)
-- [Base UI](https://base-ui.com)
+- **New message types** — add a variant to `ClientMessage` / `ServerMessage` in `shared/types/realtime.ts`, then handle it in `server/api/ws.ts`
+- **New 3D objects** — add components under `app/components/metaverse/` and place them in `world.tsx`
+- **New places** — add entries to the `DEMO_PLACES` array in `app/pages/landing.tsx`
 
 ## License
 
-Published under the [MIT](https://github.com/vercel/examples/blob/main/license.md) license.
+MIT — see [LICENSE](./LICENSE)
