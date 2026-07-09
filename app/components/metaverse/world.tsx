@@ -390,7 +390,7 @@ export function GameWorld({ rt, placeId: _placeId }: GameWorldProps) {
             },
           });
 
-          renderer.setPixelRatio(1.25);
+          renderer.setPixelRatio(Math.min(1.25, window.devicePixelRatio));
 
           await renderer.init();
 
