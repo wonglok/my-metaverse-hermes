@@ -1,6 +1,7 @@
 # Lambobo Palace
 
-<img width="2752" height="1536" alt="Gemini_Generated_Image_iwghzeiwghzeiwgh" src="https://github.com/user-attachments/assets/9253f689-bec8-4f10-88f2-250a517d8ec8" />
+https://github.com/user-attachments/assets/9288a33b-dc95-4333-a3d6-fd400a56517f
+
 
 A multiplayer 3D world that runs in your browser. You walk around, see other people in real time, and chat with them — no download, no account, just open the link and jump in.
 
@@ -27,6 +28,10 @@ The 3D world is rendered with Three.js. The real-time stuff happens over WebSock
 - **Server** — Nitro v3 running on Vercel Functions
 - **Multi-server (optional)** — Redis pub/sub for scaling across servers. Works fine without it on a single server
 - **Styling** — Tailwind CSS + shadcn/ui
+
+<img width="2752" height="1536" alt="Gemini_Generated_Image_iwghzeiwghzeiwgh" src="https://github.com/user-attachments/assets/9253f689-bec8-4f10-88f2-250a517d8ec8" />
+
+
 
 ### Project layout
 
