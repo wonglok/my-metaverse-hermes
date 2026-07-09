@@ -296,8 +296,8 @@ function MyScene({
 
       {/* Moving platforms */}
       <KinematicPlatform
-        position={[0, 1.5, -8]}
-        motion={{ axis: "y", amplitude: 2.0, speed: 1.2 }}
+        position={[0, 4, -8]}
+        motion={{ axis: "y", amplitude: 4.0, speed: 0.5 }}
         onReady={registerPlatform}
       >
         <Cylinder castShadow receiveShadow scale={[3, 0.1, 3]}>

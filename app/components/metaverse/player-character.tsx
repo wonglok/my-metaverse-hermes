@@ -94,12 +94,16 @@ export function PlayerCharacter({
 
     // Trigger jump animation from keyboard/joystick input, hold for 0.4s
     if (spacePressedRef?.current) {
-      jumpTimer.current = 1.0;
+      jumpTimer.current = 0.4;
     }
     jumpTimer.current = Math.max(0, jumpTimer.current - delta);
 
     const isOnGround = "isOnGround" in state ? state.isOnGround : true;
-    const jumping = jumpTimer.current > 0 || !isOnGround;
+    const jumping =
+      jumpTimer.current > 0 ||
+      (!isMe && !isOnGround) ||
+      spacePressedRef?.current;
+
     const walking = state.walkAnimation !== 0;
 
     const targetIdle = !jumping && !walking ? 1 : 0;
