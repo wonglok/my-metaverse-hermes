@@ -47,16 +47,16 @@ export async function encodeAudioToMp3(
 
   await ffmpeg.writeFile(inputName, inputData);
 
-  // Low-bitrate mono MP3 tuned for voice
+  // Low-bitrate mono MP3 tuned for voice — ~16kbps
   await ffmpeg.exec([
     "-i",
     inputName,
     "-b:a",
-    "32k", // 32 kbps — voice stays clear at this rate
+    "16k",
     "-ac",
-    "1", // mono
+    "1",
     "-ar",
-    "22050", // 22.05 kHz sample rate
+    "16000",
     "-f",
     "mp3",
     outputName,
@@ -69,7 +69,7 @@ export async function encodeAudioToMp3(
   await ffmpeg.deleteFile(outputName);
 
   // Estimate duration from blob size / bitrate (approximate)
-  const duration = blob.size > 0 ? (blob.size * 8) / 128000 : 1;
+  const duration = blob.size > 0 ? (blob.size * 8) / 16000 : 1;
 
   return { base64: uint8ToBase64(mp3Data), duration };
 }
