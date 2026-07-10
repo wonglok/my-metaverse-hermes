@@ -421,7 +421,7 @@ export function ChatWindow({
       {/* Floating toggle button */}
       <button
         className={cn(
-          "fixed bottom-4 right-[100px] z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
+          "fixed top-17 right-2 z-[99999999] flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
           "",
         )}
         onClick={toggleOpen}
@@ -449,7 +449,7 @@ export function ChatWindow({
       {/* Chat panel */}
       <div
         className={cn(
-          "fixed bottom-20 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
+          "fixed top-20 right-4 z-40 flex flex-col overflow-hidden rounded-xl border bg-card shadow-2xl transition-all duration-200",
           "max-sm:bottom-20 max-sm:right-0 max-sm:left-0 max-sm:rounded-b-none max-sm:rounded-t-xl",
           open
             ? "max-sm:h-[60vh] h-[520px] w-[380px] max-sm:w-full opacity-100"
