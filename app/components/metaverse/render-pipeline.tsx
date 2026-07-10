@@ -40,8 +40,10 @@ export function EffectsSSGI({ children = null }: { children: any }) {
     stats.dom.style.touchAction = "none";
     stats.dom.style.top = "";
     stats.dom.style.left = "";
-    stats.dom.style.right = "0px";
-    stats.dom.style.top = "0px";
+    stats.dom.style.left = "15px";
+    stats.dom.style.top = "50px";
+    stats.dom.style.borderRadius = "10px";
+    stats.dom.style.overflow = "hidden";
 
     if (gl?.domElement?.parentElement?.parentElement) {
       gl.domElement.parentElement.parentElement.appendChild(stats.dom);
