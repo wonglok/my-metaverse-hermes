@@ -137,7 +137,7 @@ export function GamePage() {
       <GameWorld placeId={pid} />
 
       {/* Center-bottom mic button */}
-      <div className="absolute right-4 bottom-30  lg:bottom-17 lg:left-1/2 lg:-translate-x-1/2 z-30">
+      <div className="absolute left-[50%] bottom-5 lg:bottom-17 lg:left-1/2 -translate-x-1/2 z-30">
         <VoiceRecordButton onSendVoice={sendVoice} />
       </div>
 
