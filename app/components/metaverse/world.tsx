@@ -235,6 +235,7 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
     lookAt3a.copy(player.position);
     lookAt3a.y += LOOK_TARGET_Y;
     lookAt3b.lerp(lookAt3a, 0.1);
+
     lookAt3b.x = lookAt3a.x;
     lookAt3b.z = lookAt3a.z;
 
