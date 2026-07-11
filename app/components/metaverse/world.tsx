@@ -154,6 +154,8 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
 
   // Directional light follows player
   const lightOffset = useMemo(() => new THREE.Vector3(10, 35, 50), []);
+  const lookAt3a = useMemo(() => new THREE.Vector3(0, 0, 0), []);
+  const lookAt3b = useMemo(() => new THREE.Vector3(0, 0, 0), []);
 
   useFrame(() => {
     const player = playerRef.current;
@@ -229,7 +231,18 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
 
     const camT = 1 - Math.exp(-LERP_SPEED * clampedDelta);
     camera.position.lerp(new THREE.Vector3(targetX, targetY, targetZ), camT);
-    camera.lookAt(px, py + LOOK_TARGET_Y, pz);
+
+    lookAt3a.copy(player.position);
+    lookAt3a.y += LOOK_TARGET_Y;
+    lookAt3b.lerp(lookAt3a, 0.1);
+    lookAt3b.x = lookAt3a.x;
+    lookAt3b.z = lookAt3a.z;
+
+    camera.lookAt(lookAt3b);
+
+    //
+    //
+    // camera.lookAt(px, py + LOOK_TARGET_Y, pz);
   });
 
   // Platform registration helper
