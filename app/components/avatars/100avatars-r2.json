@@ -25,12 +25,8 @@
           "107_PyreSorcerer.vrm",
           "107_PyreSorcerer_Voxel.vrm"
         ],
-        "thumbnails": [
-          "107_PyreSorcerer_thumbnail.gif"
-        ],
-        "textures": [
-          "107_PyreSorcerer_Voxel_Texture.png"
-        ]
+        "thumbnails": ["107_PyreSorcerer_thumbnail.gif"],
+        "textures": ["107_PyreSorcerer_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/PEr2Dv1Ds_Y_c4iXhLJwdA9GZHXC8CkK-QWipd17gOo"
@@ -61,12 +57,8 @@
           "142_CoolPan.vrm",
           "142_CoolPan_Voxel.vrm"
         ],
-        "thumbnails": [
-          "142_CoolPan_thumbnail.gif"
-        ],
-        "textures": [
-          "142_CoolPan_Voxel_Texture.png"
-        ]
+        "thumbnails": ["142_CoolPan_thumbnail.gif"],
+        "textures": ["142_CoolPan_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/BlyKjSLHUvR5I3bL9GDViTFEe7_Mv4E_48wjOj4U4Wg"
@@ -97,12 +89,8 @@
           "163_face_Voxel.vrm",
           "163_face_Voxel.fbx"
         ],
-        "thumbnails": [
-          "163_face_thumbnail.gif"
-        ],
-        "textures": [
-          "163_face_Voxel_Texture.png"
-        ]
+        "thumbnails": ["163_face_thumbnail.gif"],
+        "textures": ["163_face_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/IFEgyMvBULimH_2oigkYmijDHGXr-Jmz6zlfaOjXl6M"
@@ -133,12 +121,8 @@
           "135_CoffeeMaker.vrm",
           "135_CoffeeMaker_Voxel.vrm"
         ],
-        "thumbnails": [
-          "135_CoffeeMaker_thumbnail.gif"
-        ],
-        "textures": [
-          "135_CoffeeMaker_Voxel_Texture.png"
-        ]
+        "thumbnails": ["135_CoffeeMaker_thumbnail.gif"],
+        "textures": ["135_CoffeeMaker_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/cWHrmDFydPynhWYUuPfsrQbHx5Szqr7RVKxSUsDmKXo"
@@ -169,12 +153,8 @@
           "119_CaptainLantern.fbx",
           "119_CaptainLantern_Voxel.vrm"
         ],
-        "thumbnails": [
-          "119_CaptainLantern_thumbnail.gif"
-        ],
-        "textures": [
-          "119_CaptainLantern_Voxel_Texture.png"
-        ]
+        "thumbnails": ["119_CaptainLantern_thumbnail.gif"],
+        "textures": ["119_CaptainLantern_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/fHT1XNa90x-2lIEghJEhzE2B-YrBrwDCA00zZ-XC2q0"
@@ -205,9 +185,7 @@
           "196_Cool_Fridge.vrm",
           "196_Cool_Fridge_Voxel.vrm"
         ],
-        "thumbnails": [
-          "196_Cool_Fridge_thumbnail.gif"
-        ],
+        "thumbnails": ["196_Cool_Fridge_thumbnail.gif"],
         "textures": [
           "196_Cool_FridgeTexture.png",
           "196_Cool_Fridge_Voxel_Texture.png"
@@ -242,12 +220,8 @@
           "173_CircleBoi_Voxel.vrm",
           "173_CircleBoi_Voxel.fbx"
         ],
-        "thumbnails": [
-          "173_CircleBoi_thumbnail.gif"
-        ],
-        "textures": [
-          "173_CircleBoi_Voxel_Texture.png"
-        ]
+        "thumbnails": ["173_CircleBoi_thumbnail.gif"],
+        "textures": ["173_CircleBoi_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/1uaCMYsDUR-l2Ys-wwx5vNtFHMkDa-GlvgOesoQht1Y"
@@ -278,52 +252,13 @@
           "146_CoolTrash.vrm",
           "146_CoolTrash_Voxel.vrm"
         ],
-        "thumbnails": [
-          "146_CoolTrash_thumbnail.gif"
-        ],
-        "textures": [
-          "146_CoolTrash_Voxel_Texture.png"
-        ]
+        "thumbnails": ["146_CoolTrash_thumbnail.gif"],
+        "textures": ["146_CoolTrash_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/rV0EMToENW1Vgdkzl3KoEwH7R4haP7fDYB8YY8Fpnlo"
   },
-  {
-    "id": "fac8f977-e7f5-417d-b255-fed02b52efb0",
-    "name": "CoolPoo",
-    "project_id": "100avatars-r2",
-    "description": "Avatar 176: CoolPoo",
-    "model_file_url": "https://arweave.net/4V0lF-3oQafJ7-65R5Rk7TWemHFvmof2GFwzlYq0H6s",
-    "format": "VRM",
-    "is_public": true,
-    "is_draft": false,
-    "created_at": "2025-03-11T16:41:51.490Z",
-    "updated_at": "2025-03-11T16:41:51.490Z",
-    "metadata": {
-      "number": "176",
-      "series": "R2",
-      "alternateModels": {
-        "fbx": "https://arweave.net/44J1KMauEIjtwXO7Xxox3JQ_Wy4qT1M4-3zV_p7XQ-Y",
-        "voxel_fbx": "https://arweave.net/mOxolBP_O2_c12HPet7BEr28UkD-Q4QLSS8ENZGzQPg",
-        "voxel_vrm": "https://arweave.net/1D2bkaxirJq9EEJbawEZwHLaRd5h7LhDX2GWWdyzxHc"
-      },
-      "ardriveFiles": {
-        "models": [
-          "176_CoolPoo.fbx",
-          "176_CoolPoo_Voxel.fbx",
-          "176_CoolPoo.vrm",
-          "176_CoolPoo_Voxel.vrm"
-        ],
-        "thumbnails": [
-          "176_CoolPoo_thumbnail.gif"
-        ],
-        "textures": [
-          "176_CoolPoo_Voxel_Texture.png"
-        ]
-      }
-    },
-    "thumbnail_url": "https://arweave.net/6fiUgOuW7IwZW85F4DRB50IquDriQqt_UKBigpL7iAQ"
-  },
+
   {
     "id": "e9db9cae-d1c0-414b-a16d-737343e456c1",
     "name": "CosmicPerson",
@@ -350,12 +285,8 @@
           "129_CosmicPerson.vrm",
           "129_CosmicPerson_Voxel.vrm"
         ],
-        "thumbnails": [
-          "129_CosmicPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "129_CosmicPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["129_CosmicPerson_thumbnail.gif"],
+        "textures": ["129_CosmicPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/kIGhXfV25A9hxyMGiYlCOgsGivFqrVFwRMHJZi_tVoM"
@@ -386,12 +317,8 @@
           "180_SrStickbug.vrm",
           "180_SrStickbug_Voxel.vrm"
         ],
-        "thumbnails": [
-          "180_SrStickbug_thumbnail.gif"
-        ],
-        "textures": [
-          "180_SrStickbug_Voxel_Texture.png"
-        ]
+        "thumbnails": ["180_SrStickbug_thumbnail.gif"],
+        "textures": ["180_SrStickbug_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/pUq7qLfMFe2G8phUOMja6ESfwB9Xyt19gSKaByC2tvY"
@@ -422,12 +349,8 @@
           "190_CoolCow.vrm",
           "190_CoolCow_Voxel.vrm"
         ],
-        "thumbnails": [
-          "190_CoolCow_thumbnail.gif"
-        ],
-        "textures": [
-          "190_CoolCow_Voxel_Texture.png"
-        ]
+        "thumbnails": ["190_CoolCow_thumbnail.gif"],
+        "textures": ["190_CoolCow_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/RnDpQG8vDvCDUv3OEApEpfyLL9aHlwVJCngyshL29CM"
@@ -458,12 +381,8 @@
           "198_CoolStickman.vrm",
           "198_CoolStickman_Voxel.vrm"
         ],
-        "thumbnails": [
-          "198_CoolStickman_thumbnail.gif"
-        ],
-        "textures": [
-          "198_CoolStickman_Voxel_Texture.png"
-        ]
+        "thumbnails": ["198_CoolStickman_thumbnail.gif"],
+        "textures": ["198_CoolStickman_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/VGtXVFkHmU5Nutiz1kJQ9KQlBnd4V9kjzTbuFDqVKBk"
@@ -494,12 +413,8 @@
           "118_COOLFRIES.vrm",
           "118_COOLFRIES_Voxel.vrm"
         ],
-        "thumbnails": [
-          "118_COOLFRIES_thumbnail.gif"
-        ],
-        "textures": [
-          "118_COOLFRIES_Voxel_Texture.png"
-        ]
+        "thumbnails": ["118_COOLFRIES_thumbnail.gif"],
+        "textures": ["118_COOLFRIES_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/cfUgNQGNsffZWv05bJekwL8hWk4dpHmkP3RKlyHODbA"
@@ -530,12 +445,8 @@
           "110_UnicornPerson.vrm",
           "110_UnicornPerson_Voxel.vrm"
         ],
-        "thumbnails": [
-          "110_UnicornPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "110_UnicornPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["110_UnicornPerson_thumbnail.gif"],
+        "textures": ["110_UnicornPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/oX_RgqEZx-DbYgUiiYhxpaNH1CFcNAUPjRCuSRCJJaY"
@@ -566,12 +477,8 @@
           "174_CylinderHead_Voxel.vrm",
           "174_CylinderHead_Voxel.fbx"
         ],
-        "thumbnails": [
-          "174_CylinderHead_thumbnail.gif"
-        ],
-        "textures": [
-          "174_CylinderHead_Voxel_Texture.png"
-        ]
+        "thumbnails": ["174_CylinderHead_thumbnail.gif"],
+        "textures": ["174_CylinderHead_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/09cxP1QT3Fog8JFR4r1qE1EboS_SVaxZB6RiVVWXTKk"
@@ -602,12 +509,8 @@
           "123_SUPERSUP.vrm",
           "123_SUPERSUP_Voxel.vrm"
         ],
-        "thumbnails": [
-          "123_SUPERSUP_thumbnail.gif"
-        ],
-        "textures": [
-          "123_SUPERSUP_Voxel_Texture.png"
-        ]
+        "thumbnails": ["123_SUPERSUP_thumbnail.gif"],
+        "textures": ["123_SUPERSUP_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/rhfOH2r806zMiN0g7UQYh2c0emykhCMyIZm8omYb9rA"
@@ -638,12 +541,8 @@
           "156_COOLPIN.vrm",
           "156_COOLPIN_Voxel.vrm"
         ],
-        "thumbnails": [
-          "156_COOLPIN_thumbnail.gif"
-        ],
-        "textures": [
-          "156_COOLPIN_Voxel_Texture.png"
-        ]
+        "thumbnails": ["156_COOLPIN_thumbnail.gif"],
+        "textures": ["156_COOLPIN_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/GWKTTbKO-Qidd5YcvfwjDUFirSzt_YmDCpVR-eSxvoE"
@@ -674,12 +573,8 @@
           "162_CoolTaco.vrm",
           "162_CoolTaco_Voxel.fbx"
         ],
-        "thumbnails": [
-          "162_CoolTaco_thumbnail.gif"
-        ],
-        "textures": [
-          "162_CoolTaco_Voxel_Texture.png"
-        ]
+        "thumbnails": ["162_CoolTaco_thumbnail.gif"],
+        "textures": ["162_CoolTaco_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/DlOIQTwCk_-hvHeRmLRR1BAjRU3WC-aqusQO7KIue-w"
@@ -710,12 +605,8 @@
           "105_GoldfishBagPerson.vrm",
           "105_GoldfishBagPerson_Voxel.vrm"
         ],
-        "thumbnails": [
-          "105_GoldfishBagPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "105_GoldfishBagPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["105_GoldfishBagPerson_thumbnail.gif"],
+        "textures": ["105_GoldfishBagPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/RCWOE4Y3LNHyi7qykAT0SUISHCi6x4-zL43Oxyr_tmI"
@@ -746,12 +637,8 @@
           "139_CoolHydrant.vrm",
           "139_CoolHydrant_Voxel.vrm"
         ],
-        "thumbnails": [
-          "139_CoolHydrant_thumbnail.gif"
-        ],
-        "textures": [
-          "139_CoolHydrant_Voxel_Texture.png"
-        ]
+        "thumbnails": ["139_CoolHydrant_thumbnail.gif"],
+        "textures": ["139_CoolHydrant_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/U75zOyT8g2XWqUYEHOawOpfu-nM1biw2H2A42Bubj3o"
@@ -782,12 +669,8 @@
           "145_CoolPirate_Voxel.fbx",
           "145_CoolPirate_Voxel.vrm"
         ],
-        "thumbnails": [
-          "145_CoolPirate_thumbnail.gif"
-        ],
-        "textures": [
-          "145_CoolPirate_Voxel_Texture.png"
-        ]
+        "thumbnails": ["145_CoolPirate_thumbnail.gif"],
+        "textures": ["145_CoolPirate_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/xohKEjCNVvTxscKi8PraA-yVanniHik9pMdETdjXNDI"
@@ -818,12 +701,8 @@
           "153_CoolBarrel.vrm",
           "153_CoolBarrel_Voxel.vrm"
         ],
-        "thumbnails": [
-          "153_CoolBarrel_thumbnail.gif"
-        ],
-        "textures": [
-          "153_CoolBarrel_Voxel_Texture.png"
-        ]
+        "thumbnails": ["153_CoolBarrel_thumbnail.gif"],
+        "textures": ["153_CoolBarrel_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/AfF4x2jrQJxHcx_GymQTT7o8kN0XFdonbTA4dc_HWiQ"
@@ -854,12 +733,8 @@
           "134_CoolKetchup.vrm",
           "134_CoolKetchup_Voxel.vrm"
         ],
-        "thumbnails": [
-          "134_CoolKetchup_thumbnail.gif"
-        ],
-        "textures": [
-          "134_CoolKetchup_Voxel_Texture.png"
-        ]
+        "thumbnails": ["134_CoolKetchup_thumbnail.gif"],
+        "textures": ["134_CoolKetchup_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/sixYC_oV9EMFV4L6paw1JG_ebYGh8tCKBkjdjigtSs4"
@@ -890,12 +765,8 @@
           "197_CoolBell.vrm",
           "197_CoolBell_Voxel.vrm"
         ],
-        "thumbnails": [
-          "197_CoolBell_thumbnail.gif"
-        ],
-        "textures": [
-          "197_CoolBell_Voxel_Texture.png"
-        ]
+        "thumbnails": ["197_CoolBell_thumbnail.gif"],
+        "textures": ["197_CoolBell_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/mFUR4q2cHTpEk6y2ygesaXDbes2AW5bsZO-DFp8P2KI"
@@ -926,12 +797,8 @@
           "185_TastySandwich_Voxel.vrm",
           "185_TastySandwich.vrm"
         ],
-        "thumbnails": [
-          "185_TastySandwich_thumbnail.gif"
-        ],
-        "textures": [
-          "185_TastySandwich_Voxel_Texture.png"
-        ]
+        "thumbnails": ["185_TastySandwich_thumbnail.gif"],
+        "textures": ["185_TastySandwich_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/baewhTA5OadMUi8gsUufJLMx1q8GT1Az9VzYqwRZu7E"
@@ -962,12 +829,8 @@
           "155_CoolPlunger.vrm",
           "155_CoolPlunger_Voxel.vrm"
         ],
-        "thumbnails": [
-          "155_CoolPlunger_thumbnail.gif"
-        ],
-        "textures": [
-          "155_CoolPlunger_Voxel_Texture.png"
-        ]
+        "thumbnails": ["155_CoolPlunger_thumbnail.gif"],
+        "textures": ["155_CoolPlunger_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/cBqyH0LISlNl9xEiSfAUmchNHtXoMPoLWKW1W9RE2H0"
@@ -998,9 +861,7 @@
           "167_Mister_Contract_Voxel.vrm",
           "167_Mister_Contract_Voxel.fbx"
         ],
-        "thumbnails": [
-          "167_Mister_Contract_thumbnail.gif"
-        ],
+        "thumbnails": ["167_Mister_Contract_thumbnail.gif"],
         "textures": [
           "167_Mister_Contract_Voxel_Texture.png",
           "167_Mister_ContractTexture.png"
@@ -1035,12 +896,8 @@
           "154_CoolMail.vrm",
           "154_CoolMail_Voxel.vrm"
         ],
-        "thumbnails": [
-          "154_CoolMail_thumbnail.gif"
-        ],
-        "textures": [
-          "154_CoolMail_Voxel_Texture.png"
-        ]
+        "thumbnails": ["154_CoolMail_thumbnail.gif"],
+        "textures": ["154_CoolMail_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/wcDxlutv1SuyayMZrSxye9m207ij1BNhrAfVCUvf6AI"
@@ -1071,12 +928,8 @@
           "191_CoolSteak.vrm",
           "191_CoolSteak_Voxel.vrm"
         ],
-        "thumbnails": [
-          "191_CoolSteak_thumbnail.gif"
-        ],
-        "textures": [
-          "191_CoolSteak_Voxel_Texture.png"
-        ]
+        "thumbnails": ["191_CoolSteak_thumbnail.gif"],
+        "textures": ["191_CoolSteak_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/3-hq5qNpbk2LuNlf3ccQ9iLshaog9_3qvtqd9Ms96Yw"
@@ -1107,12 +960,8 @@
           "114_WopWop.vrm",
           "114_WopWop_Voxel.vrm"
         ],
-        "thumbnails": [
-          "114_WopWop_thumbnail.gif"
-        ],
-        "textures": [
-          "114_WopWop_Voxel_Texture.png"
-        ]
+        "thumbnails": ["114_WopWop_thumbnail.gif"],
+        "textures": ["114_WopWop_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/dGOrYW-QIvK7YAqqV1R2k6GEWOjRjk2ldD9JKaBQ47s"
@@ -1143,12 +992,8 @@
           "138_CoolRamen.vrm",
           "138_CoolRamen_Voxel.vrm"
         ],
-        "thumbnails": [
-          "138_CoolRamen_thumbnail.gif"
-        ],
-        "textures": [
-          "138_CoolRamen_Voxel_Texture.png"
-        ]
+        "thumbnails": ["138_CoolRamen_thumbnail.gif"],
+        "textures": ["138_CoolRamen_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/BBvHoN5mo8YRZeXAY816rAwwQHw_4AA65-2WsjimmXU"
@@ -1179,12 +1024,8 @@
           "144_RealCake.vrm",
           "144_RealCake_Voxel.vrm"
         ],
-        "thumbnails": [
-          "144_RealCake_thumbnail.gif"
-        ],
-        "textures": [
-          "144_RealCake_Voxel_Texture.png"
-        ]
+        "thumbnails": ["144_RealCake_thumbnail.gif"],
+        "textures": ["144_RealCake_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/QJ4m9S2oAgZX6El_uh8WB9fiVWbQAXyG9Q75Z87AL7M"
@@ -1215,12 +1056,8 @@
           "128_RandomBoi_Voxel.vrm",
           "128_RandomBoi.vrm"
         ],
-        "thumbnails": [
-          "128_RandomBoi_thumbnail.gif"
-        ],
-        "textures": [
-          "128_RandomBoi_Voxel_Texture.png"
-        ]
+        "thumbnails": ["128_RandomBoi_thumbnail.gif"],
+        "textures": ["128_RandomBoi_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/QGdpzzXmMZ5ZxI3FFix1PvK9AOhV8oef77fK6F9Fh7s"
@@ -1251,12 +1088,8 @@
           "116_MrZurbZurb.vrm",
           "116_MrZurbZurb_Voxel.vrm"
         ],
-        "thumbnails": [
-          "116_MrZurbZurb_thumbnail.gif"
-        ],
-        "textures": [
-          "116_MrZurbZurb_Voxel_Texture.png"
-        ]
+        "thumbnails": ["116_MrZurbZurb_thumbnail.gif"],
+        "textures": ["116_MrZurbZurb_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/L_u0WvK65fj5yDwp7FQpU_KAeTghk-MCfEqHvC8wfss"
@@ -1287,12 +1120,8 @@
           "101_EggBOY_Voxel.vrm",
           "101_EggBOY.vrm"
         ],
-        "thumbnails": [
-          "101_EggBOY_thumbnail.gif"
-        ],
-        "textures": [
-          "101_EggBOY_Voxel_Texture.png"
-        ]
+        "thumbnails": ["101_EggBOY_thumbnail.gif"],
+        "textures": ["101_EggBOY_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/KBytq-ntliV5pM9Zy_2oSH0OQ54opPnKSUJfQZqLoXU"
@@ -1323,12 +1152,8 @@
           "136_SlugPerson_Voxel.vrm",
           "136_SlugPerson.vrm"
         ],
-        "thumbnails": [
-          "136_SlugPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "136_SlugPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["136_SlugPerson_thumbnail.gif"],
+        "textures": ["136_SlugPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/SMgE_jSQEpK2PTW8GuImIJ9Z7ItABJkR9kX3ERHIx_E"
@@ -1359,12 +1184,8 @@
           "193_CoolCola.vrm",
           "193_CoolCola_Voxel.vrm"
         ],
-        "thumbnails": [
-          "193_CoolCola_thumbnail.gif"
-        ],
-        "textures": [
-          "193_CoolCola_Voxel_Texture.png"
-        ]
+        "thumbnails": ["193_CoolCola_thumbnail.gif"],
+        "textures": ["193_CoolCola_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/RMWL4e0oroxDN0fi0phUW74cc1Hpq2-srLdwyPTt1ic"
@@ -1395,12 +1216,8 @@
           "111_SquareCosmonaut.vrm",
           "111_SquareCosmonaut_Voxel.vrm"
         ],
-        "thumbnails": [
-          "111_SquareCosmonaut_thumbnail.gif"
-        ],
-        "textures": [
-          "111_SquareCosmonaut_Voxel_Texture.png"
-        ]
+        "thumbnails": ["111_SquareCosmonaut_thumbnail.gif"],
+        "textures": ["111_SquareCosmonaut_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/sgDeGrkZAhtxmL_Dj8Z_b-z1jS5e-MFJpjhHE66pfAE"
@@ -1431,12 +1248,8 @@
           "160_ChillPenguin.vrm",
           "160_ChillPenguin_Voxel.vrm"
         ],
-        "thumbnails": [
-          "160_ChillPenguin_thumbnail.gif"
-        ],
-        "textures": [
-          "160_ChillPenguin_Voxel_Texture.png"
-        ]
+        "thumbnails": ["160_ChillPenguin_thumbnail.gif"],
+        "textures": ["160_ChillPenguin_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/IIaNU4y7r4oOHrj3Zx_E-KZX7Ye9RHht9Q2K0i61BtQ"
@@ -1467,12 +1280,8 @@
           "131_CoolShovel_Voxel.vrm",
           "131_CoolShovel.vrm"
         ],
-        "thumbnails": [
-          "131_CoolShovel_thumbnail.gif"
-        ],
-        "textures": [
-          "131_CoolShovel_Voxel_Texture.png"
-        ]
+        "thumbnails": ["131_CoolShovel_thumbnail.gif"],
+        "textures": ["131_CoolShovel_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/58laJvoh7XgXxohL-9ZWaBz1mGeV1UfnutWFdDPQQ2w"
@@ -1503,12 +1312,8 @@
           "194_CoolCloud.vrm",
           "194_CoolCloud_Voxel.vrm"
         ],
-        "thumbnails": [
-          "194_CoolCloud_thumbnail.gif"
-        ],
-        "textures": [
-          "194_CoolCloud_Voxel_Texture.png"
-        ]
+        "thumbnails": ["194_CoolCloud_thumbnail.gif"],
+        "textures": ["194_CoolCloud_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/fw0sg5RpBHClQhlXSqfaQtZDrjfASlCSpPwcXCFb2wo"
@@ -1539,12 +1344,8 @@
           "148_EYECleric.vrm",
           "148_EYECleric_Voxel.vrm"
         ],
-        "thumbnails": [
-          "148_EYECleric_thumbnail.gif"
-        ],
-        "textures": [
-          "148_EYECleric_Voxel_Texture.png"
-        ]
+        "thumbnails": ["148_EYECleric_thumbnail.gif"],
+        "textures": ["148_EYECleric_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/3nPj6Ut307sqFPZJTJZvT69ffqz7kdajXMV0hgIYDQ4"
@@ -1575,12 +1376,8 @@
           "106_CoolLoops.vrm",
           "106_CoolLoops_Voxel.vrm"
         ],
-        "thumbnails": [
-          "106_CoolLoops_thumbnail.gif"
-        ],
-        "textures": [
-          "106_CoolLoops_Voxel_Texture.png"
-        ]
+        "thumbnails": ["106_CoolLoops_thumbnail.gif"],
+        "textures": ["106_CoolLoops_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/FW6pBDPyPoOoudQxmvfRdu4y5ZljptmZlf-jYE56__4"
@@ -1611,12 +1408,8 @@
           "108_ChillPalm.vrm",
           "108_ChillPalm_Voxel.vrm"
         ],
-        "thumbnails": [
-          "108_ChillPalm_thumbnail.gif"
-        ],
-        "textures": [
-          "108_ChillPalm_Voxel_Texture.png"
-        ]
+        "thumbnails": ["108_ChillPalm_thumbnail.gif"],
+        "textures": ["108_ChillPalm_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/HoPy8ZSSy9sKKipqZH3RhnpwZLjHuny16q0eQ5OmVa4"
@@ -1647,12 +1440,8 @@
           "141_CoolDrumstick.vrm",
           "141_CoolDrumstick_Voxel.vrm"
         ],
-        "thumbnails": [
-          "141_CoolDrumstick_thumbnail.gif"
-        ],
-        "textures": [
-          "141_CoolDrumstick_Voxel_Texture.png"
-        ]
+        "thumbnails": ["141_CoolDrumstick_thumbnail.gif"],
+        "textures": ["141_CoolDrumstick_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/Kwm_wIs6W0ePcESP33Qs87gWthfcB8OcLeqg33ae1II"
@@ -1683,12 +1472,8 @@
           "150_COOLAsparagoose.vrm",
           "150_COOLAsparagoose_Voxel.vrm"
         ],
-        "thumbnails": [
-          "150_COOLAsparagoose_thumbnail.gif"
-        ],
-        "textures": [
-          "150_COOLAsparagoose_Voxel_Texture.png"
-        ]
+        "thumbnails": ["150_COOLAsparagoose_thumbnail.gif"],
+        "textures": ["150_COOLAsparagoose_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/HrwLJGx4KK4o1TjpcQpFKFIstfEa2wZ0sRrh9cIzhCI"
@@ -1719,12 +1504,8 @@
           "184_CoolCoconut_Voxel.fbx",
           "184_CoolCoconut_Voxel.vrm"
         ],
-        "thumbnails": [
-          "184_CoolCoconut_thumbnail.gif"
-        ],
-        "textures": [
-          "184_CoolCoconut_Voxel_Texture.png"
-        ]
+        "thumbnails": ["184_CoolCoconut_thumbnail.gif"],
+        "textures": ["184_CoolCoconut_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/N4aX3BChmlPX-ITq6HVNB5zuoTpk6Fwo6ynjXGYHfH8"
@@ -1755,12 +1536,8 @@
           "187_CoolPeanut.vrm",
           "187_CoolPeanut_Voxel.vrm"
         ],
-        "thumbnails": [
-          "187_CoolPeanut_thumbnail.gif"
-        ],
-        "textures": [
-          "187_CoolPeanut_Voxel_Texture.png"
-        ]
+        "thumbnails": ["187_CoolPeanut_thumbnail.gif"],
+        "textures": ["187_CoolPeanut_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/Kd8jVWywg5r-d8p1-HpXl6nG31X3LDZIkIP2xjLYKpE"
@@ -1791,12 +1568,8 @@
           "113_EYEWizard.vrm",
           "113_EYEWizard_Voxel.vrm"
         ],
-        "thumbnails": [
-          "113_EYEWizard_thumbnail.gif"
-        ],
-        "textures": [
-          "113_EYEWizard_Voxel_Texture.png"
-        ]
+        "thumbnails": ["113_EYEWizard_thumbnail.gif"],
+        "textures": ["113_EYEWizard_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/d_qd1FEH6Y7WKufbjV_XCeisgCdL4Wc-vtir9o3hhqs"
@@ -1827,12 +1600,8 @@
           "179_CoolBunny.vrm",
           "179_CoolBunny_Voxel.vrm"
         ],
-        "thumbnails": [
-          "179_CoolBunny_thumbnail.gif"
-        ],
-        "textures": [
-          "179_CoolBunny_Voxel_Texture.png"
-        ]
+        "thumbnails": ["179_CoolBunny_thumbnail.gif"],
+        "textures": ["179_CoolBunny_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/DfWQx24mE31M0p6cYiTkmdgxtE70q89HebQxz8961tU"
@@ -1863,12 +1632,8 @@
           "164_PencilBeing_Voxel.vrm",
           "164_PencilBeing_Voxel.fbx"
         ],
-        "thumbnails": [
-          "164_PencilBeing_thumbnail.gif"
-        ],
-        "textures": [
-          "164_PencilBeing_Voxel_Texture.png"
-        ]
+        "thumbnails": ["164_PencilBeing_thumbnail.gif"],
+        "textures": ["164_PencilBeing_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/a1Ktrp3boN9JZQ3QKBzEP1aI852ICr1jD4Z8_2Wm30s"
@@ -1899,12 +1664,8 @@
           "137_CoolCan.vrm",
           "137_CoolCan_Voxel.vrm"
         ],
-        "thumbnails": [
-          "137_CoolCan_thumbnail.gif"
-        ],
-        "textures": [
-          "137_CoolCan_Voxel_Texture.png"
-        ]
+        "thumbnails": ["137_CoolCan_thumbnail.gif"],
+        "textures": ["137_CoolCan_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/XWmgGHkba9rTNC2yQi9u66CIoapGa6HqtpFoiteVlOI"
@@ -1935,12 +1696,8 @@
           "182_CoolTurtle.vrm",
           "182_CoolTurtle_Voxel.vrm"
         ],
-        "thumbnails": [
-          "182_CoolTurtle_thumbnail.gif"
-        ],
-        "textures": [
-          "182_CoolTurtle_Voxel_Texture.png"
-        ]
+        "thumbnails": ["182_CoolTurtle_thumbnail.gif"],
+        "textures": ["182_CoolTurtle_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/ygh2zAZD66TPmBYBr_77kalUAkx9ve6wYwXQH0qB-Gg"
@@ -1971,12 +1728,8 @@
           "200_CoolPolygonalMind.vrm",
           "200_CoolPolygonalMind_Voxel.vrm"
         ],
-        "thumbnails": [
-          "200_CoolPolygonalMind_thumbnail.gif"
-        ],
-        "textures": [
-          "200_CoolPolygonalMind_Voxel_Texture.png"
-        ]
+        "thumbnails": ["200_CoolPolygonalMind_thumbnail.gif"],
+        "textures": ["200_CoolPolygonalMind_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/YSH3OtLlujXs580zCel-pQBFa_lKW3j9refZ18BNF1s"
@@ -2007,12 +1760,8 @@
           "161_CoolPancake_Voxel.vrm",
           "161_CoolPancake_Voxel.fbx"
         ],
-        "thumbnails": [
-          "161_CoolPancake_thumbnail.gif"
-        ],
-        "textures": [
-          "161_CoolPancake_Voxel_Texture.png"
-        ]
+        "thumbnails": ["161_CoolPancake_thumbnail.gif"],
+        "textures": ["161_CoolPancake_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/kMYWiqvzDQYpycCnJZmpZySdyWMf2OFHi-PfoMR4_nM"
@@ -2043,12 +1792,8 @@
           "188_CoolPotato.vrm",
           "188_CoolPotato_Voxel.vrm"
         ],
-        "thumbnails": [
-          "188_CoolPotato_thumbnail.gif"
-        ],
-        "textures": [
-          "188_CoolPotato_Voxel_Texture.png"
-        ]
+        "thumbnails": ["188_CoolPotato_thumbnail.gif"],
+        "textures": ["188_CoolPotato_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/71Ww-SP7VhN-KqXUuiLeNhtTpEBeMJcjQ562PbsRHHA"
@@ -2079,12 +1824,8 @@
           "104_SunflowerPerson.vrm",
           "104_SunflowerPerson_Voxel.vrm"
         ],
-        "thumbnails": [
-          "104_SunflowerPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "104_SunflowerPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["104_SunflowerPerson_thumbnail.gif"],
+        "textures": ["104_SunflowerPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/n7wjq-1MOyFQxy4sds5v1-k1cy1KSII6BjYvVr98L6k"
@@ -2115,12 +1856,8 @@
           "120_SharkPerson.vrm",
           "120_SharkPerson_Voxel.vrm"
         ],
-        "thumbnails": [
-          "120_SharkPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "120_SharkPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["120_SharkPerson_thumbnail.gif"],
+        "textures": ["120_SharkPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/hrCpCVV3N6G0IlEBZC5blFW2kf3y1UFrSZBK9GpgAME"
@@ -2151,12 +1888,8 @@
           "170_CoolBoard_Voxel.vrm",
           "170_CoolBoard_Voxel.fbx"
         ],
-        "thumbnails": [
-          "170_CoolBoard_thumbnail.gif"
-        ],
-        "textures": [
-          "170_CoolBoard_Voxel_Texture.png"
-        ]
+        "thumbnails": ["170_CoolBoard_thumbnail.gif"],
+        "textures": ["170_CoolBoard_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/S1EqKrcLUEENV9PfAxsIUYVmlLlPeIt6TEhG8Ekd6kQ"
@@ -2187,12 +1920,8 @@
           "181_HourglassPerson.vrm",
           "181_HourglassPerson_Voxel.vrm"
         ],
-        "thumbnails": [
-          "181_HourglassPerson_thumbnail.gif"
-        ],
-        "textures": [
-          "181_HourglassPerson_Voxel_Texture.png"
-        ]
+        "thumbnails": ["181_HourglassPerson_thumbnail.gif"],
+        "textures": ["181_HourglassPerson_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/6lIx6_-Jonhoqjs6WAArp0CwUMXe1E9xttLwOdXZXjY"
@@ -2223,12 +1952,8 @@
           "165_CoolCandle_Voxel.vrm",
           "165_CoolCandle_Voxel.fbx"
         ],
-        "thumbnails": [
-          "165_CoolCandle_thumbnail.gif"
-        ],
-        "textures": [
-          "165_CoolCandle_Voxel_Texture.png"
-        ]
+        "thumbnails": ["165_CoolCandle_thumbnail.gif"],
+        "textures": ["165_CoolCandle_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/RyVTd8VZcWR0PzSL4GtYBQYDDjnBbLm8Ciw6AWv8NHI"
@@ -2259,12 +1984,8 @@
           "157_AwesomeLemon_Voxel.vrm",
           "157_AwesomeLemon.vrm"
         ],
-        "thumbnails": [
-          "157_AwesomeLemon_thumbnail.gif"
-        ],
-        "textures": [
-          "157_AwesomeLemon_Voxel.png"
-        ]
+        "thumbnails": ["157_AwesomeLemon_thumbnail.gif"],
+        "textures": ["157_AwesomeLemon_Voxel.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/DiWqbGFFmgM8F7JeO-ndtg5rePpEzSioyXzjDAcPVVg"
@@ -2295,12 +2016,8 @@
           "192_CoolWashingMachine.vrm",
           "192_CoolWashingMachine_Voxel.vrm"
         ],
-        "thumbnails": [
-          "192_CoolWashingMachine_thumbnail.gif"
-        ],
-        "textures": [
-          "192_CoolWashingMachine_Voxel_Texture.png"
-        ]
+        "thumbnails": ["192_CoolWashingMachine_thumbnail.gif"],
+        "textures": ["192_CoolWashingMachine_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/yBdyx0nuL9EdCVzLtX6H4HkcLVxLCUyLB_jhOYGLowM"
@@ -2331,12 +2048,8 @@
           "117_SlimRingo.vrm",
           "117_SlimRingo_Voxel.vrm"
         ],
-        "thumbnails": [
-          "117_SlimRingo_thumbnail.gif"
-        ],
-        "textures": [
-          "117_SlimRingo_Voxel_Texture.png"
-        ]
+        "thumbnails": ["117_SlimRingo_thumbnail.gif"],
+        "textures": ["117_SlimRingo_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/GLvpqzOOhg4QWgvVX_W6MtzaDOXPb1Ej1KWzeGtaoFk"
@@ -2367,12 +2080,8 @@
           "133_CoolBaguette_Voxel.vrm",
           "133_CoolBaguette.vrm"
         ],
-        "thumbnails": [
-          "133_CoolBaguette_thumbnail.gif"
-        ],
-        "textures": [
-          "133_CoolBaguette_Voxel_Texture.png"
-        ]
+        "thumbnails": ["133_CoolBaguette_thumbnail.gif"],
+        "textures": ["133_CoolBaguette_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/s0kQ9XWFgYlFoMPnFqR2z0rcn9NoDaMYRp1c1YVUP-4"
@@ -2403,12 +2112,8 @@
           "175_CoolOrange_Voxel.vrm",
           "175_CoolOrange_Voxel.fbx"
         ],
-        "thumbnails": [
-          "175_CoolOrange_thumbnail.gif"
-        ],
-        "textures": [
-          "175_CoolOrange_Voxel.png"
-        ]
+        "thumbnails": ["175_CoolOrange_thumbnail.gif"],
+        "textures": ["175_CoolOrange_Voxel.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/BZo0hb9dlt1HR17N10RZmweiknP-a_vv1Jv2XvCpY5o"
@@ -2439,12 +2144,8 @@
           "152_COOLTNT_Voxel.vrm",
           "152_COOLTNT_Voxel.fbx"
         ],
-        "thumbnails": [
-          "152_COOLTNT_thumbnail.gif"
-        ],
-        "textures": [
-          "152_COOLTNT_Voxel_Texture.png"
-        ]
+        "thumbnails": ["152_COOLTNT_thumbnail.gif"],
+        "textures": ["152_COOLTNT_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/Dqx-0FqkNfIBfgD7zP-U-sY_hiL6H3QnbhifeH2lEtA"
@@ -2475,12 +2176,8 @@
           "166_CoolBroom.vrm",
           "166_CoolBroom_Voxel.vrm"
         ],
-        "thumbnails": [
-          "166_CoolBroom_thumbnail.gif"
-        ],
-        "textures": [
-          "166_CoolBroom_Voxel_Texture.png"
-        ]
+        "thumbnails": ["166_CoolBroom_thumbnail.gif"],
+        "textures": ["166_CoolBroom_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/aRndDfxjPpIWDrpbyLKa9KR_Rq4E7qk0g0b3gQ1yDU4"
@@ -2511,12 +2208,8 @@
           "126_CoolBattery.vrm",
           "126_CoolBattery_Voxel.vrm"
         ],
-        "thumbnails": [
-          "126_CoolBattery_thumbnail.gif"
-        ],
-        "textures": [
-          "126_CoolBattery_Voxel_Texture.png"
-        ]
+        "thumbnails": ["126_CoolBattery_thumbnail.gif"],
+        "textures": ["126_CoolBattery_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/tEUNkquNjog83EuLAAKm-j8ognZBjc5n73cEkE1-xNk"
@@ -2547,12 +2240,8 @@
           "183_CoolBed.vrm",
           "183_CoolBed_Voxel.vrm"
         ],
-        "thumbnails": [
-          "183_CoolBed_thumbnail.gif"
-        ],
-        "textures": [
-          "183_CoolBed_Voxel_Texture.png"
-        ]
+        "thumbnails": ["183_CoolBed_thumbnail.gif"],
+        "textures": ["183_CoolBed_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/b5O_UFKZIybKxHh4rg3Qq4-d2lsbVzhMkt8tP3KOqjo"
@@ -2583,12 +2272,8 @@
           "195_CoolShield.vrm",
           "195_CoolShield_Voxel.vrm"
         ],
-        "thumbnails": [
-          "195_CoolShield_thumbnail.gif"
-        ],
-        "textures": [
-          "195_CoolShield_Voxel_Texture.png"
-        ]
+        "thumbnails": ["195_CoolShield_thumbnail.gif"],
+        "textures": ["195_CoolShield_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/2hd5MQsCCfkkLcQF8Gc2YmkxJ2l0-jsxPnokSH5yuwE"
@@ -2619,12 +2304,8 @@
           "151_LupLup_Voxel.vrm",
           "151_LupLup_Voxel.fbx"
         ],
-        "thumbnails": [
-          "151_LupLup_thumbnail.gif"
-        ],
-        "textures": [
-          "151_LupLup_Voxel_Texture.png"
-        ]
+        "thumbnails": ["151_LupLup_thumbnail.gif"],
+        "textures": ["151_LupLup_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/fyIm5O5iFuIAGLK4YfM2Vs_ZXrGgg3HIb5nfs1jOzLE"
@@ -2655,12 +2336,8 @@
           "102_Bizdude.vrm",
           "102_Bizdude_Voxel.vrm"
         ],
-        "thumbnails": [
-          "102_Bizdude_thumbnail.gif"
-        ],
-        "textures": [
-          "102_Bizdude_Voxel_Texture.png"
-        ]
+        "thumbnails": ["102_Bizdude_thumbnail.gif"],
+        "textures": ["102_Bizdude_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/Ji3o5O51UMjtEaqRF15436i5wNhNokosHHcpNjOpj1g"
@@ -2691,12 +2368,8 @@
           "115_LaloBOT.vrm",
           "115_LaloBOT_Voxel.vrm"
         ],
-        "thumbnails": [
-          "115_LaloBOT_thumbnail.gif"
-        ],
-        "textures": [
-          "115_LaloBOT_Voxel_Texture.png"
-        ]
+        "thumbnails": ["115_LaloBOT_thumbnail.gif"],
+        "textures": ["115_LaloBOT_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/KDPNQS3cuwbQDTJsu1dS1-c6dkupZ-cwZ4WK9B1xaoo"
@@ -2727,12 +2400,8 @@
           "158_SuperICEPOP.vrm",
           "158_SuperICEPOP_Voxel.vrm"
         ],
-        "thumbnails": [
-          "158_SuperICEPOP_thumbnail.gif"
-        ],
-        "textures": [
-          "158_SuperICEPOP_Voxel_Texture.png"
-        ]
+        "thumbnails": ["158_SuperICEPOP_thumbnail.gif"],
+        "textures": ["158_SuperICEPOP_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/38CEu1BdLEJbkUHMXbCjprs7b8guUyy3-CbNhGUZY5Y"
@@ -2763,12 +2432,8 @@
           "147_Wonkerls.vrm",
           "147_Wonkerls_Voxel.vrm"
         ],
-        "thumbnails": [
-          "147_Wonkerls_thumbnail.gif"
-        ],
-        "textures": [
-          "147_Wonkerls_Voxel_Texture.png"
-        ]
+        "thumbnails": ["147_Wonkerls_thumbnail.gif"],
+        "textures": ["147_Wonkerls_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/mDC1glyoHASX7PS_GjVTXsI52iQ25T6Z7wqRS0W_KCk"
@@ -2799,12 +2464,8 @@
           "121_Balloony.fbx",
           "121_Balloony_Voxel.vrm"
         ],
-        "thumbnails": [
-          "121_Balloony_thumbnail.gif"
-        ],
-        "textures": [
-          "121_Balloony_Voxel_Texture.png"
-        ]
+        "thumbnails": ["121_Balloony_thumbnail.gif"],
+        "textures": ["121_Balloony_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/SVa5uvWItHXJDuIH5qUDj3y0eUsK7IaCLocouoTkOi4"
@@ -2835,12 +2496,8 @@
           "169_CoolCone_Voxel.vrm",
           "169_CoolCone_Voxel.fbx"
         ],
-        "thumbnails": [
-          "169_CoolCone_thumbnail.gif"
-        ],
-        "textures": [
-          "169_CoolCone_Voxel_Texture.png"
-        ]
+        "thumbnails": ["169_CoolCone_thumbnail.gif"],
+        "textures": ["169_CoolCone_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/9jK-taPDRmJa2HYSBNnoVYlzcx0592l6Bks7KdN0Wjo"
@@ -2871,12 +2528,8 @@
           "168_EYEFighter_Voxel.vrm",
           "168_EYEFighter_Voxel.fbx"
         ],
-        "thumbnails": [
-          "168_EYEFighter_thumbnail.gif"
-        ],
-        "textures": [
-          "168_EYEFighter_Voxel_Texture.png"
-        ]
+        "thumbnails": ["168_EYEFighter_thumbnail.gif"],
+        "textures": ["168_EYEFighter_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/w5PLeaFVxEetfkrL_ru72CoMU-majicqUJC4IulXdDs"
@@ -2907,12 +2560,8 @@
           "109_AlienSkeleton.vrm",
           "109_AlienSkeleton_Voxel.vrm"
         ],
-        "thumbnails": [
-          "109_AlienSkeleton_thumbnail.gif"
-        ],
-        "textures": [
-          "109_AlienSkeleton_Voxel_Texture.png"
-        ]
+        "thumbnails": ["109_AlienSkeleton_thumbnail.gif"],
+        "textures": ["109_AlienSkeleton_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/rOksMHorvQ_K67vZ_6_jZ-rZX9PZpuzk1gt6LWs7m1A"
@@ -2943,12 +2592,8 @@
           "159_CoolDrink.vrm",
           "159_CoolDrink_Voxel.vrm"
         ],
-        "thumbnails": [
-          "159_CoolDrink_thumbnail.gif"
-        ],
-        "textures": [
-          "159_CoolDrink_Voxel_Texture.png"
-        ]
+        "thumbnails": ["159_CoolDrink_thumbnail.gif"],
+        "textures": ["159_CoolDrink_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/39EA5smWfddklmqWY3gxN4UZhV_kuB8kWtVmcgWyFeI"
@@ -2979,12 +2624,8 @@
           "127_CoolJam.vrm",
           "127_CoolJam_Voxel.vrm"
         ],
-        "thumbnails": [
-          "127_CoolJam_thumbnail.gif"
-        ],
-        "textures": [
-          "127_CoolJam_Voxel_Texture.png"
-        ]
+        "thumbnails": ["127_CoolJam_thumbnail.gif"],
+        "textures": ["127_CoolJam_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/IPRDxjuPbjqxMU6SvpKq_rsKEWzhpYsu6LYKnHe-HDw"
@@ -3015,12 +2656,8 @@
           "199_CoolMoneyBag.vrm",
           "199_CoolMoneyBag_Voxel.vrm"
         ],
-        "thumbnails": [
-          "199_CoolMoneyBag_thumbnail.gif"
-        ],
-        "textures": [
-          "199_CoolMoneyBag_Voxel_Texture.png"
-        ]
+        "thumbnails": ["199_CoolMoneyBag_thumbnail.gif"],
+        "textures": ["199_CoolMoneyBag_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/138xfIfDtaHZFfK9B3MJFcNKvTzQSTLL8GzYb8nZNq0"
@@ -3051,12 +2688,8 @@
           "143_CoolGuitar.vrm",
           "143_CoolGuitar_Voxel.vrm"
         ],
-        "thumbnails": [
-          "143_CoolGuitar_thumbnail.gif"
-        ],
-        "textures": [
-          "143_CoolGuitar_Voxel_Texture.png"
-        ]
+        "thumbnails": ["143_CoolGuitar_thumbnail.gif"],
+        "textures": ["143_CoolGuitar_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/3MzlPHSjkICIOECSs4m1LvFuhYEEahWkDQ-AksK3_Ks"
@@ -3087,12 +2720,8 @@
           "125_HodlerKing.vrm",
           "125_HodlerKing_Voxel.vrm"
         ],
-        "thumbnails": [
-          "125_HodlerKing_thumbnail.gif"
-        ],
-        "textures": [
-          "125_HodlerKing_Voxel_Texture.png"
-        ]
+        "thumbnails": ["125_HodlerKing_thumbnail.gif"],
+        "textures": ["125_HodlerKing_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/LIh_ZIrZbcmgO3DTLbyQBLqxvOk9OKIixIgIyUHjt7I"
@@ -3123,12 +2752,8 @@
           "186_CoolSword.vrm",
           "186_CoolSword_Voxel.vrm"
         ],
-        "thumbnails": [
-          "186_CoolSword_thumbnail.gif"
-        ],
-        "textures": [
-          "186_CoolSword_Voxel_Texture.png"
-        ]
+        "thumbnails": ["186_CoolSword_thumbnail.gif"],
+        "textures": ["186_CoolSword_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/ptk_yygJ4fDyHEp_VJnZX2L5Jq-J8jUSzprvZNnZfII"
@@ -3159,12 +2784,8 @@
           "122_Mowchok.vrm",
           "122_Mowchok_Voxel.vrm"
         ],
-        "thumbnails": [
-          "122_Mowchok_thumbnail.gif"
-        ],
-        "textures": [
-          "122_Mowchok_Voxel_Texture.png"
-        ]
+        "thumbnails": ["122_Mowchok_thumbnail.gif"],
+        "textures": ["122_Mowchok_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/pRFiHLQyP_6hlwN5z0tONSd1hjl9Peh_aQFjt9aHsbM"
@@ -3195,12 +2816,8 @@
           "177_MoonGirl.vrm",
           "177_MoonGirl_Voxel.vrm"
         ],
-        "thumbnails": [
-          "177_MoonGirl_thumbnail.gif"
-        ],
-        "textures": [
-          "177_MoonGirl_Voxel_Texture.png"
-        ]
+        "thumbnails": ["177_MoonGirl_thumbnail.gif"],
+        "textures": ["177_MoonGirl_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/lE0qNr1nyImkyMF9JZBcDw28BLQNAn9ipbO8avSPywc"
@@ -3231,12 +2848,8 @@
           "140_BubbleBoi.vrm",
           "140_BubbleBoi_Voxel.vrm"
         ],
-        "thumbnails": [
-          "140_BubbleBoi_thumbnail.gif"
-        ],
-        "textures": [
-          "140_BubbleBoi_Voxel_Texture.png"
-        ]
+        "thumbnails": ["140_BubbleBoi_thumbnail.gif"],
+        "textures": ["140_BubbleBoi_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/edqpeWh_27uAgyyL5riDjyCoXe9HRjKhdDYltZK43_4"
@@ -3267,12 +2880,8 @@
           "149_EYESummoner.vrm",
           "149_EYESummoner_Voxel.vrm"
         ],
-        "thumbnails": [
-          "149_EYESummoner_thumbnail.gif"
-        ],
-        "textures": [
-          "149_EYESummoner_Voxel_Texture.png"
-        ]
+        "thumbnails": ["149_EYESummoner_thumbnail.gif"],
+        "textures": ["149_EYESummoner_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/sLLZ_EjlL6ACHRfxJLsBUrP6V7o71IlPM9v77ReGC_A"
@@ -3303,12 +2912,8 @@
           "103_CoolPizza_Voxel.vrm",
           "103_CoolPizza.vrm"
         ],
-        "thumbnails": [
-          "103_CoolPizza_thumbnail.gif"
-        ],
-        "textures": [
-          "103_CoolPizza_Voxel_Texture.png"
-        ]
+        "thumbnails": ["103_CoolPizza_thumbnail.gif"],
+        "textures": ["103_CoolPizza_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/SqX68Pyto0TrWaOHdSs76n2gIuvpikW8MrrFZQhjMVE"
@@ -3339,12 +2944,8 @@
           "171_CoolDoor_Voxel.vrm",
           "171_CoolDoor.vrm"
         ],
-        "thumbnails": [
-          "171_CoolDoor_thumbnail.gif"
-        ],
-        "textures": [
-          "171_CoolDoor_Voxel_Texture.png"
-        ]
+        "thumbnails": ["171_CoolDoor_thumbnail.gif"],
+        "textures": ["171_CoolDoor_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/EZJNmcOQ6Ja3tPYH6REcTvZiG4hkEQXB3mrobgKu74w"
@@ -3375,12 +2976,8 @@
           "178_DOPEScrewdriver.vrm",
           "178_DOPEScrewdriver_Voxel.vrm"
         ],
-        "thumbnails": [
-          "178_DOPEScrewdriver_thumbnail.gif"
-        ],
-        "textures": [
-          "178_DOPEScrewdriver_Voxel_Texture.png"
-        ]
+        "thumbnails": ["178_DOPEScrewdriver_thumbnail.gif"],
+        "textures": ["178_DOPEScrewdriver_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/ybsSvtOpr1edNX_YXo2iZVabtf2DP2BeLtL_AC43i_Y"
@@ -3411,12 +3008,8 @@
           "132_SaltySalt.vrm",
           "132_SaltySalt_Voxel.vrm"
         ],
-        "thumbnails": [
-          "132_SaltySalt_thumbnail.gif"
-        ],
-        "textures": [
-          "132_SaltySalt_Voxel_Texture.png"
-        ]
+        "thumbnails": ["132_SaltySalt_thumbnail.gif"],
+        "textures": ["132_SaltySalt_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/KPT7JHDoMYkqHD4HwdD4Qe1V9bzU9bIAGY-7GLgtUN8"
@@ -3447,12 +3040,8 @@
           "124_CosmicDweller_Voxel.vrm",
           "124_CosmicDweller.vrm"
         ],
-        "thumbnails": [
-          "124_CosmicDweller_thumbnail.gif"
-        ],
-        "textures": [
-          "124_CosmicDweller_Voxel_Texture.png"
-        ]
+        "thumbnails": ["124_CosmicDweller_thumbnail.gif"],
+        "textures": ["124_CosmicDweller_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/Pdu_a-6V4OyRZaCPxPPRT3ZtPF3iPvpKk_mfIVrq0pM"
@@ -3483,12 +3072,8 @@
           "112_BanHammerDude.vrm",
           "112_BanHammerDude_Voxel.vrm"
         ],
-        "thumbnails": [
-          "112_BanHammerDude_thumbnail.gif"
-        ],
-        "textures": [
-          "112_BanHammerDude_Voxel_Texture.png"
-        ]
+        "thumbnails": ["112_BanHammerDude_thumbnail.gif"],
+        "textures": ["112_BanHammerDude_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/ZzQeKhjvra7ut1r0-gpCK_1VqRMTZOPHFAN41THkY_4"
@@ -3519,12 +3104,8 @@
           "189_CoolEgg.vrm",
           "189_CoolEgg_Voxel.vrm"
         ],
-        "thumbnails": [
-          "189_CoolEgg_thumbnail.gif"
-        ],
-        "textures": [
-          "189_CoolEgg_Voxel_Texture.png"
-        ]
+        "thumbnails": ["189_CoolEgg_thumbnail.gif"],
+        "textures": ["189_CoolEgg_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/JkfaQjhUU50ibtuYnEwV-Xunrz7wnb_59XNkxt8MU7M"
@@ -3555,12 +3136,8 @@
           "172_ConeheadBeing_Voxel.vrm",
           "172_ConeheadBeing_Voxel.fbx"
         ],
-        "thumbnails": [
-          "172_ConeheadBeing_thumbnail.gif"
-        ],
-        "textures": [
-          "172_ConeheadBeing_Voxel_Texture.png"
-        ]
+        "thumbnails": ["172_ConeheadBeing_thumbnail.gif"],
+        "textures": ["172_ConeheadBeing_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/Kl6Dlm6DNma0mGgPo27GUHitmzDcZCexGomJgxuoWO8"
@@ -3591,12 +3168,8 @@
           "130_FalconDude_Voxel.vrm",
           "130_FalconDude.vrm"
         ],
-        "thumbnails": [
-          "130_FalconDude_thumbnail.gif"
-        ],
-        "textures": [
-          "130_FalconDude_Voxel_Texture.png"
-        ]
+        "thumbnails": ["130_FalconDude_thumbnail.gif"],
+        "textures": ["130_FalconDude_Voxel_Texture.png"]
       }
     },
     "thumbnail_url": "https://arweave.net/_FhrZ-az851ZrK6V1CjwEzpACjwzjD0bkVDNcVl_jbE"

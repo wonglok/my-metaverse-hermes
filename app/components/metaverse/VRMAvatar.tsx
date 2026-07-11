@@ -131,8 +131,20 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <h2 className="text-sm font-medium text-white">
-          Choose Avatar ({visible.length})
+          <div>Choose Avatar ({visible.length})</div>
+          <div>
+            <div className="text-xs">
+              Powerd by{" "}
+              <a
+                className="underline text-blue-300"
+                href={`https://github.com/toxsam/open-source-avatars`}
+              >
+                Open Source Avatars Github
+              </a>
+            </div>
+          </div>
         </h2>
+
         <button
           onClick={onClose}
           className="rounded-lg p-1 text-white/50 transition hover:bg-white/10 hover:text-white"
