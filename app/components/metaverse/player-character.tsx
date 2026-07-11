@@ -6,12 +6,42 @@ import { Center, Gltf, Text3D, useFBX, useGLTF } from "@react-three/drei";
 import { helveticaReglar } from "./helvetica";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { PlayerPhysicsState } from "./physics";
+import { VRMAvatar } from "./VRMAvatar";
+import { FBXAvatar } from "./FBXAvatar";
+
+/**
+ * Local player mesh with walk cycle animation.
+ * RoundedBoxGeometry body/arms/head matching vanilla code style.
+ */
+export function PlayerCharacter(props: PlayerCharacterProps) {
+  //
+
+  console.log(props);
+  //
+
+  return (
+    <>
+      {/*  */}
+      {/*  */}
+      <VRMAvatar
+        //
+        {...props}
+        state={props.state}
+        avatarUrl={`https://arweave.net/Ea1KXujzJatQgCFSMzGOzp_UtHqB1pyia--U3AtkMAY`}
+      ></VRMAvatar>
+      {/*  */}
+      {/*  */}
+      {/*  */}
+    </>
+  );
+}
 
 interface PlayerCharacterProps {
   name?: string;
   state: PlayerPhysicsState | { walkAnimation: number };
   isMe: boolean;
-  spacePressedRef?: React.MutableRefObject<boolean>;
+  spacePressedRef?: React.RefObject<boolean>;
+  avatarUrl?: string | null;
 }
 
 let useFBXAction = (
@@ -34,11 +64,7 @@ let useFBXAction = (
   return action;
 };
 
-/**
- * Local player mesh with walk cycle animation.
- * RoundedBoxGeometry body/arms/head matching vanilla code style.
- */
-export function PlayerCharacter({
+export function LambAvatar({
   name = "me",
   state,
   isMe = true,

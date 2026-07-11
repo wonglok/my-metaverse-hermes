@@ -4,6 +4,7 @@ import { useMetaverseStore } from "@/stores/metaverse";
 import { GameWorld } from "@/components/metaverse/world";
 import { ChatWindow } from "@/components/chat/chat-window";
 import { VoiceRecordButton } from "@/components/chat/voice-record-button";
+import { VRMPicker } from "@/components/metaverse/VRMAvatar";
 
 function NameEditor({
   name,
@@ -85,6 +86,14 @@ export function GamePage() {
   const sendChat = useMetaverseStore((s) => s.sendChat);
   const sendVoice = useMetaverseStore((s) => s.sendVoice);
 
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() =>
+    localStorage.getItem("lambobo-avatar-url")
+  );
+  const [avatarThumb, setAvatarThumb] = useState<string | null>(() =>
+    localStorage.getItem("lambobo-avatar-thumb")
+  );
+  const [showPicker, setShowPicker] = useState(false);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
       {/* Status bar */}
@@ -106,35 +115,90 @@ export function GamePage() {
           Leave
         </button>
 
-        <div className="flex items-center gap-3 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
-          <span className="font-medium text-white">{pid}</span>
-          <span className="text-white/40">|</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur">
+            <span className="font-medium text-white">{pid}</span>
+            <span className="text-white/40">|</span>
 
-          {self && (
-            <>
-              <NameEditor name={self.name} onSave={sendName} />
-              <span className="text-white/40">|</span>
-            </>
-          )}
+            {self && (
+              <>
+                <NameEditor name={self.name} onSave={sendName} />
+                <span className="text-white/40">|</span>
+              </>
+            )}
 
-          <span
-            className={
-              status === "connected"
-                ? "text-green-400"
-                : status === "connecting"
-                  ? "text-yellow-400"
-                  : "text-red-400"
-            }
+            <span
+              className={
+                status === "connected"
+                  ? "text-green-400"
+                  : status === "connecting"
+                    ? "text-yellow-400"
+                    : "text-red-400"
+              }
+            >
+              {status}
+            </span>
+            <span className="text-white/40">|</span>
+            <span>{onlineCount} online</span>
+          </div>
+
+          {/* Avatar picker button */}
+          <button
+            onClick={() => setShowPicker((v) => !v)}
+            className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-white/80 backdrop-blur transition hover:bg-white/10 ${
+              showPicker ? "bg-white/15" : "bg-black/50"
+            }`}
+            title="Change avatar"
           >
-            {status}
-          </span>
-          <span className="text-white/40">|</span>
-          <span>{onlineCount} online</span>
+            {avatarThumb ? (
+              <img
+                src={avatarThumb}
+                alt="Avatar"
+                className="size-6 rounded-full object-cover ring-1 ring-white/20"
+              />
+            ) : (
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
+              </svg>
+            )}
+            <span className="hidden sm:inline">Avatar</span>
+          </button>
         </div>
       </div>
 
+      {/* Avatar picker overlay */}
+      {showPicker && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setShowPicker(false)}
+          />
+          <div className="absolute right-4 top-12 z-50">
+            <VRMPicker
+              selectedId={avatarUrl ?? undefined}
+              onSelect={(item) => {
+                setAvatarUrl(item.model_file_url);
+                setAvatarThumb(item.thumbnail_url);
+                localStorage.setItem("lambobo-avatar-url", item.model_file_url);
+                localStorage.setItem("lambobo-avatar-thumb", item.thumbnail_url);
+                setShowPicker(false);
+              }}
+              onClose={() => setShowPicker(false)}
+            />
+          </div>
+        </>
+      )}
+
       {/* 3D World */}
-      <GameWorld placeId={pid} />
+      <GameWorld placeId={pid} avatarUrl={avatarUrl} />
 
       {/* Center-bottom mic button */}
       <div className="absolute left-[50%] bottom-5 lg:bottom-17 lg:left-1/2 -translate-x-1/2 z-30">

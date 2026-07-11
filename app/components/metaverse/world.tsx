@@ -45,6 +45,7 @@ extend(THREE as any);
 
 interface GameWorldProps {
   placeId: string;
+  avatarUrl?: string | null;
 }
 
 interface MySceneProps {
@@ -61,9 +62,10 @@ interface MySceneProps {
     angle: number;
     force: number;
   }>;
+  avatarUrl?: string | null;
 }
 
-function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
+function MyScene({ keysRef, spacePressedRef, joystickInputRef, avatarUrl }: MySceneProps) {
   const playerRef = useRef<THREE.Group>(null);
   const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
@@ -340,6 +342,7 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
               isMe={true}
               state={physicsStateRef.current}
               spacePressedRef={spacePressedRef}
+              avatarUrl={avatarUrl}
             />
           </group>
         </Suspense>
@@ -369,7 +372,7 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef }: MySceneProps) {
   );
 }
 
-export function GameWorld({ placeId: _placeId }: GameWorldProps) {
+export function GameWorld({ placeId: _placeId, avatarUrl }: GameWorldProps) {
   //
 
   const keysRef = useRef({
@@ -420,6 +423,7 @@ export function GameWorld({ placeId: _placeId }: GameWorldProps) {
               keysRef={keysRef}
               spacePressedRef={spacePressedRef}
               joystickInputRef={joystickInputRef}
+              avatarUrl={avatarUrl}
             />
           </Suspense>
         </EffectsSSGI>
