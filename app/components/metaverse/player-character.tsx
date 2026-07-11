@@ -7,31 +7,22 @@ import { helveticaReglar } from "./helvetica";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { PlayerPhysicsState } from "./physics";
 import { VRMAvatar } from "./VRMAvatar";
-import { FBXAvatar } from "./FBXAvatar";
+import { useAvatarStore } from "@/stores/avatar";
+
+const DEFAULT_AVATAR_URL =
+  "https://arweave.net/Ea1KXujzJatQgCFSMzGOzp_UtHqB1pyia--U3AtkMAY";
 
 /**
  * Local player mesh with walk cycle animation.
  * RoundedBoxGeometry body/arms/head matching vanilla code style.
  */
 export function PlayerCharacter(props: PlayerCharacterProps) {
-  //
-
-  console.log(props);
-  //
+  const storedUrl = useAvatarStore((s) => s.avatarUrl);
+  const avatarUrl = storedUrl || DEFAULT_AVATAR_URL;
 
   return (
     <>
-      {/*  */}
-      {/*  */}
-      <VRMAvatar
-        //
-        {...props}
-        state={props.state}
-        avatarUrl={`https://arweave.net/Ea1KXujzJatQgCFSMzGOzp_UtHqB1pyia--U3AtkMAY`}
-      ></VRMAvatar>
-      {/*  */}
-      {/*  */}
-      {/*  */}
+      <VRMAvatar {...props} state={props.state} avatarUrl={avatarUrl} />
     </>
   );
 }

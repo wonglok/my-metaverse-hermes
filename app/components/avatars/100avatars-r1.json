@@ -31,70 +31,7 @@
     },
     "thumbnail_url": "https://arweave.net/MsKV9G8Dvzv1rOfU8aCLlxZ2PtzQ-J9ijkdkFU-ExPo"
   },
-  {
-    "id": "56b866fc-c6e8-4635-8abb-b587c4c5b5dd",
-    "name": "Robert",
-    "project_id": "100avatars-r1",
-    "description": "Avatar 070: Robert",
-    "model_file_url": "https://arweave.net/gwG7w4bY-A5c3R6A6GOz3xBCgbPvkFQmqPIDtvnNsYI",
-    "format": "VRM",
-    "is_public": true,
-    "is_draft": false,
-    "created_at": "2025-03-11T16:41:51.488Z",
-    "updated_at": "2025-03-11T16:41:51.488Z",
-    "metadata": {
-      "number": "070",
-      "series": "R1",
-      "alternateModels": {
-        "voxel_fbx": "https://arweave.net/zB59q55gcNSOdkYDX257XBTn8b6MqmIoLi6qRO_9WBk",
-        "fbx": "https://arweave.net/2_oOLdq9OHsrjkdCjAPH8pyIO8gO9u_2QQJEBJH9Eh4",
-        "voxel_vrm": "https://arweave.net/EfONjKqe7uuqkhAtEVgwoOmbpoOGOIQqQDo_qnqRo_g"
-      },
-      "ardriveFiles": {
-        "models": [
-          "070_Robert_Voxel.fbx",
-          "070_Robert.fbx",
-          "070_Robert.vrm",
-          "070_Robert_Voxel.vrm"
-        ],
-        "thumbnails": ["070_Robert_thumbnail.gif"],
-        "textures": ["070_Robert_Voxel_Texture.png"]
-      }
-    },
-    "thumbnail_url": "https://arweave.net/gaFPebQ9hSZDa_xNHkja8CH0Qde2y41L95VQTtroWNA"
-  },
-  {
-    "id": "718c61cb-32e7-4292-b44c-0c4f6a903968",
-    "name": "Bloody",
-    "project_id": "100avatars-r1",
-    "description": "Avatar 030: Bloody",
-    "model_file_url": "https://arweave.net/VBFMTU6Y26re-WiEtl3FxV5wj0DzYUyjeYPyVrhYkic",
-    "format": "VRM",
-    "is_public": true,
-    "is_draft": false,
-    "created_at": "2025-03-11T16:41:51.488Z",
-    "updated_at": "2025-03-11T16:41:51.488Z",
-    "metadata": {
-      "number": "030",
-      "series": "R1",
-      "alternateModels": {
-        "fbx": "https://arweave.net/rGrj2395Ux0q40ZcU1KeW4u3gz7lvJkeMbP7Xr49d28",
-        "voxel_fbx": "https://arweave.net/jNDHUDbvHJxNcdD7GUuie6MKy7AIwv3GGP6MKhsAUKY",
-        "voxel_vrm": "https://arweave.net/DP5c7ICllL5PWa_KHXnpZdePEO876Ysp7xQG8qExJ5c"
-      },
-      "ardriveFiles": {
-        "models": [
-          "030_Bloody.fbx",
-          "030_Bloody.vrm",
-          "030_Bloody_Voxel.fbx",
-          "030_Bloody_Voxel.vrm"
-        ],
-        "thumbnails": ["030_Bloody_thumbnail.gif"],
-        "textures": ["030_Bloody_Voxel_Texture.png"]
-      }
-    },
-    "thumbnail_url": "https://arweave.net/sbTlKSCyltB4AqOU7W27QDKftwKgHgpSm-79nYKpHyc"
-  },
+
   {
     "id": "8df2b84c-a9ad-41f7-b01a-e73fde7db568",
     "name": "Rabbit",

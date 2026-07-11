@@ -48,6 +48,7 @@ export async function loadMixamoAnimation(url, vrm) {
 
   try {
     const asset = await new Promise((resolve, reject) => {
+      loader.crossOrigin = 'aynon'
       loader.load(animUrl, resolve, undefined, reject);
     });
 
@@ -84,7 +85,8 @@ export async function loadMixamoAnimation(url, vrm) {
       const mixamoRigName = trackSplitted[0];
       const vrmBoneName = mixamoVRMRigMap[mixamoRigName];
       const vrmNode = vrm.humanoid?.getNormalizedBoneNode(vrmBoneName);
-      const vrmNodeName = mixamoRigName;
+
+      const vrmNodeName = asset.getObjectByName(mixamoRigName) ? mixamoRigName : vrmNode?.name;
       // const vrmNodeName =  vrmNode?.name;
       const mixamoRigNode = asset.getObjectByName(mixamoRigName);
 

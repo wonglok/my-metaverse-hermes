@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useMetaverseStore } from "@/stores/metaverse";
+import { useAvatarStore } from "@/stores/avatar";
 import { GameWorld } from "@/components/metaverse/world";
 import { ChatWindow } from "@/components/chat/chat-window";
 import { VoiceRecordButton } from "@/components/chat/voice-record-button";
@@ -86,12 +87,9 @@ export function GamePage() {
   const sendChat = useMetaverseStore((s) => s.sendChat);
   const sendVoice = useMetaverseStore((s) => s.sendVoice);
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(() =>
-    localStorage.getItem("lambobo-avatar-url")
-  );
-  const [avatarThumb, setAvatarThumb] = useState<string | null>(() =>
-    localStorage.getItem("lambobo-avatar-thumb")
-  );
+  const avatarUrl = useAvatarStore((s) => s.avatarUrl);
+  const avatarThumb = useAvatarStore((s) => s.avatarThumb);
+  const setAvatar = useAvatarStore((s) => s.setAvatar);
   const [showPicker, setShowPicker] = useState(false);
 
   return (
@@ -184,11 +182,10 @@ export function GamePage() {
           <div className="absolute right-4 top-12 z-50">
             <VRMPicker
               selectedId={avatarUrl ?? undefined}
-              onSelect={(item) => {
-                setAvatarUrl(item.model_file_url);
-                setAvatarThumb(item.thumbnail_url);
-                localStorage.setItem("lambobo-avatar-url", item.model_file_url);
-                localStorage.setItem("lambobo-avatar-thumb", item.thumbnail_url);
+              onSelect={(item: any) => {
+                const url = `https://d2upc1jytt7esc.cloudfront.net/vrm-avatars/${item.project_id}/${item.name}/model.vrm`;
+                const thumb = `https://d2upc1jytt7esc.cloudfront.net/vrm-avatars/${item.project_id}/${item.name}/thumbnail.gif`;
+                setAvatar(url, thumb);
                 setShowPicker(false);
               }}
               onClose={() => setShowPicker(false)}

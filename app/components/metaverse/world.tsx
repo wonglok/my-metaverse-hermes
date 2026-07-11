@@ -65,7 +65,12 @@ interface MySceneProps {
   avatarUrl?: string | null;
 }
 
-function MyScene({ keysRef, spacePressedRef, joystickInputRef, avatarUrl }: MySceneProps) {
+function MyScene({
+  keysRef,
+  spacePressedRef,
+  joystickInputRef,
+  avatarUrl,
+}: MySceneProps) {
   const playerRef = useRef<THREE.Group>(null);
   const movingPlatformsRef = useRef<MovingPlatform[]>([]);
   const physicsStateRef = useRef<PlayerPhysicsState>({
@@ -238,8 +243,8 @@ function MyScene({ keysRef, spacePressedRef, joystickInputRef, avatarUrl }: MySc
     lookAt3a.y += LOOK_TARGET_Y;
     lookAt3b.lerp(lookAt3a, 0.1);
 
-    lookAt3b.x = lookAt3a.x;
-    lookAt3b.z = lookAt3a.z;
+    lookAt3b.x = THREE.MathUtils.lerp(lookAt3b.x, lookAt3a.x, 0.25);
+    lookAt3b.z = THREE.MathUtils.lerp(lookAt3b.z, lookAt3a.z, 0.25);
 
     camera.lookAt(lookAt3b);
 

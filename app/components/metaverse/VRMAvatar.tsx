@@ -12,12 +12,15 @@ import { loadMixamoAnimation } from "../avatars/integrations/animationLoader.js"
 import { MToonMaterialLoaderPlugin } from "@pixiv/three-vrm";
 import { MToonNodeMaterial } from "@pixiv/three-vrm/nodes";
 
-import r1 from "../avatars/100avatars-r1.json";
+// import r1 from "../avatars/100avatars-r1.json";
 import r2 from "../avatars/100avatars-r2.json";
-import r3 from "../avatars/100avatars-r3.json";
+// import r3 from "../avatars/100avatars-r3.json";
+import { getCachedThumbnail, cacheThumbnail } from "@/lib/thumbnail-cache";
+const allItems = [...r2];
 
 // Create a GLTFLoader
 const loader = new GLTFLoader();
+loader.setCrossOrigin("anonymous");
 
 // Register a VRMLoaderPlugin
 loader.register((parser) => {
@@ -33,8 +36,6 @@ loader.register((parser) => {
   });
 });
 
-const allItems = [...r1, ...r2, ...r3];
-
 interface AvatarItem {
   id: string;
   name: string;
@@ -48,8 +49,71 @@ interface VRMPickerProps {
   onClose: () => void;
 }
 
+function CachedImg({
+  src,
+  onBroken,
+  ...imgProps
+}: React.ImgHTMLAttributes<HTMLImageElement> & {
+  onBroken: (url: string) => void;
+}) {
+  const [cachedSrc, setCachedSrc] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const url = src!;
+
+    getCachedThumbnail(url).then((blobUrl) => {
+      if (cancelled) return;
+      if (blobUrl) {
+        setCachedSrc(blobUrl);
+        setLoaded(true);
+      } else {
+        // Fetch from network and cache
+        fetch(url, { mode: "cors" })
+          .then((res) => res.blob())
+          .then((blob) => {
+            if (cancelled) return;
+            cacheThumbnail(url, blob);
+            setCachedSrc(URL.createObjectURL(blob));
+            setLoaded(true);
+          })
+          .catch(() => {
+            if (!cancelled) onBroken(url);
+          });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  if (!loaded) {
+    return (
+      <div
+        className={imgProps.className}
+        style={{ background: "rgba(255,255,255,0.05)" }}
+      />
+    );
+  }
+
+  const { onBroken: _, ...rest } = imgProps as any;
+  return <img {...rest} src={cachedSrc!} onError={() => onBroken(src!)} />;
+}
+
 export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
   const [search, setSearch] = useState("");
+  const [brokenThumbs, setBrokenThumbs] = useState<Set<string>>(new Set());
+
+  const markBroken = (url: string) => {
+    setBrokenThumbs((prev) => {
+      if (prev.has(url)) return prev;
+      const next = new Set(prev);
+      next.add(url);
+      return next;
+    });
+  };
 
   const filtered = search
     ? allItems.filter((item) =>
@@ -57,12 +121,17 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
       )
     : allItems;
 
+  const visible = filtered.filter((item) => {
+    const url = `https://d2upc1jytt7esc.cloudfront.net/vrm-avatars/${item.project_id}/${item.name}/thumbnail.gif`;
+    return !brokenThumbs.has(url);
+  });
+
   return (
     <div className="flex flex-col max-h-[70vh] w-[420px] max-w-[90vw] rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <h2 className="text-sm font-medium text-white">
-          Choose Avatar ({allItems.length})
+          Choose Avatar ({visible.length})
         </h2>
         <button
           onClick={onClose}
@@ -95,8 +164,9 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
       {/* Grid */}
       <div className="overflow-y-auto p-3">
         <div className="grid grid-cols-3 gap-2">
-          {filtered.map((item) => {
+          {visible.map((item) => {
             const isSelected = item.id === selectedId;
+            const thumbUrl = `https://d2upc1jytt7esc.cloudfront.net/vrm-avatars/${item.project_id}/${item.name}/thumbnail.gif`;
             return (
               <button
                 key={item.id}
@@ -105,9 +175,10 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
                   isSelected ? "ring-2 ring-blue-400 bg-white/10" : ""
                 }`}
               >
-                <img
-                  src={item.thumbnail_url}
+                <CachedImg
+                  src={thumbUrl}
                   alt={item.name}
+                  onBroken={() => markBroken(thumbUrl)}
                   className="h-20 w-20 rounded-lg object-cover"
                 />
                 <span className="text-[11px] leading-tight text-white/70 truncate w-full text-center">
@@ -117,7 +188,7 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
             );
           })}
         </div>
-        {filtered.length === 0 && (
+        {visible.length === 0 && (
           <p className="py-8 text-center text-sm text-white/40">
             No avatars found
           </p>
@@ -242,6 +313,7 @@ function VRMModel({
   const meshRef = useRef<THREE.Group>(null);
 
   const gltf = useLoader(GLTFLoader, url, (loader) => {
+    loader.crossOrigin = "anonymous";
     // Register a VRMLoaderPlugin
     loader.register((parser) => {
       // create a WebGPU compatible MToonMaterialLoaderPlugin
@@ -294,8 +366,6 @@ function VRMModel({
         loadMixamoAnimation("/assets/vrm/motion/run.fbx", vrm),
         loadMixamoAnimation("/assets/vrm/motion/walk.fbx", vrm),
       ]);
-
-      //
 
       if (cancelled) return;
 
@@ -386,15 +456,70 @@ function VRMModel({
   );
 }
 
+function FallbackCube() {
+  return (
+    <group scale={0.5}>
+      <mesh>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial color="#6366f1" />
+      </mesh>
+      <lineSegments>
+        <edgesGeometry args={[new THREE.BoxGeometry(1, 1, 1)]} />
+        <lineBasicMaterial color="#a5b4fc" />
+      </lineSegments>
+    </group>
+  );
+}
+
+function VRMModelWithFallback({
+  url,
+  ...props
+}: { url: string } & VRMAvatarProps) {
+  const [status, setStatus] = useState<
+    "checking" | "reachable" | "unreachable"
+  >("checking");
+
+  let [dataURL, setDataURL] = useState("");
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("checking");
+
+    fetch(url, { method: "GET", mode: "cors" })
+      .then(async (res) => {
+        if (!cancelled) {
+          if (res.ok) {
+            setDataURL(URL.createObjectURL(await res.blob()));
+          }
+          setStatus(res.ok ? "reachable" : "unreachable");
+        }
+      })
+      .catch((ev) => {
+        console.log(ev);
+        // HEAD may fail due to CORS — fall back to a no-cors GET to verify the server responds
+        if (cancelled) return;
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [url]);
+
+  if (status === "unreachable" || status === "checking") {
+    return <FallbackCube />;
+  }
+
+  return (
+    <Suspense fallback={<FallbackCube />}>
+      {dataURL && <VRMModel url={dataURL} {...props} />}
+    </Suspense>
+  );
+}
+
 export function VRMAvatar(props: VRMAvatarProps) {
   const { avatarUrl } = props;
 
   if (avatarUrl) {
-    return (
-      <Suspense fallback={<DefaultAvatar {...props} />}>
-        <VRMModel url={avatarUrl} {...props} />
-      </Suspense>
-    );
+    return <VRMModelWithFallback url={avatarUrl} {...props} />;
   }
 
   return <DefaultAvatar {...props} />;
