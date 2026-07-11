@@ -114,6 +114,7 @@ export default defineWebSocketHandler({
           y: 0,
           z: clamp(Math.random() * 10 - 5, -50, 50),
           rotation: 0,
+          avatarUrl: msg.avatarUrl,
         };
         rooms.get(placeId)!.set(identity.id, playerState);
 
@@ -247,6 +248,27 @@ export default defineWebSocketHandler({
         send(peer, renameMsg);
         peer.publish(placeId, JSON.stringify(renameMsg));
         publishEvent(placeId, renameMsg);
+        break;
+      }
+
+      case "avatar": {
+        const placeId = peerRoom.get(identity.id);
+        if (!placeId) return;
+
+        const avatarUrl = String(msg.url || "").slice(0, 2048);
+        if (!avatarUrl) return;
+
+        const state = rooms.get(placeId)?.get(identity.id);
+        if (state) state.avatarUrl = avatarUrl;
+
+        const avatarMsg: ServerMessage = {
+          t: "avatar",
+          id: identity.id,
+          avatarUrl,
+        };
+
+        peer.publish(placeId, JSON.stringify(avatarMsg));
+        publishEvent(placeId, avatarMsg);
         break;
       }
 

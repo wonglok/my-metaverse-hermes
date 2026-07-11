@@ -51,13 +51,14 @@ interface MetaverseState {
   messages: ChatMessage[];
 
   /** Start the WebSocket connection for a place. Returns a cleanup fn. */
-  connect: (placeId: string) => () => void;
+  connect: (placeId: string, avatarUrl?: string | null) => () => void;
 
   // ── Send actions (called by game loop / UI) ─────────────────────────
   sendMove: (x: number, y: number, z: number, rotation: number) => void;
   sendChat: (text: string) => void;
   sendVoice: (data: string, duration: number) => void;
   sendName: (name: string) => void;
+  sendAvatar: (url: string) => void;
 }
 
 export const useMetaverseStore = create<MetaverseState>((set, get) => ({
@@ -68,7 +69,7 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
 
   // ── Connection ───────────────────────────────────────────────────────
 
-  connect: (placeId: string) => {
+  connect: (placeId: string, avatarUrl?: string | null) => {
     // Close any existing socket
     if (_rws) {
       _rws.close();
@@ -171,6 +172,14 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
           set({ players: _syncPlayers() });
           break;
         }
+        case "avatar": {
+          const p = playerMap.get(msg.id);
+          if (p) {
+            p.avatarUrl = msg.avatarUrl;
+            set({ players: _syncPlayers() });
+          }
+          break;
+        }
         case "pong":
           if (_pongTimer) { clearTimeout(_pongTimer); _pongTimer = undefined; }
           break;
@@ -196,7 +205,7 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
     rws.addEventListener("open", () => {
       if (_epoch !== innerEpoch) return;
       set({ status: "connected" });
-      _sendRaw({ t: "join", placeId });
+      _sendRaw({ t: "join", placeId, avatarUrl: avatarUrl ?? undefined });
       startHeartbeat();
     });
 
@@ -257,5 +266,9 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
   sendName: (name: string) => {
     localStorage.setItem("lambobo-nickname", name);
     _sendRaw({ t: "rename", name });
+  },
+
+  sendAvatar: (url: string) => {
+    _sendRaw({ t: "avatar", url });
   },
 }));

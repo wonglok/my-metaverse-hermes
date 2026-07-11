@@ -11,6 +11,7 @@ interface OtherAvatarProps {
   rotation?: number;
   isLocal?: boolean;
   name?: string;
+  avatarUrl?: string | null;
 }
 
 const LERP_FACTOR = 0.15;
@@ -19,6 +20,7 @@ export function OtherAvatar({
   position = [0, 0, 0],
   rotation = 0,
   name,
+  avatarUrl,
 }: OtherAvatarProps) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -69,7 +71,7 @@ export function OtherAvatar({
     <group ref={groupRef}>
       <group position={[0, 0, 0]}>
         <group rotation={[0, Math.PI * 0.5, 0]}>
-          <PlayerCharacter isMe={false} state={state} />
+          <PlayerCharacter isMe={false} state={state} avatarUrl={avatarUrl} />
         </group>
 
         {name && (
@@ -103,6 +105,7 @@ export function RemoteAvatar({
     targetRotation: number;
     color: string;
     name: string;
+    avatarUrl?: string;
   };
 }) {
   return (
@@ -111,6 +114,7 @@ export function RemoteAvatar({
       position={[player.targetX, player.targetY, player.targetZ]}
       rotation={player.targetRotation}
       name={player.name}
+      avatarUrl={player.avatarUrl}
     />
   );
 }

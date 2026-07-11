@@ -22,6 +22,8 @@ export interface PlayerState {
   z: number;
   /** Y-axis rotation in radians. */
   rotation: number;
+  /** Avatar VRM model URL. */
+  avatarUrl?: string;
 }
 
 /** A chat message (text, voice, or both). */
@@ -41,11 +43,12 @@ export interface ChatMessage {
 // ── Client → Server ──────────────────────────────────────────────────────────
 
 export type ClientMessage =
-  | { t: "join"; placeId: string }
+  | { t: "join"; placeId: string; avatarUrl?: string }
   | { t: "move"; x: number; y: number; z: number; rotation: number }
   | { t: "chat"; text: string }
   | { t: "voice"; data: string; duration: number }
   | { t: "rename"; name: string }
+  | { t: "avatar"; url: string }
   | { t: "ping" }
   // Legacy — kept for backward compatibility with the original live-canvas demo.
   | { t: "cursor"; x: number; y: number }
@@ -61,6 +64,7 @@ export type ServerMessage =
   | { t: "chat"; message: ChatMessage }
   | { t: "voice"; message: ChatMessage }
   | { t: "rename"; id: string; name: string }
+  | { t: "avatar"; id: string; avatarUrl: string }
   | { t: "pong" }
   // Legacy
   | { t: "cursor"; id: string; x: number; y: number }

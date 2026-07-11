@@ -69,11 +69,6 @@ export function GamePage() {
   const navigate = useNavigate();
   const pid = placeId ?? "default";
 
-  // Connect the WebSocket for this place
-  useEffect(() => {
-    return useMetaverseStore.getState().connect(pid);
-  }, [pid]);
-
   // Read state with selectors (avoids re-renders from high-frequency player moves)
   const status = useMetaverseStore((s) => s.status);
   const self = useMetaverseStore((s) => s.self);
@@ -86,11 +81,25 @@ export function GamePage() {
   const sendName = useMetaverseStore((s) => s.sendName);
   const sendChat = useMetaverseStore((s) => s.sendChat);
   const sendVoice = useMetaverseStore((s) => s.sendVoice);
+  const sendAvatar = useMetaverseStore((s) => s.sendAvatar);
 
   const avatarUrl = useAvatarStore((s) => s.avatarUrl);
   const avatarThumb = useAvatarStore((s) => s.avatarThumb);
   const setAvatar = useAvatarStore((s) => s.setAvatar);
   const [showPicker, setShowPicker] = useState(false);
+
+  // Connect the WebSocket for this place
+  useEffect(() => {
+    const storedUrl = localStorage.getItem("lambobo-avatar-url");
+    return useMetaverseStore.getState().connect(pid, storedUrl);
+  }, [pid]);
+
+  // Send avatar update when it changes
+  useEffect(() => {
+    if (avatarUrl) {
+      sendAvatar(avatarUrl);
+    }
+  }, [avatarUrl]);
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">

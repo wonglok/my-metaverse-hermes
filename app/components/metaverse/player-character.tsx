@@ -18,7 +18,7 @@ const DEFAULT_AVATAR_URL =
  */
 export function PlayerCharacter(props: PlayerCharacterProps) {
   const storedUrl = useAvatarStore((s) => s.avatarUrl);
-  const avatarUrl = storedUrl || DEFAULT_AVATAR_URL;
+  const avatarUrl = props.avatarUrl ?? storedUrl ?? DEFAULT_AVATAR_URL;
 
   return (
     <>

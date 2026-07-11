@@ -354,25 +354,15 @@ function MyScene({
       </group>
 
       {/* Remote players */}
-      {players.map(
-        (p: {
-          id: string;
-          targetX: number;
-          targetY: number;
-          targetZ: number;
-          targetRotation: number;
-          color: string;
-          name: string;
-        }) => {
-          return (
-            <group key={p.id}>
-              <Suspense fallback={null}>
-                <RemoteAvatar player={p} />
-              </Suspense>
-            </group>
-          );
-        },
-      )}
+      {players.map((p) => {
+        return (
+          <group key={p.id}>
+            <Suspense fallback={null}>
+              <RemoteAvatar player={p} />
+            </Suspense>
+          </group>
+        );
+      })}
     </>
   );
 }
