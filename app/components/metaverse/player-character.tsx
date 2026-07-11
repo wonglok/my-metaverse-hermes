@@ -10,7 +10,7 @@ import { VRMAvatar } from "./VRMAvatar";
 import { useAvatarStore } from "@/stores/avatar";
 
 const DEFAULT_AVATAR_URL =
-  "https://arweave.net/Ea1KXujzJatQgCFSMzGOzp_UtHqB1pyia--U3AtkMAY";
+  "https://d2upc1jytt7esc.cloudfront.net/vrm-avatars/100avatars-r2/SaltySalt/model.vrm";
 
 /**
  * Local player mesh with walk cycle animation.
