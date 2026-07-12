@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -58,8 +58,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -127,7 +127,9 @@
 
 /* Smooth cursor interpolation between position frames. */
 .cursor {
-  transition: left 90ms linear, top 90ms linear;
+  transition:
+    left 90ms linear,
+    top 90ms linear;
 }
 
 /*
@@ -190,4 +192,8 @@
   .hero-backdrop__layer {
     animation: none;
   }
+}
+
+body {
+  overflow-x: hidden;
 }
