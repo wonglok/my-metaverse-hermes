@@ -30,7 +30,7 @@ export function DiamindComponent({ name = "diam_1" }) {
 
   const diamondModel = useGLTF(`/models/diamond/diamond.glb`);
 
-  const [dAPI, setDiamond] = useState<any>(null);
+  const [dAPI, setDiamond] = useState<any>();
 
   const envMap = useEnvironment({ files: [`/models/diamond/sky.hdr`] });
 
