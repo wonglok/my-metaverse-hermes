@@ -187,9 +187,7 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
                 key={item.id}
                 onClick={() => onSelect(item)}
                 className={`relative flex flex-col items-center gap-1 rounded-xl p-2 transition-all duration-200 hover:bg-white/[0.06] ${
-                  isSelected
-                    ? "ring-1 ring-white/20 bg-white/[0.08]"
-                    : ""
+                  isSelected ? "ring-1 ring-white/20 bg-white/[0.08]" : ""
                 }`}
               >
                 <CachedImg
@@ -525,9 +523,32 @@ function VRMModelWithFallback({
     return <FallbackCube />;
   }
 
+  let { isMe, name } = props;
+
   return (
     <Suspense fallback={<FallbackCube />}>
-      {dataURL && <VRMModel url={dataURL} {...props} />}
+      {dataURL && (
+        <>
+          <VRMModel url={dataURL} {...props} />
+
+          {/*  */}
+
+          {name && isMe && (
+            <group
+              rotation={[0, 0, 0]}
+              position={[0, 3, 0]}
+              scale={[0.5, 0.5, 0.5]}
+            >
+              <Center key={name}>
+                <Text3D font={helveticaReglar as any}>
+                  {name}
+                  <meshStandardMaterial />
+                </Text3D>
+              </Center>
+            </group>
+          )}
+        </>
+      )}
     </Suspense>
   );
 }
