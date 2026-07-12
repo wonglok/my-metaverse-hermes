@@ -537,10 +537,10 @@ function VRMModelWithFallback({
             <group
               rotation={[0, 0, 0]}
               position={[0, 3, 0]}
-              scale={[0.5, 0.5, 0.5]}
+              scale={[1.0, 1.0, 1.0]}
             >
               <Center key={name}>
-                <Text3D font={helveticaReglar as any}>
+                <Text3D scale={0.5} font={helveticaReglar as any}>
                   {name}
                   <meshStandardMaterial />
                 </Text3D>

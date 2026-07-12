@@ -81,7 +81,7 @@ export function OtherAvatar({
             scale={[1, 1, 1]}
           >
             <Center key={name}>
-              <Text3D font={helveticaReglar as any}>
+              <Text3D scale={0.5} bevelEnabled font={helveticaReglar as any}>
                 {name}
 
                 <meshStandardMaterial></meshStandardMaterial>
