@@ -539,17 +539,36 @@ function VRMModelWithFallback({
               position={[0, 3, 0]}
               scale={[1.0, 1.0, 1.0]}
             >
-              <Center key={name}>
-                <Text3D scale={0.5} font={helveticaReglar as any}>
-                  {name}
-                  <meshStandardMaterial />
-                </Text3D>
-              </Center>
+              <LookCam>
+                <Center key={name}>
+                  <Text3D scale={0.5} font={helveticaReglar as any}>
+                    {name}
+                    <meshStandardMaterial />
+                  </Text3D>
+                </Center>
+              </LookCam>
             </group>
           )}
         </>
       )}
     </Suspense>
+  );
+}
+
+export function LookCam({ children }: any) {
+  const ref = useRef<THREE.Object3D>(null);
+
+  let wp = useMemo(() => new THREE.Vector3(), []);
+  useFrame((_: any) => {
+    if (ref.current) {
+      _.camera.getWorldPosition(wp);
+      ref.current.lookAt(wp.x, wp.y, wp.z);
+    }
+  });
+  return (
+    <>
+      <group ref={ref}>{children}</group>
+    </>
   );
 }
 

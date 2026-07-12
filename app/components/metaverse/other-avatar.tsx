@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { Center, Text3D } from "@react-three/drei";
 import { helveticaReglar } from "./helvetica";
 import { PlayerCharacter } from "./player-character";
+import { LookCam } from "./VRMAvatar";
 
 interface OtherAvatarProps {
   color: string;
@@ -80,13 +81,15 @@ export function OtherAvatar({
             rotation={[0, Math.PI * -1.5, 0]}
             scale={[1, 1, 1]}
           >
-            <Center key={name}>
-              <Text3D scale={0.5} bevelEnabled font={helveticaReglar as any}>
-                {name}
+            <LookCam>
+              <Center key={name}>
+                <Text3D scale={0.5} bevelEnabled font={helveticaReglar as any}>
+                  {name}
 
-                <meshStandardMaterial></meshStandardMaterial>
-              </Text3D>
-            </Center>
+                  <meshStandardMaterial></meshStandardMaterial>
+                </Text3D>
+              </Center>
+            </LookCam>
           </group>
         )}
       </group>
