@@ -276,7 +276,7 @@ function MyScene({
         >
           <group scale={5}>
             <Spinner>
-              <DiamindComponent name="diam_2"></DiamindComponent>
+              <DiamindComponent name="diam_1"></DiamindComponent>
             </Spinner>
           </group>
         </KinematicPlatform>
