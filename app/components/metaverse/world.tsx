@@ -34,6 +34,8 @@ import { WebGPURenderer } from "three/webgpu";
 // import { Fn } from "three/src/nodes/TSL.js";
 import { EffectsSSGI } from "./render-pipeline";
 import { GLBEnv } from "./GLBEnv";
+import { DiamindComponent, Spinner } from "./DiamondTSL/DiamondComponent";
+import { diamondRand } from "./DiamondTSL/DiamondGo";
 
 declare module "@react-three/fiber" {
   interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
@@ -265,6 +267,51 @@ function MyScene({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <KinematicPlatform
+          position={[-4, 1.5, 0]}
+          scale={1}
+          motion={{ axis: "y", amplitude: 0, speed: 0 }}
+          onReady={registerPlatform}
+        >
+          <group scale={2}>
+            <Spinner>
+              <DiamindComponent name="diam_2"></DiamindComponent>
+            </Spinner>
+          </group>
+        </KinematicPlatform>
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <KinematicPlatform
+          position={[0, 1.5, 0]}
+          scale={1}
+          motion={{ axis: "y", amplitude: 0, speed: 0 }}
+          onReady={registerPlatform}
+        >
+          <group scale={2}>
+            <Spinner>
+              <DiamindComponent name="diam_1"></DiamindComponent>
+            </Spinner>
+          </group>
+        </KinematicPlatform>
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <KinematicPlatform
+          position={[4, 1.5, 0]}
+          scale={1}
+          motion={{ axis: "y", amplitude: 0, speed: 0 }}
+          onReady={registerPlatform}
+        >
+          <group scale={2}>
+            <Spinner>
+              <DiamindComponent name="diam_2"></DiamindComponent>
+            </Spinner>
+          </group>
+        </KinematicPlatform>
+      </Suspense>
+
       <directionalLight
         ref={lightRef}
         color={"#ffffff"}

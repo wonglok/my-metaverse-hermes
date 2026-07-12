@@ -59,7 +59,7 @@ export function GamePage() {
         onToggleChat={() => {
           // Click the chat toggle button in the DOM
           document
-            .querySelector<HTMLButtonElement>('[data-chat-toggle]')
+            .querySelector<HTMLButtonElement>("[data-chat-toggle]")
             ?.click();
         }}
         onLeave={() => navigate("/")}
