@@ -100,6 +100,8 @@ function NameEditDialog({
   useEffect(() => {
     if (!open) return;
     function handleKey(e: KeyboardEvent) {
+      e.stopPropagation();
+
       if (e.key === "Escape") onClose();
     }
     document.addEventListener("keydown", handleKey);
