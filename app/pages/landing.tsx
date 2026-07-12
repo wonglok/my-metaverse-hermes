@@ -164,7 +164,7 @@ export function LandingPage() {
 
         {/* ── Featured Places ────────────────────────────────── */}
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-backwards">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/30">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
             Featured Places
           </h2>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -174,7 +174,7 @@ export function LandingPage() {
                 onClick={() => enterPlace(place.id)}
                 className={cn(
                   "group flex flex-col gap-3 rounded-2xl p-5 text-left",
-                  "border border-white/[0.07] bg-white/[0.02] backdrop-blur-xl",
+                  "border border-white/[0.07] bg-white/[0.22] backdrop-blur-xl",
                   "transition-all duration-300 ease-out",
                   "hover:bg-white/[0.05] hover:border-white/[0.14] hover:scale-[1.015]",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
@@ -210,7 +210,7 @@ export function LandingPage() {
         <section
           className={cn(
             "mt-6 flex flex-col items-center gap-4 rounded-2xl p-6 sm:p-8 text-center",
-            "border border-white/[0.06] bg-white/[0.01] backdrop-blur-xl",
+            "border border-white/[0.06] bg-white/[0.22] backdrop-blur-xl",
             "animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500 fill-mode-backwards",
           )}
         >
