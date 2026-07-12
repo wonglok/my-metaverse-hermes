@@ -127,19 +127,21 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
   });
 
   return (
-    <div className="flex flex-col max-h-[70vh] w-[420px] max-w-[90vw] rounded-xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl">
+    <div className="flex flex-col max-h-[70vh] w-[420px] max-w-[90vw] rounded-2xl border border-white/[0.08] bg-black/40 backdrop-blur-2xl shadow-[0_16px_48px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.04)]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <h2 className="text-sm font-medium text-white">
+      <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3">
+        <h2 className="text-sm font-medium text-white/90">
           <div>Choose Avatar ({visible.length})</div>
           <div>
-            <div className="text-xs">
-              Powerd by{" "}
+            <div className="text-xs text-white/40">
+              Powered by{" "}
               <a
-                className="underline text-blue-300"
-                href={`https://github.com/toxsam/open-source-avatars`}
+                className="underline text-white/50 hover:text-white/70 transition"
+                href="https://github.com/toxsam/open-source-avatars"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Open Source Avatars Github
+                Open Source Avatars
               </a>
             </div>
           </div>
@@ -147,7 +149,8 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
 
         <button
           onClick={onClose}
-          className="rounded-lg p-1 text-white/50 transition hover:bg-white/10 hover:text-white"
+          className="rounded-xl p-1.5 text-white/40 transition hover:bg-white/[0.06] hover:text-white/70 cursor-pointer"
+          aria-label="Close avatar picker"
         >
           <svg
             width="16"
@@ -163,13 +166,13 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
       </div>
 
       {/* Search */}
-      <div className="border-b border-white/10 px-4 py-2">
+      <div className="border-b border-white/[0.08] px-4 py-2">
         <input
           type="text"
           placeholder="Search avatars..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg bg-white/5 px-3 py-1.5 text-sm text-white placeholder:text-white/30 outline-none ring-1 ring-white/10 focus:ring-white/30"
+          className="w-full rounded-xl bg-white/[0.06] border border-white/[0.08] px-3 py-1.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10 transition"
         />
       </div>
 
@@ -183,8 +186,10 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
               <button
                 key={item.id}
                 onClick={() => onSelect(item)}
-                className={`relative flex flex-col items-center gap-1 rounded-lg p-2 transition hover:bg-white/10 ${
-                  isSelected ? "ring-2 ring-blue-400 bg-white/10" : ""
+                className={`relative flex flex-col items-center gap-1 rounded-xl p-2 transition-all duration-200 hover:bg-white/[0.06] ${
+                  isSelected
+                    ? "ring-1 ring-white/20 bg-white/[0.08]"
+                    : ""
                 }`}
               >
                 <CachedImg
@@ -193,7 +198,7 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
                   onBroken={() => markBroken(thumbUrl)}
                   className="h-20 w-20 rounded-lg object-cover"
                 />
-                <span className="text-[11px] leading-tight text-white/70 truncate w-full text-center">
+                <span className="text-[11px] leading-tight text-white/50 truncate w-full text-center">
                   {item.name}
                 </span>
               </button>
@@ -201,7 +206,7 @@ export function VRMPicker({ selectedId, onSelect, onClose }: VRMPickerProps) {
           })}
         </div>
         {visible.length === 0 && (
-          <p className="py-8 text-center text-sm text-white/40">
+          <p className="py-8 text-center text-sm text-white/30">
             No avatars found
           </p>
         )}
