@@ -420,8 +420,9 @@ export function ChatWindow({
     <>
       {/* Floating toggle button */}
       <button
+        data-chat-toggle
         className={cn(
-          "fixed top-12 right-2 z-[20] flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
+          "fixed bottom-24 right-4 z-[20] flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
           "",
         )}
         onClick={toggleOpen}

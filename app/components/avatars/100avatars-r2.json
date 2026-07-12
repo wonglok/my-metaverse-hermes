@@ -2854,38 +2854,7 @@
     },
     "thumbnail_url": "https://arweave.net/edqpeWh_27uAgyyL5riDjyCoXe9HRjKhdDYltZK43_4"
   },
-  {
-    "id": "28481014-ef64-4763-bb15-b9116e548a29",
-    "name": "EYESummoner",
-    "project_id": "100avatars-r2",
-    "description": "Avatar 149: EYESummoner",
-    "model_file_url": "https://arweave.net/pHLSWb6kYL5kArbNCyABbbf23w51s5PfYDF2h46nDgY",
-    "format": "VRM",
-    "is_public": true,
-    "is_draft": false,
-    "created_at": "2025-03-11T16:41:51.495Z",
-    "updated_at": "2025-03-11T16:41:51.495Z",
-    "metadata": {
-      "number": "149",
-      "series": "R2",
-      "alternateModels": {
-        "voxel_fbx": "https://arweave.net/wIK8xToT1ZE3mdYkxrH66fqif35oSlR1kNE8LxovAgg",
-        "fbx": "https://arweave.net/KwEOZObXPMy3GsR59AiIHkpTqTvz_k079EVUzCdEP6E",
-        "voxel_vrm": "https://arweave.net/mi-wtj-9-fdCunnyv-mLIbzDaLRKbC40jQa7R7g0MUQ"
-      },
-      "ardriveFiles": {
-        "models": [
-          "149_EYESummoner_Voxel.fbx",
-          "149_EYESummoner.fbx",
-          "149_EYESummoner.vrm",
-          "149_EYESummoner_Voxel.vrm"
-        ],
-        "thumbnails": ["149_EYESummoner_thumbnail.gif"],
-        "textures": ["149_EYESummoner_Voxel_Texture.png"]
-      }
-    },
-    "thumbnail_url": "https://arweave.net/sLLZ_EjlL6ACHRfxJLsBUrP6V7o71IlPM9v77ReGC_A"
-  },
+
   {
     "id": "f964a7b4-e1c0-4b99-b296-bf9a412d9b4a",
     "name": "CoolPizza",
