@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import {
-  loadFFmpeg,
-  encodeAudioToMp3,
-  isFFmpegReady,
-} from "@/lib/audio";
+import { loadFFmpeg, encodeAudioToMp3, isFFmpegReady } from "@/lib/audio";
 
 type RecState =
   | { phase: "idle" }
@@ -157,10 +153,10 @@ export function VoiceRecordButton({ onSendVoice }: VoiceRecordButtonProps) {
       onClick={handlePress}
       disabled={isEncoding}
       className={cn(
-        "relative flex items-center justify-center rounded-full shadow-lg transition-all duration-200",
+        "relative flex items-center justify-center shadow-lg transition-all duration-200",
         isRecording
-          ? "size-16 bg-red-500 hover:bg-red-600 scale-110"
-          : "size-14 bg-white/20 backdrop-blur hover:bg-white/30",
+          ? "size-16 bg-red-500 hover:bg-red-600 scale-110 rounded-full"
+          : "size-14 rounded-2xl bg-black/30 backdrop-blur-2xl border border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)] hover:bg-white/[0.08] hover:border-white/[0.12]",
         isEncoding && "opacity-50",
       )}
       aria-label={isRecording ? "Stop and send" : "Record voice message"}

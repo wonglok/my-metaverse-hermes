@@ -430,7 +430,7 @@ export function GameWorld({ placeId: _placeId, avatarUrl }: GameWorldProps) {
         joystickInputRef={joystickInputRef}
       />
 
-      <div className="hidden lg:block pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur">
+      <div className="hidden lg:block pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 rounded-2xl bg-black/30 backdrop-blur-2xl border border-white/[0.08] px-4 py-2 text-xs text-white/50 shadow-[0_4px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]">
         WASD to move &middot; Space to jump &middot; Drag mouse to orbit
         &middot; Scroll to zoom
       </div>

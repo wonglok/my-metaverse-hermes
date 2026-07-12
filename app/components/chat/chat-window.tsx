@@ -422,8 +422,13 @@ export function ChatWindow({
       <button
         data-chat-toggle
         className={cn(
-          "fixed bottom-24 right-4 z-[20] flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105",
-          "",
+          "fixed bottom-[150px] right-4 z-[20] flex size-11 items-center justify-center",
+          "rounded-2xl transition-all duration-200",
+          "bg-black/30 backdrop-blur-2xl",
+          "border border-white/[0.08]",
+          "text-white/70 hover:text-white",
+          "shadow-[0_4px_24px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]",
+          "hover:bg-white/[0.08] hover:border-white/[0.12]",
         )}
         onClick={toggleOpen}
         aria-label="Toggle chat"

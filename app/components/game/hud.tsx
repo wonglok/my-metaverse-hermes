@@ -44,7 +44,6 @@ function HUDInfo({
         "transition-colors duration-500",
       )}
     >
-      {/* Place icon + name */}
       <svg
         width="14"
         height="14"
@@ -63,10 +62,8 @@ function HUDInfo({
         {placeId}
       </span>
 
-      {/* Divider */}
       <span className="h-3.5 w-px bg-white/[0.12]" />
 
-      {/* Status dot + online count */}
       <StatusDot status={status} />
       <span className="text-sm text-white/60 tabular-nums">
         {onlineCount}
@@ -76,84 +73,119 @@ function HUDInfo({
   );
 }
 
-// ── Name editor (inline) ─────────────────────────────────────────────────
+// ── Name edit dialog (popup) ─────────────────────────────────────────────
 
-function InlineNameEdit({
+function NameEditDialog({
   name,
+  open,
   onSave,
+  onClose,
 }: {
   name: string;
+  open: boolean;
   onSave: (name: string) => void;
+  onClose: () => void;
 }) {
-  const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(name);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editing) inputRef.current?.focus();
-  }, [editing]);
+    if (open) {
+      setValue(name);
+      // Focus after render
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }
+  }, [open, name]);
 
   useEffect(() => {
-    if (!editing) setValue(name);
-  }, [name, editing]);
+    if (!open) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   function commit() {
     const trimmed = value.trim();
     if (trimmed && trimmed !== name) onSave(trimmed);
-    setEditing(false);
+    onClose();
   }
 
-  function cancel() {
-    setValue(name);
-    setEditing(false);
-  }
-
-  if (!name) {
-    return (
-      <span className="block px-2.5 py-1.5 text-sm text-white/40">
-        Joining...
-      </span>
-    );
-  }
-
-  if (editing) {
-    return (
-      <input
-        ref={inputRef}
-        value={value}
-        onChange={(e) => setValue(e.target.value.slice(0, 24))}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") commit();
-          if (e.key === "Escape") cancel();
-        }}
-        className="w-full rounded-lg bg-white/[0.08] px-2.5 py-1.5 text-sm text-white outline-none ring-1 ring-white/20 focus:ring-white/40 transition"
-      />
-    );
+  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
+    commit();
   }
 
   return (
-    <button
-      onClick={() => {
-        setValue(name);
-        setEditing(true);
-      }}
-      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 -mx-2.5 text-sm text-white/80 hover:bg-white/[0.06] transition cursor-pointer"
-    >
-      <span className="truncate">{name}</span>
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        className="shrink-0 text-white/30"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Dialog */}
+      <form
+        onSubmit={handleSubmit}
+        className={cn(
+          "relative w-full max-w-xs rounded-2xl p-6",
+          "bg-black/70 backdrop-blur-2xl",
+          "border border-white/[0.1]",
+          "shadow-[0_16px_48px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.04)]",
+          "animate-in fade-in zoom-in-95 duration-200",
+        )}
       >
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-      </svg>
-    </button>
+        <h3 className="text-sm font-semibold text-white/90 mb-4">
+          Change Name
+        </h3>
+
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value.slice(0, 24))}
+          maxLength={24}
+          className={cn(
+            "w-full rounded-xl px-3.5 py-2.5 text-sm",
+            "bg-white/[0.06] border border-white/[0.1]",
+            "text-white placeholder:text-white/20",
+            "outline-none",
+            "focus:border-white/25 focus:ring-1 focus:ring-white/10",
+            "transition",
+          )}
+        />
+
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className={cn(
+              "rounded-xl px-4 py-2 text-sm font-medium",
+              "text-white/50 hover:text-white/80 hover:bg-white/[0.06]",
+              "transition cursor-pointer",
+            )}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={!value.trim() || value.trim() === name}
+            className={cn(
+              "rounded-xl bg-primary px-4 py-2 text-sm font-semibold",
+              "text-primary-foreground transition-all",
+              "hover:opacity-90",
+              "disabled:opacity-25 disabled:cursor-not-allowed",
+              "cursor-pointer",
+            )}
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -162,7 +194,7 @@ function InlineNameEdit({
 interface MenuPanelProps {
   playerName: string;
   avatarThumb: string | null;
-  onSaveName: (name: string) => void;
+  onOpenNameEditor: () => void;
   onOpenAvatar: () => void;
   onToggleChat: () => void;
   onLeave: () => void;
@@ -172,7 +204,7 @@ interface MenuPanelProps {
 function MenuPanel({
   playerName,
   avatarThumb,
-  onSaveName,
+  onOpenNameEditor,
   onOpenAvatar,
   onToggleChat,
   onLeave,
@@ -189,7 +221,7 @@ function MenuPanel({
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
-  // Focus trap: keep focus inside panel
+  // Focus panel on mount
   useEffect(() => {
     panelRef.current?.focus();
   }, []);
@@ -211,11 +243,7 @@ function MenuPanel({
       <div className="flex items-center gap-3 px-2.5 py-2">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/[0.08] ring-1 ring-white/[0.1] overflow-hidden">
           {avatarThumb ? (
-            <img
-              src={avatarThumb}
-              alt=""
-              className="size-full object-cover"
-            />
+            <img src={avatarThumb} alt="" className="size-full object-cover" />
           ) : (
             <svg
               width="18"
@@ -232,7 +260,30 @@ function MenuPanel({
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <InlineNameEdit name={playerName} onSave={onSaveName} />
+          {playerName ? (
+            <button
+              onClick={onOpenNameEditor}
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 -mx-2.5 text-sm text-white/80 hover:bg-white/[0.06] transition cursor-pointer"
+            >
+              <span className="truncate">{playerName}</span>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="shrink-0 text-white/30"
+              >
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+              </svg>
+            </button>
+          ) : (
+            <span className="block px-2.5 py-1.5 text-sm text-white/40">
+              Joining...
+            </span>
+          )}
         </div>
       </div>
 
@@ -336,9 +387,10 @@ function HUDMenu({
   onLeave: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [nameDialogOpen, setNameDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close on click outside
+  // Close menu on click outside
   useEffect(() => {
     if (!open) return;
     function handleClick(e: MouseEvent) {
@@ -346,10 +398,9 @@ function HUDMenu({
         setOpen(false);
       }
     }
-    // Delay to avoid the same click that opened it
     const timer = setTimeout(() => {
       document.addEventListener("click", handleClick);
-    }, 0);
+    }, 100);
     return () => {
       clearTimeout(timer);
       document.removeEventListener("click", handleClick);
@@ -412,10 +463,7 @@ function HUDMenu({
           <MenuPanel
             playerName={playerName}
             avatarThumb={avatarThumb}
-            onSaveName={(name) => {
-              onSaveName(name);
-              close();
-            }}
+            onOpenNameEditor={() => setNameDialogOpen(true)}
             onOpenAvatar={onOpenAvatar}
             onToggleChat={onToggleChat}
             onLeave={onLeave}
@@ -423,6 +471,17 @@ function HUDMenu({
           />
         </div>
       )}
+
+      {/* Name edit dialog — rendered outside the menu so it is independent */}
+      <NameEditDialog
+        name={playerName}
+        open={nameDialogOpen}
+        onSave={(newName) => {
+          onSaveName(newName);
+          close();
+        }}
+        onClose={() => setNameDialogOpen(false)}
+      />
     </div>
   );
 }

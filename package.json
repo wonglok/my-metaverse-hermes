@@ -29,6 +29,7 @@
     "lucide-react": "^1.18.0",
     "md5": "^2.3.0",
     "nipplejs": "^1.0.4",
+    "ogl": "^1.0.11",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router": "^8.1.0",
