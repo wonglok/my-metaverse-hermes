@@ -267,20 +267,20 @@ function MyScene({
 
   return (
     <>
-      <Suspense fallback={null}>
-        <KinematicPlatform
-          position={[0, 2.5, -5]}
-          scale={2}
-          motion={{ axis: "y", amplitude: 1, speed: 1 }}
-          onReady={registerPlatform}
-        >
-          <group scale={5}>
+      <KinematicPlatform
+        position={[0, 2.5, -5]}
+        scale={2}
+        motion={{ axis: "y", amplitude: 1, speed: 1 }}
+        onReady={registerPlatform}
+      >
+        <Suspense fallback={null}>
+          <group scale={2}>
             <Spinner>
               <DiamindComponent name="diam_1"></DiamindComponent>
             </Spinner>
           </group>
-        </KinematicPlatform>
-      </Suspense>
+        </Suspense>
+      </KinematicPlatform>
 
       <directionalLight
         ref={lightRef}
