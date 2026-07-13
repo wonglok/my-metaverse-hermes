@@ -301,11 +301,7 @@ function MyScene({
 
       <Suspense
         fallback={
-          <KinematicPlatform
-            position={[0, 0, 0]}
-            motion={{ axis: "y", amplitude: 0, speed: 0 }}
-            onReady={registerPlatform}
-          >
+          <KinematicPlatform onReady={registerPlatform}>
             <mesh receiveShadow position={[0, -0.25, 0]}>
               <cylinderGeometry args={[100, 100, 0.5]} />
               <meshStandardNodeMaterial
@@ -317,11 +313,7 @@ function MyScene({
           </KinematicPlatform>
         }
       >
-        <KinematicPlatform
-          position={[0, 0, 0]}
-          motion={{ axis: "y", amplitude: 0, speed: 0 }}
-          onReady={registerPlatform}
-        >
+        <KinematicPlatform onReady={registerPlatform}>
           <GLBEnv src="/assets/place/church.glb" receiveShadow castShadow />
         </KinematicPlatform>
       </Suspense>

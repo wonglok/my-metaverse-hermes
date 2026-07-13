@@ -34,7 +34,7 @@ export function KinematicPlatform({
   url,
   // scale = 1,
   position = [0, 0, 0],
-  motion = { axis: "y", amplitude: 1.5, speed: 0.8 },
+  motion = { axis: "x", amplitude: 0, speed: 0 },
   onReady,
   children,
   scale = 1,
