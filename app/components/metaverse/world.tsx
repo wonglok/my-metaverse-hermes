@@ -4,7 +4,7 @@ import { extend, type ThreeToJSXElements } from "@react-three/fiber";
 import * as THREE from "three/webgpu";
 import { useRef, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { Gltf, Cylinder } from "@react-three/drei";
+import { Gltf, Cylinder, Box } from "@react-three/drei";
 import { useMetaverseStore } from "@/stores/metaverse";
 import { PlayerCharacter } from "./player-character";
 import { RemoteAvatar } from "./other-avatar";
@@ -270,10 +270,10 @@ function MyScene({
       <Suspense fallback={null}>
         <KinematicPlatform
           position={[0, 2.5, -5]}
-          scale={2}
           motion={{ axis: "y", amplitude: 1, speed: 1 }}
           onReady={registerPlatform}
         >
+          <Box scale={2} visible={false}></Box>
           <group scale={2}>
             <Spinner>
               <DiamindComponent name="diam_1"></DiamindComponent>
