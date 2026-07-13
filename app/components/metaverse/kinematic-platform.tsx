@@ -75,7 +75,7 @@ export function KinematicPlatform({
           clearTimeout(id);
         };
       }
-    });
+    }, 10);
 
     return () => {
       clearInterval(tt);
