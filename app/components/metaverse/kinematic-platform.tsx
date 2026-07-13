@@ -42,7 +42,6 @@ export function KinematicPlatform({
   const groupRef = useRef<THREE.Group>(null);
   const bvhRef = useRef<ObjectBVH | null>(null);
   const velocity = useRef(new THREE.Vector3());
-  const readyRef = useRef(false);
   const unregisterRef = useRef<(() => void) | null>(null);
 
   // Unregister on unmount
@@ -54,17 +53,30 @@ export function KinematicPlatform({
 
   // Build BVH from children once they're in the group (or after GLB load)
   useEffect(() => {
-    const group = groupRef.current;
-    if (!group || readyRef.current) return;
-    if (url) return; // wait for GLB loader if URL is set
-    if (!children) return;
+    let clean = () => {};
 
-    // Allow one frame for R3F to populate the group with child meshes
-    const id = setTimeout(() => {
-      if (!groupRef.current) return;
-      buildBVH(groupRef.current);
+    let tt = setInterval(() => {
+      if (groupRef.current) {
+        clearInterval(tt);
+        const group = groupRef.current;
+        if (!group) return;
+        // if (url) return; // wait for GLB loader if URL is set
+        if (!children) return;
+
+        // Allow one frame for R3F to populate the group with child meshes
+        const id = setTimeout(() => {
+          if (!groupRef.current) return;
+          buildBVH(groupRef.current);
+        });
+
+        clean = () => clearTimeout(id);
+      }
     });
-    return () => clearTimeout(id);
+
+    return () => {
+      clearInterval(tt);
+      clean();
+    };
   }, [children, url]);
 
   // Load GLB and build BVH
@@ -119,13 +131,12 @@ export function KinematicPlatform({
       velocity: velocity.current,
     };
     unregisterRef.current = onReady?.(platform) ?? null;
-    readyRef.current = true;
   }
 
   // Animate using wall-clock time so all peers stay in sync without network
   useFrame(() => {
     const group = groupRef.current;
-    if (!group || !readyRef.current) return;
+    if (!group) return;
 
     const t = Date.now() / 1000; // seconds since epoch
     const axis = motion.axis;

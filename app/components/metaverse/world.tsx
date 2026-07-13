@@ -271,12 +271,12 @@ function MyScene({
     <>
       <Suspense fallback={null}>
         <KinematicPlatform
-          position={[0, 2.5, -5]}
+          position={[0, 3.5, -5]}
           motion={{ axis: "y", amplitude: 1, speed: 1 }}
           onReady={registerPlatform}
         >
-          <Box scale={2} visible={false}></Box>
-          <group scale={2}>
+          <Box scale={4} visible={false}></Box>
+          <group scale={4}>
             <Spinner>
               <DiamindComponent name="diam_1"></DiamindComponent>
             </Spinner>
