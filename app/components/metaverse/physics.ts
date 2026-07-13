@@ -193,7 +193,7 @@ export function updatePlayerPhysics(
   if (state.isOnGround) {
     for (const mp of movingPlatforms) {
       const platBox = new THREE.Box3().setFromObject(mp.group);
-      platBox.expandByScalar(0.15);
+      platBox.expandByScalar(0.3);
 
       const feet = new THREE.Vector3(
         player.position.x,
