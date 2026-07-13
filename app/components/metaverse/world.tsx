@@ -35,7 +35,7 @@ import { WebGPURenderer } from "three/webgpu";
 import { EffectsSSGI } from "./render-pipeline";
 import { GLBEnv } from "./GLBEnv";
 import { DiamindComponent, Spinner } from "./DiamondTSL/DiamondComponent";
-import { diamondRand } from "./DiamondTSL/DiamondGo";
+// import { diamondRand } from "./DiamondTSL/DiamondGo";
 
 declare module "@react-three/fiber" {
   interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
@@ -149,7 +149,9 @@ function MyScene({
         Math.abs(euler.y - lastSentRot) > 0.001;
 
       if (moved && now - lastSentTime >= MIN_INTERVAL) {
-        useMetaverseStore.getState().sendMove(pos.x, pos.y, pos.z, euler.y);
+        useMetaverseStore
+          .getState()
+          .sendMove(pos.x, pos.y, pos.z, euler.y, avatarUrl ?? undefined);
         lastSentPos.copy(pos);
         lastSentRot = euler.y;
         lastSentTime = now;

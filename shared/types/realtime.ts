@@ -44,7 +44,7 @@ export interface ChatMessage {
 
 export type ClientMessage =
   | { t: "join"; placeId: string; avatarUrl?: string }
-  | { t: "move"; x: number; y: number; z: number; rotation: number }
+  | { t: "move"; x: number; y: number; z: number; rotation: number; avatarUrl?: string }
   | { t: "chat"; text: string }
   | { t: "voice"; data: string; duration: number }
   | { t: "rename"; name: string }
@@ -60,7 +60,7 @@ export type ServerMessage =
   | { t: "welcome"; self: Peer; peers: PlayerState[] }
   | { t: "join"; peer: PlayerState }
   | { t: "leave"; id: string }
-  | { t: "move"; id: string; x: number; y: number; z: number; rotation: number }
+  | { t: "move"; id: string; x: number; y: number; z: number; rotation: number; avatarUrl?: string }
   | { t: "chat"; message: ChatMessage }
   | { t: "voice"; message: ChatMessage }
   | { t: "rename"; id: string; name: string }

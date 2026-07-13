@@ -24,7 +24,7 @@ let _epoch = 0;
 let _rws: ReconnectingWebSocket | null = null;
 let _heartbeatTimer: ReturnType<typeof setInterval> | undefined;
 let _pongTimer: ReturnType<typeof setTimeout> | undefined;
-let _pendingMove: { x: number; y: number; z: number; rotation: number } | null =
+let _pendingMove: { x: number; y: number; z: number; rotation: number; avatarUrl?: string } | null =
   null;
 let _rafId: number | undefined;
 
@@ -54,7 +54,7 @@ interface MetaverseState {
   connect: (placeId: string, avatarUrl?: string | null) => () => void;
 
   // ── Send actions (called by game loop / UI) ─────────────────────────
-  sendMove: (x: number, y: number, z: number, rotation: number) => void;
+  sendMove: (x: number, y: number, z: number, rotation: number, avatarUrl?: string) => void;
   sendChat: (text: string) => void;
   sendVoice: (data: string, duration: number) => void;
   sendName: (name: string) => void;
@@ -151,6 +151,7 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
             p.targetY = msg.y;
             p.targetZ = msg.z;
             p.targetRotation = msg.rotation;
+            if (msg.avatarUrl) p.avatarUrl = msg.avatarUrl;
             set({ players: _syncPlayers() });
           }
           break;
@@ -241,8 +242,8 @@ export const useMetaverseStore = create<MetaverseState>((set, get) => ({
 
   // ── Send actions ─────────────────────────────────────────────────────
 
-  sendMove: (x: number, y: number, z: number, rotation: number) => {
-    _pendingMove = { x, y, z, rotation };
+  sendMove: (x: number, y: number, z: number, rotation: number, avatarUrl?: string) => {
+    _pendingMove = { x, y, z, rotation, avatarUrl };
     if (_rafId == null) {
       _rafId = requestAnimationFrame(() => {
         _rafId = undefined;

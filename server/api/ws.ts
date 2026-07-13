@@ -152,6 +152,7 @@ export default defineWebSocketHandler({
         state.y = y;
         state.z = z;
         state.rotation = rotation;
+        if (msg.avatarUrl) state.avatarUrl = msg.avatarUrl;
 
         const moveMsg: ServerMessage = {
           t: "move",
@@ -160,6 +161,7 @@ export default defineWebSocketHandler({
           y,
           z,
           rotation,
+          avatarUrl: msg.avatarUrl || state.avatarUrl,
         };
 
         peer.publish(placeId, JSON.stringify(moveMsg));
