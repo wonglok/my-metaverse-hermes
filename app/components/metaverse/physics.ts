@@ -149,10 +149,7 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
         },
       });
 
-      if (
-        objMaxScore > globalMaxScore &&
-        objDir.lengthSq() > 0.0001
-      ) {
+      if (objMaxScore > globalMaxScore && objDir.lengthSq() > 0.0001) {
         globalMaxScore = objMaxScore;
         globalMaxDepth = objMaxDepth;
         globalDir.copy(objDir);
@@ -165,9 +162,9 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
   if (globalMaxDepth > 0 && globalMatrix) {
     // Transform direction from local to world space (rotation only — direction
     // is a vector, not a point).
-    const worldDir = globalDir.clone().applyMatrix4(
-      new THREE.Matrix4().extractRotation(globalMatrix),
-    );
+    const worldDir = globalDir
+      .clone()
+      .applyMatrix4(new THREE.Matrix4().extractRotation(globalMatrix));
     _worldSegment.start.addScaledVector(worldDir, globalMaxDepth);
     _worldSegment.end.addScaledVector(worldDir, globalMaxDepth);
   }
