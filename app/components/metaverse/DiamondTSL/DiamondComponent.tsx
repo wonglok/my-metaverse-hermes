@@ -60,7 +60,7 @@ export function DiamindComponent({ name = "diam_1" }) {
 
     const mesh = new Mesh(obj.geometry, material);
     mesh.castShadow = true;
-    mesh.scale.setScalar(25);
+    mesh.scale.set(25, 25, 25);
     const scene = new Scene();
     scene.environment = envMap;
     scene.background = envMap;
