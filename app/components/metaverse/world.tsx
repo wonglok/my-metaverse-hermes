@@ -318,8 +318,6 @@ function MyScene({
         </KinematicPlatform>
       </Suspense>
 
-      {/*  */}
-
       {/* Moving platforms */}
       <KinematicPlatform
         position={[6, 1, -2]}
