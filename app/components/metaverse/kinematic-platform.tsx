@@ -32,7 +32,7 @@ interface KinematicPlatformProps {
  */
 export function KinematicPlatform({
   url,
-  scale = 1,
+  // scale = 1,
   position = [0, 0, 0],
   motion = { axis: "y", amplitude: 1.5, speed: 0.8 },
   onReady,
@@ -69,6 +69,7 @@ export function KinematicPlatform({
           buildBVH(groupRef.current);
         });
 
+        clean();
         clean = () => clearTimeout(id);
       }
     });
@@ -122,7 +123,7 @@ export function KinematicPlatform({
     });
     group.updateMatrixWorld(true);
 
-    const bvh = new ObjectBVH(group, { maxLeafTris: 1 });
+    const bvh = new ObjectBVH(group, { maxLeafTris: 2 });
     bvhRef.current = bvh;
 
     const platform: MovingPlatform = {

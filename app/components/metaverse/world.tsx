@@ -164,7 +164,7 @@ function MyScene({
   }, []);
 
   // Directional light follows player
-  const lightOffset = useMemo(() => new THREE.Vector3(10, 35, 50), []);
+  const lightOffset = useMemo(() => new THREE.Vector3(20, 35, 40), []);
   const lookAt3a = useMemo(() => new THREE.Vector3(0, 0, 0), []);
   const lookAt3b = useMemo(() => new THREE.Vector3(0, 0, 0), []);
 
@@ -298,6 +298,7 @@ function MyScene({
         >
           <group scale={3}>
             <Spinner>
+              <Box scale={[2, 1, 2]} visible={false}></Box>
               <DiamindComponent name="diam_1"></DiamindComponent>
             </Spinner>
           </group>
