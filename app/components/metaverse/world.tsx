@@ -188,6 +188,7 @@ function MyScene({
     const walkAngle = joystick.active
       ? thetaRef.current + (joystick.angle + Math.PI * -0.5)
       : thetaRef.current;
+
     const keys = joystick.active
       ? {
           fwd: true,
@@ -295,7 +296,7 @@ function MyScene({
           motion={{ axis: "y", amplitude: 1, speed: 1 }}
           onReady={registerPlatform}
         >
-          <group scale={4}>
+          <group scale={3}>
             <Spinner>
               <DiamindComponent name="diam_1"></DiamindComponent>
             </Spinner>
