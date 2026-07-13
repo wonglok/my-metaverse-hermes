@@ -38,7 +38,7 @@ export function KinematicPlatform({
   onReady,
   children,
 }: KinematicPlatformProps) {
-  const { scene } = useThree();
+  // const { scene } = useThree();
   const groupRef = useRef<THREE.Group>(null);
   const bvhRef = useRef<ObjectBVH | null>(null);
   const velocity = useRef(new THREE.Vector3());
@@ -60,46 +60,46 @@ export function KinematicPlatform({
     if (!children) return;
 
     // Allow one frame for R3F to populate the group with child meshes
-    const id = requestAnimationFrame(() => {
+    const id = setTimeout(() => {
       if (!groupRef.current) return;
       buildBVH(groupRef.current);
     });
-    return () => cancelAnimationFrame(id);
+    return () => clearTimeout(id);
   }, [children, url]);
 
   // Load GLB and build BVH
-  useEffect(() => {
-    if (!url) return;
-    let cancelled = false;
+  // useEffect(() => {
+  //   if (!url) return;
+  //   let cancelled = false;
 
-    new GLTFLoader().load(url, (res) => {
-      if (cancelled) return;
+  //   new GLTFLoader().load(url, (res) => {
+  //     if (cancelled) return;
 
-      const gltfScene = res.scene;
-      gltfScene.scale.setScalar(scale);
+  //     const gltfScene = res.scene;
+  //     gltfScene.scale.setScalar(scale);
 
-      gltfScene.traverse((c) => {
-        c.castShadow = true;
-        c.receiveShadow = true;
-        const mesh = c as THREE.Mesh;
-        if (mesh.isMesh && !mesh.geometry.boundsTree) {
-          mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
-        }
-      });
+  //     gltfScene.traverse((c) => {
+  //       c.castShadow = true;
+  //       c.receiveShadow = true;
+  //       const mesh = c as THREE.Mesh;
+  //       if (mesh.isMesh && !mesh.geometry.boundsTree) {
+  //         mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
+  //       }
+  //     });
 
-      gltfScene.updateMatrixWorld(true);
+  //     gltfScene.updateMatrixWorld(true);
 
-      const group = groupRef.current;
-      if (!group) return;
-      group.add(gltfScene);
+  //     const group = groupRef.current;
+  //     if (!group) return;
+  //     group.add(gltfScene);
 
-      buildBVH(group);
-    });
+  //     buildBVH(group);
+  //   });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [url, scale]);
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [url, scale]);
 
   function buildBVH(group: THREE.Group) {
     group.traverse((c) => {
