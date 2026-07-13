@@ -81,6 +81,7 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
   // Collect the single deepest penetration across all meshes, then resolve
   // once. Resolving per-triangle pushes the capsule in conflicting directions
   // and causes snapping.
+  let globalMaxScore = 0;
   let globalMaxDepth = 0;
   const globalDir = new THREE.Vector3();
   let globalMatrix: THREE.Matrix4 | null = null;
@@ -110,6 +111,7 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
       const mesh = object as THREE.Mesh;
       if (!mesh.geometry.boundsTree) return;
 
+      let objMaxScore = 0;
       let objMaxDepth = 0;
       const objDir = new THREE.Vector3();
 
@@ -136,9 +138,10 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
 
             // Bias: weight upward-pushing normals more heavily so the player
             // stays on top of the platform instead of being pushed horizontally.
-            const upwardBias = 1 + Math.max(0, _triNormal.y) * 2;
+            const score = depth * (1 + Math.max(0, _triNormal.y) * 2);
 
-            if (depth * upwardBias > objMaxDepth) {
+            if (score > objMaxScore) {
+              objMaxScore = score;
               objMaxDepth = depth;
               objDir.copy(_triNormal).normalize();
             }
@@ -147,9 +150,10 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
       });
 
       if (
-        objMaxDepth > globalMaxDepth &&
+        objMaxScore > globalMaxScore &&
         objDir.lengthSq() > 0.0001
       ) {
+        globalMaxScore = objMaxScore;
         globalMaxDepth = objMaxDepth;
         globalDir.copy(objDir);
         globalMatrix = object.matrixWorld;
@@ -185,6 +189,10 @@ export function updatePlayerPhysics(
   // Carry the player with any platform they're standing on. Must happen
   // before the physics step so the player moves with the platform, not
   // after collision resolution when they've already been pushed off.
+  // Only apply horizontal (X, Z) velocity — collision resolution handles
+  // vertical positioning. Applying Y velocity causes the player to
+  // oscillate against the shapecast correction on vertically-moving
+  // platforms.
   if (state.isOnGround) {
     for (const mp of movingPlatforms) {
       const platBox = new THREE.Box3().setFromObject(mp.group);
@@ -197,7 +205,8 @@ export function updatePlayerPhysics(
       );
 
       if (platBox.containsPoint(feet)) {
-        player.position.addScaledVector(mp.velocity, delta);
+        player.position.x += mp.velocity.x * delta;
+        player.position.z += mp.velocity.z * delta;
       }
     }
   }
