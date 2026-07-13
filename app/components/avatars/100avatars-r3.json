@@ -265,32 +265,6 @@
     "thumbnail_url": "https://arweave.net/ETEjeooyYc4NSqAxMskRz8rmwmto1AzGtPHSRWXSyHc"
   },
   {
-    "id": "97f06e78-7ffc-4cb4-972d-316e7632bbc4",
-    "name": "EvilPendra",
-    "project_id": "100avatars-r3",
-    "description": "Avatar 259: EvilPendra",
-    "model_file_url": "https://arweave.net/bpgbtgi23JECF3VkU-F-DpzNbYhX_VNDVgRGYCb2lY8",
-    "format": "VRM",
-    "is_public": true,
-    "is_draft": false,
-    "created_at": "2025-03-11T16:41:51.496Z",
-    "updated_at": "2025-03-11T16:41:51.496Z",
-    "metadata": {
-      "number": "259",
-      "series": "R3",
-      "alternateModels": {},
-      "ardriveFiles": {
-        "models": ["259_EvilPendra.vrm"],
-        "thumbnails": [
-          "259_EvilPendra_Icon.png",
-          "259_EvilPendra_FullBody.png"
-        ],
-        "textures": ["259_EvilPendra_MidShot.png"]
-      }
-    },
-    "thumbnail_url": "https://arweave.net/Yj4JUUXTXyqBJvPUOjzmdxHwXLJ5WUGc1LXRXBuIjxs"
-  },
-  {
     "id": "5bcf9b1f-1865-462f-86bc-44a485e5dfdc",
     "name": "BeachKing",
     "project_id": "100avatars-r3",
@@ -1147,29 +1121,6 @@
       }
     },
     "thumbnail_url": "https://arweave.net/3fJ3qtDat4bG3vRoV-E_BOqo0NHjHb7R4nIgnOLRrFE"
-  },
-  {
-    "id": "2ae6b45f-70f8-433a-a87e-fd49115eb260",
-    "name": "EvilBook",
-    "project_id": "100avatars-r3",
-    "description": "Avatar 262: EvilBook",
-    "model_file_url": "https://arweave.net/AeQDTTPAAd35wAtZ1Mgjets8Cc1GHJkHjKiR53NcVAM",
-    "format": "VRM",
-    "is_public": true,
-    "is_draft": false,
-    "created_at": "2025-03-11T16:41:51.496Z",
-    "updated_at": "2025-03-11T16:41:51.496Z",
-    "metadata": {
-      "number": "262",
-      "series": "R3",
-      "alternateModels": {},
-      "ardriveFiles": {
-        "models": ["262_EvilBook.vrm"],
-        "thumbnails": ["262_EvilBook_FullBody.png", "262_EvilBook_Icon.png"],
-        "textures": ["262_EvilBook_MidShot.png"]
-      }
-    },
-    "thumbnail_url": "https://arweave.net/De2RfkfNY6MEx3uL5_gyopDiITlsefayTd9VH7xYKbw"
   },
   {
     "id": "afe6933e-f670-4f29-9566-d00ef854ec7f",
