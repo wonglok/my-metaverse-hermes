@@ -37,6 +37,7 @@ export function KinematicPlatform({
   motion = { axis: "y", amplitude: 1.5, speed: 0.8 },
   onReady,
   children,
+  scale = 1,
 }: KinematicPlatformProps) {
   // const { scene } = useThree();
   const groupRef = useRef<THREE.Group>(null);
@@ -70,7 +71,10 @@ export function KinematicPlatform({
         });
 
         clean();
-        clean = () => clearTimeout(id);
+        clean = () => {
+          clearTimeout(id);
+          groupRef.current = null;
+        };
       }
     });
 
@@ -81,38 +85,38 @@ export function KinematicPlatform({
   }, [children, url]);
 
   // Load GLB and build BVH
-  // useEffect(() => {
-  //   if (!url) return;
-  //   let cancelled = false;
+  useEffect(() => {
+    if (!url) return;
+    let cancelled = false;
 
-  //   new GLTFLoader().load(url, (res) => {
-  //     if (cancelled) return;
+    new GLTFLoader().load(url, (res) => {
+      if (cancelled) return;
 
-  //     const gltfScene = res.scene;
-  //     gltfScene.scale.setScalar(scale);
+      const gltfScene = res.scene;
+      gltfScene.scale.setScalar(scale);
 
-  //     gltfScene.traverse((c) => {
-  //       c.castShadow = true;
-  //       c.receiveShadow = true;
-  //       const mesh = c as THREE.Mesh;
-  //       if (mesh.isMesh && !mesh.geometry.boundsTree) {
-  //         mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
-  //       }
-  //     });
+      gltfScene.traverse((c) => {
+        c.castShadow = true;
+        c.receiveShadow = true;
+        const mesh = c as THREE.Mesh;
+        if (mesh.isMesh && !mesh.geometry.boundsTree) {
+          mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
+        }
+      });
 
-  //     gltfScene.updateMatrixWorld(true);
+      gltfScene.updateMatrixWorld(true);
 
-  //     const group = groupRef.current;
-  //     if (!group) return;
-  //     group.add(gltfScene);
+      const group = groupRef.current;
+      if (!group) return;
+      group.add(gltfScene);
 
-  //     buildBVH(group);
-  //   });
+      buildBVH(group);
+    });
 
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, [url, scale]);
+    return () => {
+      cancelled = true;
+    };
+  }, [url, scale]);
 
   function buildBVH(group: THREE.Group) {
     group.traverse((c) => {
@@ -123,7 +127,7 @@ export function KinematicPlatform({
     });
     group.updateMatrixWorld(true);
 
-    const bvh = new ObjectBVH(group, { maxLeafTris: 2 });
+    const bvh = new ObjectBVH(group, { maxLeafTris: 1 });
     bvhRef.current = bvh;
 
     const platform: MovingPlatform = {

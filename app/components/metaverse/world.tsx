@@ -289,26 +289,16 @@ function MyScene({
 
       <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
 
-      {/* Platform */}
-      <Suspense fallback={null}>
-        <KinematicPlatform
-          position={[0, 0, 0]}
-          motion={{ axis: "y", amplitude: 0, speed: 0 }}
-          onReady={registerPlatform}
-        >
-          <group
-            rotation={[Math.PI * 0.25, 0, 0]}
-            position={[0, 1.5, 0]}
-            scale={3}
-          >
-            <Spinner>
-              <DiamindComponent name="diam_1"></DiamindComponent>
-            </Spinner>
-          </group>
-        </KinematicPlatform>
-      </Suspense>
+      <group
+        rotation={[Math.PI * 0.25, 0, 0]}
+        position={[0, 2.3, -32.5]}
+        scale={3}
+      >
+        <Spinner>
+          <DiamindComponent name="diam_1"></DiamindComponent>
+        </Spinner>
+      </group>
 
-      {/* GLTF environment (church model) */}
       <Suspense
         fallback={
           <KinematicPlatform
@@ -335,6 +325,8 @@ function MyScene({
           <GLBEnv src="/assets/place/church.glb" receiveShadow castShadow />
         </KinematicPlatform>
       </Suspense>
+
+      {/*  */}
 
       {/* Moving platforms */}
       <KinematicPlatform
