@@ -293,7 +293,7 @@ function MyScene({
       <Suspense fallback={null}>
         <KinematicPlatform
           position={[0, 3.5, -5]}
-          motion={{ axis: "y", amplitude: 1, speed: 1 }}
+          motion={{ axis: "y", amplitude: 0, speed: 0 }}
           onReady={registerPlatform}
         >
           <Spinner>
