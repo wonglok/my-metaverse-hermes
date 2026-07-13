@@ -11,6 +11,7 @@ const _invMat = new THREE.Matrix4();
 const _worldSegment = new THREE.Line3();
 const _localSegment = new THREE.Line3();
 const _sphere = new THREE.Sphere();
+const _triNormal = new THREE.Vector3();
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -77,6 +78,13 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
   _sceneLocalBox.max.addScalar(capsule.radius);
   _sceneLocalBox.applyMatrix4(_invMat);
 
+  // Collect the single deepest penetration across all meshes, then resolve
+  // once. Resolving per-triangle pushes the capsule in conflicting directions
+  // and causes snapping.
+  let globalMaxDepth = 0;
+  const globalDir = new THREE.Vector3();
+  let globalMatrix: THREE.Matrix4 | null = null;
+
   bvhCtx.bvh.shapecast({
     intersectsBounds: (box) => box.intersectsBox(_sceneLocalBox),
 
@@ -102,6 +110,9 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
       const mesh = object as THREE.Mesh;
       if (!mesh.geometry.boundsTree) return;
 
+      let objMaxDepth = 0;
+      const objDir = new THREE.Vector3();
+
       (mesh.geometry.boundsTree as any).shapecast({
         intersectsBounds: (box: THREE.Box3) =>
           box.intersectsBox(_objectLocalBox),
@@ -116,17 +127,46 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
             capsulePoint,
           );
           if (distance < localRadius) {
-            const depth = localRadius - distance;
-            const direction = capsulePoint.sub(triPoint).normalize();
-            _localSegment.start.addScaledVector(direction, depth);
-            _localSegment.end.addScaledVector(direction, depth);
+            const depth = Math.min(localRadius - distance, capsule.radius * 2);
+            // Use the triangle face normal as the push direction. Face normals
+            // point outward from the geometry, which is the correct direction
+            // to de-penetrate the capsule. The closest-point direction near
+            // edges has a horizontal component that slides the player off.
+            (tri as any).getNormal(_triNormal);
+
+            // Bias: weight upward-pushing normals more heavily so the player
+            // stays on top of the platform instead of being pushed horizontally.
+            const upwardBias = 1 + Math.max(0, _triNormal.y) * 2;
+
+            if (depth * upwardBias > objMaxDepth) {
+              objMaxDepth = depth;
+              objDir.copy(_triNormal).normalize();
+            }
           }
         },
       });
 
-      _worldSegment.copy(_localSegment).applyMatrix4(object.matrixWorld);
+      if (
+        objMaxDepth > globalMaxDepth &&
+        objDir.lengthSq() > 0.0001
+      ) {
+        globalMaxDepth = objMaxDepth;
+        globalDir.copy(objDir);
+        globalMatrix = object.matrixWorld;
+      }
     },
   });
+
+  // Apply the single deepest correction in world space
+  if (globalMaxDepth > 0 && globalMatrix) {
+    // Transform direction from local to world space (rotation only — direction
+    // is a vector, not a point).
+    const worldDir = globalDir.clone().applyMatrix4(
+      new THREE.Matrix4().extractRotation(globalMatrix),
+    );
+    _worldSegment.start.addScaledVector(worldDir, globalMaxDepth);
+    _worldSegment.end.addScaledVector(worldDir, globalMaxDepth);
+  }
 }
 
 // ── Physics step ───────────────────────────────────────────────────────────
@@ -142,6 +182,26 @@ export function updatePlayerPhysics(
   walkAngle: number,
   params: PhysicsParams,
 ): void {
+  // Carry the player with any platform they're standing on. Must happen
+  // before the physics step so the player moves with the platform, not
+  // after collision resolution when they've already been pushed off.
+  if (state.isOnGround) {
+    for (const mp of movingPlatforms) {
+      const platBox = new THREE.Box3().setFromObject(mp.group);
+      platBox.expandByScalar(0.15);
+
+      const feet = new THREE.Vector3(
+        player.position.x,
+        player.position.y,
+        player.position.z,
+      );
+
+      if (platBox.containsPoint(feet)) {
+        player.position.addScaledVector(mp.velocity, delta);
+      }
+    }
+  }
+
   player.updateMatrixWorld();
 
   // Get capsule in world space
@@ -225,25 +285,6 @@ export function updatePlayerPhysics(
   if (touchingGround) {
     state.offGroundTimer = OFF_GROUND_TIME;
     state.isOnGround = true;
-
-    // Carry the player with any moving platform they're standing on.
-    // Check each platform: if the player capsule overlaps the platform group
-    // AABB and the player was pushed upward, apply the platform's velocity.
-    for (const mp of movingPlatforms) {
-      const platBox = new THREE.Box3().setFromObject(mp.group);
-      platBox.expandByScalar(0.1); // small tolerance
-
-      const playerBottom = new THREE.Vector3(
-        player.position.x,
-        player.position.y, // capsule bottom is near player origin
-        player.position.z,
-      );
-
-      if (platBox.containsPoint(playerBottom)) {
-        player.position.addScaledVector(mp.velocity, delta);
-      }
-    }
-
     state.velocity.set(0, 0, 0);
   } else {
     state.offGroundTimer -= delta;
