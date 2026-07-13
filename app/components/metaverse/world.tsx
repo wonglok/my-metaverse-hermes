@@ -269,21 +269,6 @@ function MyScene({
 
   return (
     <>
-      <Suspense fallback={null}>
-        <KinematicPlatform
-          position={[0, 3.5, -5]}
-          motion={{ axis: "y", amplitude: 1, speed: 1 }}
-          onReady={registerPlatform}
-        >
-          <Box scale={4} visible={false}></Box>
-          <group scale={4}>
-            <Spinner>
-              <DiamindComponent name="diam_1"></DiamindComponent>
-            </Spinner>
-          </group>
-        </KinematicPlatform>
-      </Suspense>
-
       <directionalLight
         ref={lightRef}
         color={"#ffffff"}
@@ -302,6 +287,21 @@ function MyScene({
       <ambientLight intensity={0.4} />
 
       <CameraController thetaRef={thetaRef} phiRef={phiRef} distRef={distRef} />
+
+      {/* Platform */}
+      <Suspense fallback={null}>
+        <KinematicPlatform
+          position={[0, 3.5, -5]}
+          motion={{ axis: "y", amplitude: 1, speed: 1 }}
+          onReady={registerPlatform}
+        >
+          <group scale={4}>
+            <Spinner>
+              <DiamindComponent name="diam_1"></DiamindComponent>
+            </Spinner>
+          </group>
+        </KinematicPlatform>
+      </Suspense>
 
       {/* GLTF environment (church model) */}
       <Suspense
@@ -333,18 +333,8 @@ function MyScene({
 
       {/* Moving platforms */}
       <KinematicPlatform
-        position={[0, 4, -15]}
-        motion={{ axis: "y", amplitude: 4.0, speed: 0.5 }}
-        onReady={registerPlatform}
-      >
-        <Cylinder castShadow receiveShadow scale={[3, 0.1, 3]}>
-          <meshStandardNodeMaterial color="#e8a440" roughness={0.4} />
-        </Cylinder>
-      </KinematicPlatform>
-
-      <KinematicPlatform
         position={[6, 2, -2]}
-        motion={{ axis: "x", amplitude: 2, speed: 0.7 }}
+        motion={{ axis: "x", amplitude: 2, speed: 3.7 }}
         onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
