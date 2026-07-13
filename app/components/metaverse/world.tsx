@@ -422,8 +422,8 @@ export function GameWorld({ placeId: _placeId, avatarUrl }: GameWorldProps) {
         }}
       >
         <EffectsSSGI>
-          <WaterPlane />
           <Suspense fallback={null}>
+            <WaterPlane />
             <MyScene
               keysRef={keysRef}
               spacePressedRef={spacePressedRef}
