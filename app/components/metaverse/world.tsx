@@ -322,8 +322,19 @@ function MyScene({
 
       {/* Moving platforms */}
       <KinematicPlatform
-        position={[6, 2, -2]}
+        position={[6, 1, -2]}
         motion={{ axis: "x", amplitude: 5, speed: 0.25 }}
+        onReady={registerPlatform}
+      >
+        <mesh castShadow receiveShadow>
+          <boxGeometry args={[4, 0.3, 4]} />
+          <meshStandardNodeMaterial color="#e8ad40" roughness={0.3} />
+        </mesh>
+      </KinematicPlatform>
+
+      <KinematicPlatform
+        position={[-6, 1, -2]}
+        motion={{ axis: "z", amplitude: 5, speed: 0.25 }}
         onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
