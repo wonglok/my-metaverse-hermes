@@ -45,13 +45,6 @@ export function KinematicPlatform({
   const velocity = useRef(new THREE.Vector3());
   const unregisterRef = useRef<(() => void) | null>(null);
 
-  // Unregister on unmount
-  useEffect(() => {
-    return () => {
-      unregisterRef.current?.();
-    };
-  }, []);
-
   // Build BVH from children once they're in the group (or after GLB load)
   useEffect(() => {
     let clean = () => {};
@@ -72,6 +65,7 @@ export function KinematicPlatform({
 
         clean();
         clean = () => {
+          unregisterRef.current?.();
           clearTimeout(id);
         };
       }
