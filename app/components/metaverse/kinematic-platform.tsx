@@ -68,12 +68,11 @@ export function KinematicPlatform({
         const id = setTimeout(() => {
           if (!groupRef.current) return;
           buildBVH(groupRef.current);
-        });
+        }, 5);
 
         clean();
         clean = () => {
           clearTimeout(id);
-          groupRef.current = null;
         };
       }
     });
@@ -84,39 +83,39 @@ export function KinematicPlatform({
     };
   }, [children, url]);
 
-  // Load GLB and build BVH
-  useEffect(() => {
-    if (!url) return;
-    let cancelled = false;
+  // // Load GLB and build BVH
+  // useEffect(() => {
+  //   if (!url) return;
+  //   let cancelled = false;
 
-    new GLTFLoader().load(url, (res) => {
-      if (cancelled) return;
+  //   new GLTFLoader().load(url, (res) => {
+  //     if (cancelled) return;
 
-      const gltfScene = res.scene;
-      gltfScene.scale.setScalar(scale);
+  //     const gltfScene = res.scene;
+  //     gltfScene.scale.setScalar(scale);
 
-      gltfScene.traverse((c) => {
-        c.castShadow = true;
-        c.receiveShadow = true;
-        const mesh = c as THREE.Mesh;
-        if (mesh.isMesh && !mesh.geometry.boundsTree) {
-          mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
-        }
-      });
+  //     gltfScene.traverse((c) => {
+  //       c.castShadow = true;
+  //       c.receiveShadow = true;
+  //       const mesh = c as THREE.Mesh;
+  //       if (mesh.isMesh && !mesh.geometry.boundsTree) {
+  //         mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
+  //       }
+  //     });
 
-      gltfScene.updateMatrixWorld(true);
+  //     gltfScene.updateMatrixWorld(true);
 
-      const group = groupRef.current;
-      if (!group) return;
-      group.add(gltfScene);
+  //     const group = groupRef.current;
+  //     if (!group) return;
+  //     group.add(gltfScene);
 
-      buildBVH(group);
-    });
+  //     buildBVH(group);
+  //   });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [url, scale]);
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [url, scale]);
 
   function buildBVH(group: THREE.Group) {
     group.traverse((c) => {
@@ -125,6 +124,7 @@ export function KinematicPlatform({
         mesh.geometry.boundsTree = new MeshBVH(mesh.geometry);
       }
     });
+
     group.updateMatrixWorld(true);
 
     const bvh = new ObjectBVH(group, { maxLeafTris: 1 });
