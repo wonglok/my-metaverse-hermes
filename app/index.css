@@ -197,3 +197,14 @@
 body {
   overflow-x: hidden;
 }
+
+input {
+  font-size: 17px !important;
+}
+
+html,
+document,
+body,
+#root {
+  height: 100%;
+}

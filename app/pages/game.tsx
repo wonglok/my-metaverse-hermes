@@ -46,7 +46,7 @@ export function GamePage() {
   }, [avatarUrl]);
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black">
+    <div className="relative h-full w-full overflow-hidden bg-black">
       {/* ── HUD: info pill + menu ─────────────────────────────── */}
       <GameHUD
         placeId={pid}

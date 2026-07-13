@@ -39,7 +39,7 @@ export function App() {
   const rt = useRealtime();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-full">
       <HeroBackdrop />
 
       <header className="relative z-10 mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-5">
