@@ -172,6 +172,8 @@ function shapecastBVH(bvhCtx: BVHContext, capsule: PlayerCapsule): void {
 
 // ── Physics step ───────────────────────────────────────────────────────────
 
+const feet = new THREE.Vector3();
+const box3 = new THREE.Box3();
 export function updatePlayerPhysics(
   delta: number,
   player: THREE.Group,
@@ -192,18 +194,17 @@ export function updatePlayerPhysics(
   // platforms.
   if (state.isOnGround) {
     for (const mp of movingPlatforms) {
-      const platBox = new THREE.Box3().setFromObject(mp.group);
+      box3.setFromArray([0, 0, 0]);
+      const platBox = box3.setFromObject(mp.group);
       platBox.expandByScalar(0.3);
 
-      const feet = new THREE.Vector3(
-        player.position.x,
-        player.position.y,
-        player.position.z,
-      );
+      feet.set(player.position.x, player.position.y, player.position.z);
 
       if (platBox.containsPoint(feet)) {
         player.position.x += mp.velocity.x * delta;
+        player.position.y += mp.velocity.y * delta;
         player.position.z += mp.velocity.z * delta;
+        state.isOnGround = true;
       }
     }
   }

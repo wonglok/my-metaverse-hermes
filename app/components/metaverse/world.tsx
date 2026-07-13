@@ -335,7 +335,7 @@ function MyScene({
       {/* Moving platforms */}
       <KinematicPlatform
         position={[6, 2, -2]}
-        motion={{ axis: "x", amplitude: 2, speed: 3.7 }}
+        motion={{ axis: "x", amplitude: 2, speed: 1.5 }}
         onReady={registerPlatform}
       >
         <mesh castShadow receiveShadow>
